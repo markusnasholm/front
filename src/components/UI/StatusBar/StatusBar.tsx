@@ -30,7 +30,7 @@ const StatusBarContent: React.FC<StatusBarContentProps> = ({
   return <div className={`${style.statusBar} ${(expandedBar ? `${style.expandedStatusBar}` : "")}`} onMouseOver={() => setExpandedBar(true)} onMouseLeave={() => setExpandedBar(false)} data-cy="expandedStatusBar">
     <div className={style.podsCount}>
       <span className={style.podsCountText} data-cy="podsCountText">
-        {`Targetting ${targets.length} ${pluralize('pod', targets.length)} ${targets.length ? "in" : ""} ${targets.length ? pluralize('namespace', uniqueNamespaces(targets).length) : ""} ${uniqueNamespaces(targets).join(", ")}`}
+        {`Targeting ${targets.length} ${pluralize('pod', targets.length)} ${targets.length ? "in" : ""} ${targets.length ? pluralize('namespace', uniqueNamespaces(targets).length) : ""} ${uniqueNamespaces(targets).join(", ")}`}
       </span>
     </div>
     {expandedBar && <div style={{ marginTop: 20 }}>
@@ -57,7 +57,7 @@ export const StatusBar: React.FC = () => {
   const [targets, setTargets] = useState<Target[]>([]);
 
   useInterval(async () => {
-    fetch(`${HubBaseUrl}/pods/targetted`)
+    fetch(`${HubBaseUrl}/pods/targeted`)
       .then(response => response.json())
       .then(data => setTargets(data.targets))
       .catch(err => console.error(err));
