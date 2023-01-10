@@ -41,12 +41,12 @@ interface TcpStreamTexts {
   downloadPcap: string;
 }
 
-export function useTcpStreamTextsByWidth(windowWidth: number): TcpStreamTexts {
+export function useTcpStreamTextsByWidth(windowWidth: number, layer4: string): TcpStreamTexts {
 
-  let tcpStream = "TCP Stream:"
+  let tcpStream = `${layer4} Stream:`
   let indexText = "Index:"
   let nodeText = "Node:"
-  let tcpReplay = "TCP Replay"
+  let tcpReplay = `${layer4} Replay`
   let downloadPcap = "Download PCAP"
 
   if (windowWidth < 1200) {

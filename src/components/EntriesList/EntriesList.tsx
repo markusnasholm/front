@@ -75,7 +75,7 @@ export const EntriesList: React.FC<EntriesListProps> = ({
 
       <div className={styles.footer}>
         <div>Showing <b id="item-count">{entries.length}</b> items from a total of <b
-          id="total-tcp-streams">{totalTcpStreams}</b> TCP streams
+          id="total-tcp-streams">{totalTcpStreams}</b> TCP/UDP streams
         </div>
         <div>
           UTC:

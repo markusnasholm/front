@@ -15,12 +15,13 @@ interface EntryProps {
   color: string;
   ip: string;
   port: string;
+  layer4: string;
 }
 
-export const TcpStream: React.FC<EntryProps> = ({ index, stream, worker, node, color, ip, port }) => {
+export const TcpStream: React.FC<EntryProps> = ({ index, stream, worker, node, color, ip, port, layer4 }) => {
 
   const { width } = useWindowDimensions();
-  const { tcpStream, indexText, nodeText, tcpReplay, downloadPcap } = useTcpStreamTextsByWidth(width)
+  const { tcpStream, indexText, nodeText, tcpReplay, downloadPcap } = useTcpStreamTextsByWidth(width, layer4)
 
   return <React.Fragment>
     <div className={`${styles.row}`}>
@@ -43,7 +44,7 @@ export const TcpStream: React.FC<EntryProps> = ({ index, stream, worker, node, c
           >
             <span
               style={{ color: color }}
-              title={`TCP stream in the worker: ${worker}`}
+              title={`${layer4} stream in the worker: ${worker}`}
             >
               {worker}/{stream}
             </span>
@@ -71,7 +72,7 @@ export const TcpStream: React.FC<EntryProps> = ({ index, stream, worker, node, c
           >
             <span
               style={{ color: color }}
-              title={`The index of the item in this TCP stream: ${stream}`}
+              title={`The index of the item in this ${layer4} stream: ${stream}`}
             >
               {index}
             </span>
@@ -109,6 +110,7 @@ export const TcpStream: React.FC<EntryProps> = ({ index, stream, worker, node, c
           worker={worker}
           ip={ip}
           port={port}
+          layer4={layer4}
         />
       </div>
 
@@ -120,7 +122,7 @@ export const TcpStream: React.FC<EntryProps> = ({ index, stream, worker, node, c
             backgroundColor: color,
           }}
           href={`${HubBaseUrl}/pcaps/download/${worker}/${stream}`}
-          title={`Download this TCP stream in PCAP format: ${stream}`}
+          title={`Download this ${layer4} stream in PCAP format: ${stream}`}
         >
           {downloadPcap}
         </Button>

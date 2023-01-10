@@ -164,6 +164,7 @@ export const EntryDetailed: React.FC = () => {
         color={entryData.protocol.backgroundColor}
         ip={entryData.data.dst.ip}
         port={entryData.data.dst.port}
+        layer4={entryData.protocol.layer4.toUpperCase()}
       />
       <EntryViewer
         representation={entryData.representation}

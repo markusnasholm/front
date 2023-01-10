@@ -18,9 +18,10 @@ export interface TcpReplayDialogProps {
   worker: string;
   ip: string;
   port: string;
+  layer4: string;
 }
 
-export const TcpReplayDialog: React.FC<TcpReplayDialogProps> = ({ color, node, tcpReplay, stream, worker, ip, port }) => {
+export const TcpReplayDialog: React.FC<TcpReplayDialogProps> = ({ color, node, tcpReplay, stream, worker, ip, port, layer4 }) => {
   const [open, setOpen] = React.useState(false);
   const [count, setCount] = React.useState("1");
   const [delay, setDelay] = React.useState("100");
@@ -30,11 +31,11 @@ export const TcpReplayDialog: React.FC<TcpReplayDialogProps> = ({ color, node, t
     fetch(`${HubBaseUrl}/pcaps/replay/${worker}/${stream}?count=${encodeURIComponent(count)}&delay=${encodeURIComponent(delay)}&host=${encodeURIComponent(ip)}&port=${encodeURIComponent(port)}`)
       .then(response => {
         if (response.status === 200) {
-          toast.info("TCP replay was successful.", {
+          toast.info(`${layer4} replay was successful.`, {
             theme: "colored"
           });
         } else {
-          toast.error("TCP replay was failed!", {
+          toast.error(`${layer4} replay was failed!`, {
             theme: "colored"
           });
         }
@@ -64,17 +65,17 @@ export const TcpReplayDialog: React.FC<TcpReplayDialogProps> = ({ color, node, t
           backgroundColor: color,
         }}
         onClick={handleClickOpen}
-        title={`Replay this TCP stream to the default network interface of the node: ${node}`}
+        title={`Replay this ${layer4} stream to the default network interface of the node: ${node}`}
       >
         {tcpReplay}
       </Button>
       <Dialog open={open} onClose={handleClose} style={{color: color}}>
-        <DialogTitle style={{fontWeight: "bold", color: color}}>TCP Replay</DialogTitle>
+        <DialogTitle style={{fontWeight: "bold", color: color}}>{layer4} Replay</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            This action will replay the TCP stream <b>{stream}</b> on the node <b>{node}</b>.
+            This action will replay the {layer4} stream <b>{stream}</b> on the node <b>{node}</b>.
             It will only replay the payload of client packets by establishing a brand
-            new TCP connection to the TCP server at destination IP: <b>{ip}</b> and port: <b>{port}</b>.
+            new {layer4} connection to the {layer4} server at destination IP: <b>{ip}</b> and port: <b>{port}</b>.
           </DialogContentText>
           <DialogContentText style={{marginTop: "20px"}}>
             Please set how many times it will be replayed:
@@ -83,7 +84,7 @@ export const TcpReplayDialog: React.FC<TcpReplayDialogProps> = ({ color, node, t
             autoFocus
             margin="dense"
             id="count"
-            label="TCP replay count"
+            label={`${layer4} replay count`}
             type="number"
             defaultValue={count}
             fullWidth
