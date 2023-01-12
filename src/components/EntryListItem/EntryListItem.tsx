@@ -154,7 +154,7 @@ export const EntryItem: React.FC<EntryProps> = ({ id, stream, entry, style, head
             {entry.src.ip}
           </span>
         </Queryable>
-        <span className={`${styles.tcpInfo}`} style={{ marginTop: "18px" }}>{entry.src.port ? ":" : ""}</span>
+        <span className={`${styles.tcpInfo}`} style={{ marginTop: "19px" }}>{entry.src.port ? ":" : ""}</span>
         <Queryable
           query={`src.port == "${entry.src.port}"`}
           displayIconOnMouseOver={true}
@@ -199,7 +199,7 @@ export const EntryItem: React.FC<EntryProps> = ({ id, stream, entry, style, head
           query={`dst.ip == "${entry.dst.ip}"`}
           displayIconOnMouseOver={true}
           flipped={false}
-          iconStyle={{ marginTop: "30px", marginLeft: "-2px", right: "35px", position: "relative" }}
+          iconStyle={{ marginTop: "30px", right: "35px", position: "relative" }}
         >
           <span
             className={`${styles.tcpInfo} ${styles.ip}`}
@@ -208,7 +208,7 @@ export const EntryItem: React.FC<EntryProps> = ({ id, stream, entry, style, head
             {entry.dst.ip}
           </span>
         </Queryable>
-        <span className={`${styles.tcpInfo}`} style={{ marginTop: "18px" }}>:</span>
+        <span className={`${styles.tcpInfo}`} style={{ marginTop: "19px" }}>:</span>
         <Queryable
           query={`dst.port == "${entry.dst.port}"`}
           displayIconOnMouseOver={true}
