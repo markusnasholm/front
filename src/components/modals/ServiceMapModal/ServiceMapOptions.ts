@@ -6,7 +6,7 @@ const ServiceMapOptions = {
       theta: 0.5,
       gravitationalConstant: -50,
       centralGravity: 0.01,
-      springConstant: 0.2,
+      springConstant: 0.08,
       springLength: 100,
       damping: 1.0,
       avoidOverlap: 0
