@@ -1,14 +1,14 @@
 const ServiceMapOptions = {
   physics: {
     enabled: true,
-    solver: 'barnesHut',
-    barnesHut: {
+    solver: 'forceAtlas2Based',
+    forceAtlas2Based: {
       theta: 0.5,
-      gravitationalConstant: -2000,
-      centralGravity: 0.3,
-      springLength: 180,
-      springConstant: 0.04,
-      damping: 0.09,
+      gravitationalConstant: -50,
+      centralGravity: 0.01,
+      springConstant: 0.2,
+      springLength: 100,
+      damping: 1.0,
       avoidOverlap: 0
     },
   },

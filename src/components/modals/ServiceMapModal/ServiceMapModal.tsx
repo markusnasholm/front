@@ -119,7 +119,6 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({ entries, lastU
   useEffect(() => {
     if (graphData?.nodes?.length === 0) return;
     const options = { ...graphOptions };
-    options.physics.barnesHut.avoidOverlap = graphData?.nodes?.length > 10 ? 0 : 1;
     setGraphOptions(options);
   }, [graphData?.nodes?.length]);
 
