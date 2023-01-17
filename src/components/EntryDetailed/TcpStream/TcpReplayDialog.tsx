@@ -6,6 +6,8 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import styles from './TcpStream.module.sass';
 import { toast } from "react-toastify";
 import { HubBaseUrl } from "../../../consts";
@@ -25,10 +27,11 @@ export const TcpReplayDialog: React.FC<TcpReplayDialogProps> = ({ color, node, t
   const [open, setOpen] = React.useState(false);
   const [count, setCount] = React.useState("1");
   const [delay, setDelay] = React.useState("100");
+  const [concurrent, setConcurrent] = React.useState(false);
 
   const replayTcpStream = () => {
     setOpen(false);
-    fetch(`${HubBaseUrl}/pcaps/replay/${worker}/${stream}?count=${encodeURIComponent(count)}&delay=${encodeURIComponent(delay)}&host=${encodeURIComponent(ip)}&port=${encodeURIComponent(port)}`)
+    fetch(`${HubBaseUrl}/pcaps/replay/${worker}/${stream}?count=${encodeURIComponent(count)}&delay=${encodeURIComponent(delay)}&host=${encodeURIComponent(ip)}&port=${encodeURIComponent(port)}&concurrent=${!!concurrent}`)
       .then(response => {
         if (response.status === 200) {
           toast.info(`${layer4} replay was successful.`, {
@@ -56,6 +59,10 @@ export const TcpReplayDialog: React.FC<TcpReplayDialogProps> = ({ color, node, t
     setOpen(false);
   };
 
+  const handleConcurrentCheck = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setConcurrent(event.target.checked);
+  };
+
   return (
     <div>
       <Button
@@ -77,6 +84,7 @@ export const TcpReplayDialog: React.FC<TcpReplayDialogProps> = ({ color, node, t
             It will only replay the payload of client packets by establishing a brand
             new {layer4} connection to the {layer4} server at destination IP: <b>{ip}</b> and port: <b>{port}</b>.
           </DialogContentText>
+
           <DialogContentText style={{marginTop: "20px"}}>
             Please set how many times it will be replayed:
           </DialogContentText>
@@ -93,6 +101,7 @@ export const TcpReplayDialog: React.FC<TcpReplayDialogProps> = ({ color, node, t
             required={true}
             onChange={(event) => setCount(event.target.value)}
           />
+
           <DialogContentText style={{marginTop: "20px"}}>
             The delay between the replayed packets:
           </DialogContentText>
@@ -108,6 +117,14 @@ export const TcpReplayDialog: React.FC<TcpReplayDialogProps> = ({ color, node, t
             required={true}
             onChange={(event) => setDelay(event.target.value)}
           />
+
+          <FormControlLabel
+            label={<DialogContentText style={{marginTop: "4px", color: color}}>Replay the {layer4} streams concurrently. (<b>load testing</b>)</DialogContentText>}
+            control={<Checkbox checked={concurrent} onChange={handleConcurrentCheck} style={{color: color}} />}
+            style={{marginTop: "5px"}}
+            labelPlacement="end"
+          />
+
         </DialogContent>
         <DialogActions>
           <Button
