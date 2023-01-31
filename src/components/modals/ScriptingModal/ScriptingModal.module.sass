@@ -1,0 +1,41 @@
+@import "../../../variables.module"
+@import "../../../components"
+
+$modalMargin-from-edge : 35px
+
+.closeIcon
+  position: absolute
+  right: 20px
+  top: 20px
+
+.modalContainer
+  display: flex
+  height: calc(100% - 110px)
+  background: #F0F5FF
+  padding: 0 15px
+  padding-bottom: 25px
+
+.headerContainer
+  width: 100%
+  background: white
+  display: flex
+  align-items: center
+  margin-bottom: 15px
+
+.headerSection
+  display: flex
+  align-content: center
+  align-items: center
+  margin-left: $modalMargin-from-edge
+  margin-bottom: 25px
+  margin-top: 25px
+
+  & .title
+    font-size: 28px
+    color: $blue-gray
+    font-weight: 600
+    margin-right: 35px
+    white-space: nowrap
+
+.graphSection
+  flex: 85%
