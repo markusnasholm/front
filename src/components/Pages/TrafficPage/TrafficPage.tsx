@@ -12,9 +12,10 @@ interface TrafficPageProps {
   entries: Entry[];
   setEntries: React.Dispatch<React.SetStateAction<Entry[]>>;
   setLastUpdated: React.Dispatch<React.SetStateAction<number>>;
+  getLicense: () => void;
 }
 
-export const TrafficPage: React.FC<TrafficPageProps> = ({ entries, setEntries, setLastUpdated }) => {
+export const TrafficPage: React.FC<TrafficPageProps> = ({ entries, setEntries, setLastUpdated, getLicense }) => {
   const commonClasses = useCommonStyles();
   const setServiceMapModalOpen = useSetRecoilState(serviceMapModalOpenAtom);
 
@@ -40,6 +41,7 @@ export const TrafficPage: React.FC<TrafficPageProps> = ({ entries, setEntries, s
         entries={entries}
         setEntries={setEntries}
         setLastUpdated={setLastUpdated}
+        getLicense={getLicense}
         actionButtons={actionButtons}
       />
     </>

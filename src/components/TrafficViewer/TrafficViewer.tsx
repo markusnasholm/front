@@ -45,12 +45,13 @@ interface TrafficViewerProps {
   entries: Entry[];
   setEntries: React.Dispatch<React.SetStateAction<Entry[]>>;
   setLastUpdated: React.Dispatch<React.SetStateAction<number>>;
+  getLicense: () => void;
   actionButtons?: JSX.Element,
 }
 
 const DEFAULT_QUERY = window.__RUNTIME_CONFIG__.REACT_APP_DEFAULT_FILTER ? window.__RUNTIME_CONFIG__.REACT_APP_DEFAULT_FILTER.trim() : "timestamp >= now()" ;
 
-export const TrafficViewer: React.FC<TrafficViewerProps> = ({ entries, setEntries, setLastUpdated, actionButtons }) => {
+export const TrafficViewer: React.FC<TrafficViewerProps> = ({ entries, setEntries, setLastUpdated, getLicense, actionButtons }) => {
 
   const classes = useLayoutStyles();
   const setFocusedItem = useSetRecoilState(focusedItemAtom);
@@ -119,6 +120,7 @@ export const TrafficViewer: React.FC<TrafficViewerProps> = ({ entries, setEntrie
           theme: "colored",
           autoClose: 1000,
         });
+        getLicense();
       }
 
       ws.current.onclose = (e) => {
