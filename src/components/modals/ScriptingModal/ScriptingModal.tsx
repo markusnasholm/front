@@ -24,6 +24,7 @@ const modalStyle = {
 interface TabPanelProps {
   index: number;
   selected: number;
+  scriptKey: number;
   script: Script;
   setUpdated: React.Dispatch<React.SetStateAction<number>>
 }
@@ -32,7 +33,7 @@ const DEFAULT_TITLE = "New Script"
 const DEFAULT_SCRIPT = `function capturedItem(item) {\n  // Your code goes here\n}`
 
 function TabPanel(props: TabPanelProps) {
-  const { index, selected, script, setUpdated } = props;
+  const { index, selected, scriptKey, script, setUpdated } = props;
 
   const [code, setCode] = React.useState(
     DEFAULT_SCRIPT
@@ -45,9 +46,15 @@ function TabPanel(props: TabPanelProps) {
   };
 
   const handleClickDeleteScript = () => {
-    console.log(index);
-    console.log(code);
-    setUpdated(index);
+    fetch(
+      `${HubBaseUrl}/scripts/${scriptKey}`,
+      {
+        method: 'DELETE',
+      },
+    )
+      .then(response => {
+        setUpdated(scriptKey);
+      })
   };
 
   return (
@@ -61,6 +68,7 @@ function TabPanel(props: TabPanelProps) {
         <Box sx={{ p: 3 }}>
           <Typography variant="h5" component="h2" style={{ marginBottom: "20px" }}>{script.title}</Typography>
           <Typography><b>Script Index:</b> {index}</Typography>
+          <Typography><b>Script Key:</b> {scriptKey}</Typography>
           <CodeEditor
             value={code}
             language="js"
@@ -203,11 +211,12 @@ export const ScriptingModal: React.FC<ScriptingModalProps> = ({ isOpen, onClose 
                     </Button>
                   </Tabs>
                   {
-                    Object.keys(scriptMap).map(function(key: string) {
+                    Object.keys(scriptMap).map(function(key: string, i: number) {
                       return <TabPanel
                         key={key}
-                        index={Number(key)}
+                        index={i}
                         selected={selected}
+                        scriptKey={Number(key)}
                         script={scriptMap[key]}
                         setUpdated={setUpdated}
                       />
