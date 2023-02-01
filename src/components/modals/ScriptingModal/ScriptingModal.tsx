@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Box, Fade, Modal, Backdrop, Tabs, Tab, Typography, Button } from "@mui/material";
 import closeIcon from "./assets/close.svg"
 import styles from './ScriptingModal.module.sass'
 import CodeEditor from '@uiw/react-textarea-code-editor';
+import { HubBaseUrl } from "../../../consts";
 
 const modalStyle = {
   position: 'absolute',
@@ -21,34 +22,45 @@ const modalStyle = {
 };
 
 interface TabPanelProps {
-  children?: React.ReactNode;
   index: number;
-  value: number;
+  selected: number;
+  script: Script;
+  setUpdated: React.Dispatch<React.SetStateAction<number>>
 }
 
+const DEFAULT_TITLE = "New Script"
+const DEFAULT_SCRIPT = `function capturedItem(item) {\n  // Your code goes here\n}`
+
 function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props;
+  const { index, selected, script, setUpdated } = props;
 
   const [code, setCode] = React.useState(
-    `function capturedItem(item) {\n  // Your code goes here\n}`
+    DEFAULT_SCRIPT
   );
 
-  const saveScript = () => {
+  const handleClickSaveScript = () => {
+    console.log(index);
     console.log(code);
+    setUpdated(index);
+  };
+
+  const handleClickDeleteScript = () => {
+    console.log(index);
+    console.log(code);
+    setUpdated(index);
   };
 
   return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`vertical-tabpanel-${index}`}
-      aria-labelledby={`vertical-tab-${index}`}
-      style={{ width: '100%' }}
-      {...other}
-    >
-      {value === index && (
+    <>
+      {index === selected &&  <div
+        role="tabpanel"
+        id={`vertical-tabpanel-${index}`}
+        aria-labelledby={`vertical-tab-${index}`}
+        style={{ width: '100%' }}
+      >
         <Box sx={{ p: 3 }}>
-          <Typography>{children} {value}</Typography>
+          <Typography variant="h5" component="h2" style={{ marginBottom: "20px" }}>{script.title}</Typography>
+          <Typography><b>Script Index:</b> {index}</Typography>
           <CodeEditor
             value={code}
             language="js"
@@ -62,24 +74,37 @@ function TabPanel(props: TabPanelProps) {
               margin: 10,
             }}
           />
+          <Typography style={{ marginBottom: "10px" }}>The JavaScript function <b>capturedItem(item)</b> is pre-defined hook called immediately after an item is captured from the traffic.</Typography>
+          <Typography style={{ marginBottom: "10px" }}>Once you save the script, the changes will be applied to all workers.</Typography>
           <Button
-            variant="outlined"
-            onClick={saveScript}
+            variant="contained"
+            onClick={handleClickSaveScript}
+            style={{ margin: 10 }}
           >
-            Save Script
+            Save
+          </Button>
+          <Button
+            variant="contained"
+            onClick={handleClickDeleteScript}
+            color="error"
+            style={{ margin: 10 }}
+          >
+            Delete
           </Button>
         </Box>
-      )}
-    </div>
+      </div>}
+    </>
   );
 }
 
-function a11yProps(index: number) {
-  return {
-    id: `vertical-tab-${index}`,
-    'aria-controls': `vertical-tabpanel-${index}`,
-  };
+interface Script {
+  title: string;
+  code: string;
 }
+
+type ScriptMap = {
+  [key: number]: Script;
+};
 
 interface ScriptingModalProps {
   isOpen: boolean;
@@ -88,11 +113,41 @@ interface ScriptingModalProps {
 
 export const ScriptingModal: React.FC<ScriptingModalProps> = ({ isOpen, onClose }) => {
 
-  const [value, setValue] = React.useState(0);
+  const [selected, setSelected] = React.useState(0);
+  const [updated, setUpdated] = React.useState(0);
 
-  const handleChange = (event: React.SyntheticEvent, newValue: number) => {
-    setValue(newValue);
+  const [scriptMap, setScriptMap] = React.useState({} as ScriptMap);
+
+  const handleChange = (event: React.SyntheticEvent, newKey: number) => {
+    setSelected(newKey);
   };
+
+  const handleClickAddScript = () => {
+    const obj: Script = {title: DEFAULT_TITLE, code: "" };
+    fetch(
+      `${HubBaseUrl}/scripts`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(obj)
+      },
+    )
+      .then(response => response.json())
+      .then(data => {
+        setUpdated(data.key);
+      })
+  };
+
+  useEffect(() => {
+    fetch(`${HubBaseUrl}/scripts`)
+      .then(response => response.json())
+      .then((data: ScriptMap) => {
+        setScriptMap(data);
+      })
+      .catch(err => console.error(err));
+  }, [updated]);
 
   return (
     <Modal
@@ -125,40 +180,39 @@ export const ScriptingModal: React.FC<ScriptingModalProps> = ({ isOpen, onClose 
                   <Tabs
                     orientation="vertical"
                     variant="scrollable"
-                    value={value}
+                    value={selected}
                     onChange={handleChange}
                     aria-label="Vertical tabs example"
-                    sx={{ borderRight: 1, borderColor: 'divider' }}
+                    sx={{ borderRight: 1, borderColor: 'divider', minWidth: '300px' }}
                   >
-                    <Tab label="Item One" {...a11yProps(0)} />
-                    <Tab label="Item Two" {...a11yProps(1)} />
-                    <Tab label="Item Three" {...a11yProps(2)} />
-                    <Tab label="Item Four" {...a11yProps(3)} />
-                    <Tab label="Item Five" {...a11yProps(4)} />
-                    <Tab label="Item Six" {...a11yProps(5)} />
-                    <Tab label="Item Seven" {...a11yProps(6)} />
+                    {
+                      Object.keys(scriptMap).map(function(key) {
+                        return <Tab
+                          key={key}
+                          label={scriptMap[key].title}
+                        />
+                      })
+                    }
+                    <Button
+                      variant="contained"
+                      onClick={handleClickAddScript}
+                      title="Add a new script"
+                      sx={{ margin: "70px", marginTop: "20px" }}
+                    >
+                      Add script
+                    </Button>
                   </Tabs>
-                  <TabPanel value={value} index={0}>
-                    Item One
-                  </TabPanel>
-                  <TabPanel value={value} index={1}>
-                    Item Two
-                  </TabPanel>
-                  <TabPanel value={value} index={2}>
-                    Item Three
-                  </TabPanel>
-                  <TabPanel value={value} index={3}>
-                    Item Four
-                  </TabPanel>
-                  <TabPanel value={value} index={4}>
-                    Item Five
-                  </TabPanel>
-                  <TabPanel value={value} index={5}>
-                    Item Six
-                  </TabPanel>
-                  <TabPanel value={value} index={6}>
-                    Item Seven
-                  </TabPanel>
+                  {
+                    Object.keys(scriptMap).map(function(key: string) {
+                      return <TabPanel
+                        key={key}
+                        index={Number(key)}
+                        selected={selected}
+                        script={scriptMap[key]}
+                        setUpdated={setUpdated}
+                      />
+                    })
+                  }
                 </Box>
               </div>
             </div>
