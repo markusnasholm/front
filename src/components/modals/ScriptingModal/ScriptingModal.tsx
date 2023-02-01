@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Box, Fade, Modal, Backdrop, Tabs, Tab, Typography, Button } from "@mui/material";
+import { Box, Fade, Modal, Backdrop, Tabs, Tab, Typography, Button, TextField } from "@mui/material";
 import closeIcon from "./assets/close.svg"
 import styles from './ScriptingModal.module.sass'
 import CodeEditor from '@uiw/react-textarea-code-editor';
@@ -35,14 +35,26 @@ const DEFAULT_SCRIPT = `function capturedItem(item) {\n  // Your code goes here\
 function TabPanel(props: TabPanelProps) {
   const { index, selected, scriptKey, script, setUpdated } = props;
 
-  const [code, setCode] = React.useState(
-    DEFAULT_SCRIPT
-  );
+  const [code, setCode] = React.useState(script.code ? script.code : DEFAULT_SCRIPT);
+  const [title, setTitle] = React.useState(script.title);
 
   const handleClickSaveScript = () => {
-    console.log(index);
-    console.log(code);
-    setUpdated(index);
+    const obj: Script = {title: title, code: code };
+    fetch(
+      `${HubBaseUrl}/scripts/${scriptKey}`,
+      {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(obj)
+      },
+    )
+      .then(response => response.json())
+      .then(data => {
+        console.log(data);
+        setUpdated(data.key);
+      });
   };
 
   const handleClickDeleteScript = () => {
@@ -66,9 +78,15 @@ function TabPanel(props: TabPanelProps) {
         style={{ width: '100%' }}
       >
         <Box sx={{ p: 3 }}>
-          <Typography variant="h5" component="h2" style={{ marginBottom: "20px" }}>{script.title}</Typography>
-          <Typography><b>Script Index:</b> {index}</Typography>
-          <Typography><b>Script Key:</b> {scriptKey}</Typography>
+          <TextField
+            variant="standard"
+            defaultValue={script.title}
+            type="string"
+            style={{width: "100%", marginBottom: "20px" }}
+            inputProps={{style: {fontSize: 28, fontWeight: 600}}}
+            onChange={(event) => setTitle(event.target.value)}
+          />
+          <Typography><b>Script Index:</b> {scriptKey}</Typography>
           <CodeEditor
             value={code}
             language="js"
@@ -82,7 +100,7 @@ function TabPanel(props: TabPanelProps) {
               margin: 10,
             }}
           />
-          <Typography style={{ marginBottom: "10px" }}>The JavaScript function <b>capturedItem(item)</b> is pre-defined hook called immediately after an item is captured from the traffic.</Typography>
+          <Typography style={{ marginBottom: "10px" }}>The JavaScript function <b>capturedItem(item)</b> is a pre-defined hook called immediately after an item is captured from the traffic.</Typography>
           <Typography style={{ marginBottom: "10px" }}>Once you save the script, the changes will be applied to all workers.</Typography>
           <Button
             variant="contained"
@@ -122,7 +140,7 @@ interface ScriptingModalProps {
 export const ScriptingModal: React.FC<ScriptingModalProps> = ({ isOpen, onClose }) => {
 
   const [selected, setSelected] = React.useState(0);
-  const [updated, setUpdated] = React.useState(0);
+  const [updated, setUpdated] = React.useState(-1);
 
   const [scriptMap, setScriptMap] = React.useState({} as ScriptMap);
 
@@ -144,8 +162,9 @@ export const ScriptingModal: React.FC<ScriptingModalProps> = ({ isOpen, onClose 
     )
       .then(response => response.json())
       .then(data => {
+        console.log(data);
         setUpdated(data.key);
-      })
+      });
   };
 
   useEffect(() => {
@@ -153,9 +172,10 @@ export const ScriptingModal: React.FC<ScriptingModalProps> = ({ isOpen, onClose 
       .then(response => response.json())
       .then((data: ScriptMap) => {
         setScriptMap(data);
+        setUpdated(-1);
       })
       .catch(err => console.error(err));
-  }, [updated]);
+  }, [updated, setUpdated]);
 
   return (
     <Modal
