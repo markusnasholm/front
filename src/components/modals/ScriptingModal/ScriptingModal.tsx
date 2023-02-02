@@ -65,7 +65,7 @@ function TabPanel(props: TabPanelProps) {
         method: 'DELETE',
       },
     )
-      .then(response => {
+      .then(() => {
         setUpdated(scriptKey);
       })
   };
@@ -249,7 +249,7 @@ export const ScriptingModal: React.FC<ScriptingModalProps> = ({ isOpen, onClose 
                     <Grid item xs={12} style={{ height: "30%" }}>
                       <ScrollFollow
                         startFollowing={true}
-                        render={({ onScroll, follow, startFollowing, stopFollowing }) => (
+                        render={({ onScroll, follow }) => (
                           <LazyLog
                             extraLines={1}
                             enableSearch
