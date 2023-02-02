@@ -232,7 +232,7 @@ export const ScriptingModal: React.FC<ScriptingModalProps> = ({ isOpen, onClose 
                     </Button>
                   </Tabs>
                   <Grid container spacing={2}>
-                    <Grid item xs={12}>
+                    <Grid item xs={12} style={{ height: "70%", overflow: "hidden" }}>
                       {
                         Object.keys(scriptMap).map(function(key: string, i: number) {
                           return <TabPanel
@@ -246,7 +246,7 @@ export const ScriptingModal: React.FC<ScriptingModalProps> = ({ isOpen, onClose 
                         })
                       }
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid item xs={12} style={{ height: "30%" }}>
                       <ScrollFollow
                         startFollowing={true}
                         render={({ onScroll, follow, startFollowing, stopFollowing }) => (
