@@ -1,9 +1,10 @@
 import React, { useEffect } from "react";
-import { Box, Fade, Modal, Backdrop, Tabs, Tab, Typography, Button, TextField } from "@mui/material";
+import { Box, Fade, Modal, Backdrop, Tabs, Tab, Typography, Button, TextField, Grid } from "@mui/material";
 import closeIcon from "./assets/close.svg"
 import styles from './ScriptingModal.module.sass'
 import CodeEditor from '@uiw/react-textarea-code-editor';
-import { HubBaseUrl } from "../../../consts";
+import { HubBaseUrl, HubScriptLogsWsUrl } from "../../../consts";
+import { LazyLog, ScrollFollow } from 'react-lazylog';
 
 const modalStyle = {
   position: 'absolute',
@@ -230,18 +231,39 @@ export const ScriptingModal: React.FC<ScriptingModalProps> = ({ isOpen, onClose 
                       Add script
                     </Button>
                   </Tabs>
-                  {
-                    Object.keys(scriptMap).map(function(key: string, i: number) {
-                      return <TabPanel
-                        key={key}
-                        index={i}
-                        selected={selected}
-                        scriptKey={Number(key)}
-                        script={scriptMap[key]}
-                        setUpdated={setUpdated}
+                  <Grid container spacing={2}>
+                    <Grid item xs={12}>
+                      {
+                        Object.keys(scriptMap).map(function(key: string, i: number) {
+                          return <TabPanel
+                            key={key}
+                            index={i}
+                            selected={selected}
+                            scriptKey={Number(key)}
+                            script={scriptMap[key]}
+                            setUpdated={setUpdated}
+                          />
+                        })
+                      }
+                    </Grid>
+                    <Grid item xs={12}>
+                      <ScrollFollow
+                        startFollowing={true}
+                        render={({ onScroll, follow, startFollowing, stopFollowing }) => (
+                          <LazyLog
+                            extraLines={1}
+                            enableSearch
+                            url={HubScriptLogsWsUrl}
+                            websocket
+                            websocketOptions={{}}
+                            stream
+                            onScroll={onScroll}
+                            follow={follow}
+                          />
+                        )}
                       />
-                    })
-                  }
+                    </Grid>
+                  </Grid>
                 </Box>
               </div>
             </div>

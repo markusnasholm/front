@@ -54,6 +54,7 @@
     "protobuf-decoder": "^0.1.2",
     "react-ace": "^9.0.0",
     "react-graph-vis": "^1.0.7",
+    "react-lazylog": "^4.5.3",
     "react-lowlight": "^3.0.0",
     "react-router-dom": "^6.3.0",
     "react-scrollable-feed-virtualized": "^1.4.9",
