@@ -22,8 +22,6 @@ const App: React.FC = () => {
   const [licenseExpired, setLicenseExpired] = useState(false);
   const [licenseEnd, setLicenseEnd] = useState(Date.now());
 
-  const [licenseProValid, setLicenseProValid] = useState(false);
-
   const getLicense = () => {
     fetch(`${HubBaseUrl}/license`)
       .then(response => response.json())
@@ -31,7 +29,6 @@ const App: React.FC = () => {
         setLicenseEdition(data.doc.edition);
         setLicenseExpired(data.expired);
         setLicenseEnd(data.doc.end);
-        setLicenseProValid(!data.expired && data.doc.edition === "pro")
       })
       .catch(err => console.error(err));
   };
@@ -50,7 +47,6 @@ const App: React.FC = () => {
             setEntries={setEntries}
             setLastUpdated={setLastUpdated}
             getLicense={getLicense}
-            licenseProValid={licenseProValid}
           />
           <ServiceMapModal
             entries={entries}

@@ -15,10 +15,9 @@ interface TrafficPageProps {
   setEntries: React.Dispatch<React.SetStateAction<Entry[]>>;
   setLastUpdated: React.Dispatch<React.SetStateAction<number>>;
   getLicense: () => void;
-  licenseProValid: boolean;
 }
 
-export const TrafficPage: React.FC<TrafficPageProps> = ({ entries, setEntries, setLastUpdated, getLicense, licenseProValid }) => {
+export const TrafficPage: React.FC<TrafficPageProps> = ({ entries, setEntries, setLastUpdated, getLicense }) => {
   const commonClasses = useCommonStyles();
   const setServiceMapModalOpen = useSetRecoilState(serviceMapModalOpenAtom);
   const setScriptingModalOpen = useSetRecoilState(scriptingModalOpenAtom);
@@ -32,7 +31,7 @@ export const TrafficPage: React.FC<TrafficPageProps> = ({ entries, setEntries, s
   }
 
   const actionButtons = <div style={{ display: 'flex', height: "100%" }}>
-    {licenseProValid && <Button
+    <Button
       startIcon={<TerminalIcon />}
       size="large"
       variant="contained"
@@ -40,7 +39,7 @@ export const TrafficPage: React.FC<TrafficPageProps> = ({ entries, setEntries, s
       onClick={handleScriptingModal}
       style={{ textTransform: 'unset', marginRight: "20px" }}>
       Scripting
-    </Button>}
+    </Button>
     <Button
       startIcon={<img className="custom" src={serviceMapIcon} alt="service-map" style={{ marginRight: "8%" }} />}
       size="large"
