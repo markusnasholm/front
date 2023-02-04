@@ -31,7 +31,14 @@ interface TabPanelProps {
 }
 
 const DEFAULT_TITLE = "New Script"
-const DEFAULT_SCRIPT = `function capturedItem(item) {\n  // Your code goes here\n}`
+const DEFAULT_SCRIPT = `function capturedItem(data) {
+    // Your code goes here
+}
+
+function capturedPacket(info) {
+    // Your code goes here
+}
+`
 
 function TabPanel(props: TabPanelProps) {
   const { index, selected, scriptKey, script, setUpdated } = props;
@@ -150,7 +157,7 @@ export const ScriptingModal: React.FC<ScriptingModalProps> = ({ isOpen, onClose 
   };
 
   const handleClickAddScript = () => {
-    const obj: Script = {title: DEFAULT_TITLE, code: "" };
+    const obj: Script = {title: DEFAULT_TITLE, code: DEFAULT_SCRIPT };
     fetch(
       `${HubBaseUrl}/scripts`,
       {
