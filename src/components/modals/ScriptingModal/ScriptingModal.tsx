@@ -1,11 +1,28 @@
 import React, { useEffect } from "react";
-import { Box, Fade, Modal, Backdrop, Tabs, Tab, Typography, Button, TextField, Grid } from "@mui/material";
+import {
+  Box,
+  Fade,
+  Modal,
+  Backdrop,
+  Tabs,
+  Tab,
+  Typography,
+  Button,
+  TextField,
+  Grid,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+} from "@mui/material";
 import closeIcon from "./assets/close.svg"
 import styles from './ScriptingModal.module.sass'
 import CodeEditor from '@uiw/react-textarea-code-editor';
 import { HubBaseUrl, HubScriptLogsWsUrl } from "../../../consts";
 import { LazyLog, ScrollFollow } from 'react-lazylog';
 import { toast } from "react-toastify";
+import { SelectChangeEvent } from '@mui/material/Select';
+import { DEFAULT_TITLE, DEFAULT_SCRIPT, EXAMPLE_SCRIPTS, EXAMPLE_SCRIPT_TITLES } from "./ScriptingExamples";
 
 const modalStyle = {
   position: 'absolute',
@@ -31,25 +48,12 @@ interface TabPanelProps {
   setUpdated: React.Dispatch<React.SetStateAction<number>>
 }
 
-const DEFAULT_TITLE = "New Script"
-const DEFAULT_SCRIPT = `function capturedItem(data) {
-  // Your code goes here
-}
-
-function capturedPacket(info) {
-  // Your code goes here
-}
-
-function queriedItem(data) {
-  // Your code goes here
-}
-`
-
 function TabPanel(props: TabPanelProps) {
   const { index, selected, scriptKey, script, setUpdated } = props;
 
   const [code, setCode] = React.useState(script.code ? script.code : DEFAULT_SCRIPT);
   const [title, setTitle] = React.useState(script.title);
+  const [example, setExample] = React.useState(script.code === DEFAULT_SCRIPT ? "0" : "");
 
   const handleClickSaveScript = () => {
     const obj: Script = {title: title, code: code };
@@ -95,6 +99,12 @@ function TabPanel(props: TabPanelProps) {
       })
   };
 
+  const handleExampleChange = (event: SelectChangeEvent) => {
+    setExample(event.target.value as string);
+    setCode(EXAMPLE_SCRIPTS[event.target.value]);
+    setTitle(EXAMPLE_SCRIPT_TITLES[event.target.value]);
+  };
+
   return (
     <>
       {index === selected &&  <div
@@ -106,13 +116,34 @@ function TabPanel(props: TabPanelProps) {
         <Box sx={{ p: 3 }}>
           <TextField
             variant="standard"
-            defaultValue={script.title}
+            defaultValue={title}
+            value={title}
             type="string"
             style={{width: "100%", marginBottom: "20px" }}
             inputProps={{style: {fontSize: 28, fontWeight: 600}}}
             onChange={(event) => setTitle(event.target.value)}
           />
-          <Typography><b>Script Index:</b> {scriptKey}</Typography>
+          <Grid container spacing={2}>
+            <Grid item xs={4}>
+              <Typography><b>Script Index:</b> {scriptKey}</Typography>
+            </Grid>
+            <Grid item xs={8}>
+              <FormControl fullWidth size="small">
+                <InputLabel id="example-script-select-label">Examples</InputLabel>
+                <Select
+                  labelId="example-script-select-label"
+                  id="example-script-select"
+                  value={example}
+                  label="Example"
+                  onChange={handleExampleChange}
+                >
+                  {EXAMPLE_SCRIPT_TITLES.map((title, i) => {
+                    return <MenuItem value={i}>{title}</MenuItem>
+                  })}
+                </Select>
+              </FormControl>
+            </Grid>
+          </Grid>
           <CodeEditor
             value={code}
             language="js"
@@ -124,11 +155,11 @@ function TabPanel(props: TabPanelProps) {
               backgroundColor: "#f5f5f5",
               fontFamily: 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
               margin: 10,
-              maxHeight: "300px",
+              maxHeight: "320px",
               overflow: "scroll",
             }}
           />
-          <Typography style={{ marginBottom: "10px" }}>{`Write your JavaScript code inside the hooks. It's also possible to define global variables to aggregate data. Once you save the script, the changes will be applied to all workers.`}</Typography>
+          <Typography style={{ marginBottom: "5px" }}>{`Write your JavaScript code inside the hooks.`}</Typography>
           <Button
             variant="contained"
             onClick={handleClickSaveScript}
