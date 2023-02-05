@@ -4,4 +4,19 @@ const HubBaseUrl = `http://${HubHost}:${HubPort}`
 const HubWsUrl = `ws://${HubHost}:${HubPort}/ws`
 const HubScriptLogsWsUrl = `ws://${HubHost}:${HubPort}/scripts/logs`
 
-export { HubHost, HubPort, HubBaseUrl, HubWsUrl, HubScriptLogsWsUrl }
+const ColorGreen = "#d2fad2"
+const ColorRed = "#fad6dc"
+const ColorYellow = "#f6fad2"
+const ColorWhite = "#ffffff"
+
+export {
+  HubHost,
+  HubPort,
+  HubBaseUrl,
+  HubWsUrl,
+  HubScriptLogsWsUrl,
+  ColorGreen,
+  ColorRed,
+  ColorYellow,
+  ColorWhite,
+}

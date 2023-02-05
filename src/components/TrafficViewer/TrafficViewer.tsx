@@ -17,7 +17,7 @@ import queryAtom from "../../recoil/query";
 import queryBuildAtom from "../../recoil/queryBuild";
 import queryBackgroundColorAtom from "../../recoil/queryBackgroundColor";
 import { toast } from "react-toastify";
-import { HubWsUrl } from "../../consts"
+import { HubWsUrl, ColorYellow } from "../../consts"
 import { Entry } from "../EntryListItem/Entry";
 import { useNavigate, useSearchParams } from "react-router-dom";
 
@@ -81,7 +81,7 @@ export const TrafficViewer: React.FC<TrafficViewerProps> = ({ entries, setEntrie
       setQueryBuild(DEFAULT_QUERY);
       setQuery(DEFAULT_QUERY);
       navigate({ pathname: location.pathname, search: `q=${encodeURIComponent(DEFAULT_QUERY)}` });
-      setQueryBackgroundColor("#f6fad2");
+      setQueryBackgroundColor(ColorYellow);
     }
 
     let init = false;

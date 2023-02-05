@@ -29,5 +29,7 @@ export interface Entry {
   src: TCPInterface;
   dst: TCPInterface;
   outgoing: boolean;
-  latency: number;
+  elapsedTime: number;
+  passed: boolean;
+  failed: boolean;
 }

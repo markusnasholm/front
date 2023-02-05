@@ -14,7 +14,7 @@ import queryAtom from "../../recoil/query";
 import queryBuildAtom from "../../recoil/queryBuild";
 import queryBackgroundColorAtom from "../../recoil/queryBackgroundColor";
 import { toast } from "react-toastify";
-import { HubBaseUrl } from "../../consts";
+import { HubBaseUrl, ColorGreen, ColorRed, ColorWhite } from "../../consts";
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Entry } from "../EntryListItem/Entry";
 import FileSaver from 'file-saver';
@@ -64,16 +64,16 @@ export const CodeEditorWrap: FC<CodeEditorWrap> = ({ onQueryChange, onValidation
     () =>
       debounce(async (query: string) => {
         if (!query) {
-          setQueryBackgroundColor("#f5f5f5");
+          setQueryBackgroundColor(ColorWhite);
           onValidationChanged && onValidationChanged({ query: query, message: "", valid: true });
         } else {
           fetch(`${HubBaseUrl}/query/validate?q=${encodeURIComponent(query)}`)
             .then(response => response.json())
             .then(data => {
               if (data.valid) {
-                setQueryBackgroundColor("#d2fad2");
+                setQueryBackgroundColor(ColorGreen);
               } else {
-                setQueryBackgroundColor("#fad6dc");
+                setQueryBackgroundColor(ColorRed);
               }
               onValidationChanged && onValidationChanged({ query: query, message: data.message, valid: data.valid })
             })

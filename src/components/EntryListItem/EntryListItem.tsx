@@ -17,6 +17,7 @@ import { useRecoilState } from "recoil";
 import focusedItemAtom from "../../recoil/focusedItem";
 import focusedStreamAtom from "../../recoil/focusedStream";
 import { Entry } from "./Entry";
+import { ColorGreen, ColorRed, ColorWhite } from "../../consts";
 
 interface EntryProps {
   id: string;
@@ -58,6 +59,7 @@ export const EntryItem: React.FC<EntryProps> = ({ id, stream, entry, style, head
 
   const borderStyle = !headingMode && !isSelected && isTcpSelected ? 'dashed' : 'solid';
   const transparentBorder = !headingMode && isTcpSelected ? entry.proto.backgroundColor : 'transparent';
+  const backgroundColor = entry.passed ? ColorGreen : (entry.failed ? ColorRed : ColorWhite)
 
   return <React.Fragment>
     <div
@@ -74,6 +76,7 @@ export const EntryItem: React.FC<EntryProps> = ({ id, stream, entry, style, head
         top: style['top'],
         marginTop: !headingMode ? style['marginTop'] : "10px",
         width: !headingMode ? "calc(100% - 25px)" : "calc(100% - 18px)",
+        backgroundColor: backgroundColor,
       }}
     >
       {!headingMode ? <Protocol
