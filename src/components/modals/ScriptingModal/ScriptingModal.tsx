@@ -124,10 +124,11 @@ function TabPanel(props: TabPanelProps) {
               backgroundColor: "#f5f5f5",
               fontFamily: 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
               margin: 10,
+              maxHeight: "300px",
+              overflow: "scroll",
             }}
           />
-          <Typography style={{ marginBottom: "10px" }}>The JavaScript function <b>capturedItem(item)</b> is a pre-defined hook called immediately after an item is captured from the traffic.</Typography>
-          <Typography style={{ marginBottom: "10px" }}>Once you save the script, the changes will be applied to all workers.</Typography>
+          <Typography style={{ marginBottom: "10px" }}>{`Write your JavaScript code inside the hooks. It's also possible to define global variables to aggregate data. Once you save the script, the changes will be applied to all workers.`}</Typography>
           <Button
             variant="contained"
             onClick={handleClickSaveScript}
