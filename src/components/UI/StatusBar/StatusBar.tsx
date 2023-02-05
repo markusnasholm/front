@@ -58,6 +58,7 @@ export const StatusBar: React.FC = () => {
 
   useInterval(async () => {
     fetch(`${HubBaseUrl}/pods/targeted`)
+      .then(response => response.ok ? response : response.text().then(err => Promise.reject(err)))
       .then(response => response.json())
       .then(data => setTargets(data.targets))
       .catch(err => console.error(err));

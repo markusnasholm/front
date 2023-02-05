@@ -5,6 +5,7 @@ import styles from './ScriptingModal.module.sass'
 import CodeEditor from '@uiw/react-textarea-code-editor';
 import { HubBaseUrl, HubScriptLogsWsUrl } from "../../../consts";
 import { LazyLog, ScrollFollow } from 'react-lazylog';
+import { toast } from "react-toastify";
 
 const modalStyle = {
   position: 'absolute',
@@ -32,11 +33,15 @@ interface TabPanelProps {
 
 const DEFAULT_TITLE = "New Script"
 const DEFAULT_SCRIPT = `function capturedItem(data) {
-    // Your code goes here
+  // Your code goes here
 }
 
 function capturedPacket(info) {
-    // Your code goes here
+  // Your code goes here
+}
+
+function queriedItem(data) {
+  // Your code goes here
 }
 `
 
@@ -58,10 +63,16 @@ function TabPanel(props: TabPanelProps) {
         body: JSON.stringify(obj)
       },
     )
+      .then(response => response.ok ? response : response.text().then(err => Promise.reject(err)))
       .then(response => response.json())
       .then(data => {
-        console.log(data);
         setUpdated(data.key);
+      })
+      .catch(err => {
+        console.error(err);
+        toast.error(err.toString(), {
+          theme: "colored"
+        });
       });
   };
 
@@ -72,8 +83,15 @@ function TabPanel(props: TabPanelProps) {
         method: 'DELETE',
       },
     )
+      .then(response => response.ok ? response : response.text().then(err => Promise.reject(err)))
       .then(() => {
         setUpdated(scriptKey);
+      })
+      .catch(err => {
+        console.error(err);
+        toast.error(err.toString(), {
+          theme: "colored"
+        });
       })
   };
 
@@ -168,21 +186,33 @@ export const ScriptingModal: React.FC<ScriptingModalProps> = ({ isOpen, onClose 
         body: JSON.stringify(obj)
       },
     )
+      .then(response => response.ok ? response : response.text().then(err => Promise.reject(err)))
       .then(response => response.json())
       .then(data => {
-        console.log(data);
         setUpdated(data.key);
+      })
+      .catch(err => {
+        console.error(err);
+        toast.error(err.toString(), {
+          theme: "colored"
+        });
       });
   };
 
   useEffect(() => {
     fetch(`${HubBaseUrl}/scripts`)
+      .then(response => response.ok ? response : response.text().then(err => Promise.reject(err)))
       .then(response => response.json())
       .then((data: ScriptMap) => {
         setScriptMap(data);
         setUpdated(-1);
       })
-      .catch(err => console.error(err));
+      .catch(err => {
+        console.error(err);
+        toast.error(err.toString(), {
+          theme: "colored"
+        });
+      });
   }, [updated, setUpdated]);
 
   return (

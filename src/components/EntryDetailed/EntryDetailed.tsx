@@ -134,13 +134,8 @@ export const EntryDetailed: React.FC = () => {
     if (!focusedItem) return;
     setIsLoading(true);
     fetch(`${HubBaseUrl}/item/${focusedItem}?q=${encodeURIComponent(query)}`)
-      .then(response => {
-        if (!response.ok) {
-          throw Error(`Fetch item, query: "${query}", reason: "${response.statusText}"`);
-        }
-
-        return response.json();
-      })
+      .then(response => response.ok ? response : response.text().then(err => Promise.reject(err)))
+      .then(response => response.json())
       .then(data => setEntryData(data))
       .catch(err => {
         console.error(err);

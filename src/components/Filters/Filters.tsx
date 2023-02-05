@@ -68,6 +68,7 @@ export const CodeEditorWrap: FC<CodeEditorWrap> = ({ onQueryChange, onValidation
           onValidationChanged && onValidationChanged({ query: query, message: "", valid: true });
         } else {
           fetch(`${HubBaseUrl}/query/validate?q=${encodeURIComponent(query)}`)
+            .then(response => response.ok ? response : response.text().then(err => Promise.reject(err)))
             .then(response => response.json())
             .then(data => {
               if (data.valid) {
@@ -155,6 +156,7 @@ export const QueryForm: React.FC<QueryFormProps> = ({ entries, reopenConnection,
         body: JSON.stringify(obj)
       },
     )
+      .then(response => response.ok ? response : response.text().then(err => Promise.reject(err)))
       .then((response) => {
         const filename = response.headers
           .get('Content-Disposition')
@@ -164,6 +166,12 @@ export const QueryForm: React.FC<QueryFormProps> = ({ entries, reopenConnection,
       .then(([blob, filename]) => {
         FileSaver.saveAs(blob, filename);
       })
+      .catch(err => {
+        console.error(err);
+        toast.error(err.toString(), {
+          theme: "colored"
+        });
+      });
   }
 
   useKeyPress(shortcutsKeyboard.ctrlEnter, handleSubmit, formRef.current);

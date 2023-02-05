@@ -10,6 +10,7 @@ import { ServiceMapModal } from './components/modals/ServiceMapModal/ServiceMapM
 import { ScriptingModal } from './components/modals/ScriptingModal/ScriptingModal';
 import { Entry } from "./components/EntryListItem/Entry";
 import { HubBaseUrl } from "./consts";
+import { toast } from "react-toastify";
 
 const App: React.FC = () => {
 
@@ -24,13 +25,19 @@ const App: React.FC = () => {
 
   const getLicense = () => {
     fetch(`${HubBaseUrl}/license`)
+      .then(response => response.ok ? response : response.text().then(err => Promise.reject(err)))
       .then(response => response.json())
       .then(data => {
         setLicenseEdition(data.doc.edition);
         setLicenseExpired(data.expired);
         setLicenseEnd(data.doc.end);
       })
-      .catch(err => console.error(err));
+      .catch(err => {
+        console.error(err);
+        toast.error(err.toString(), {
+          theme: "colored"
+        });
+      });
   };
 
   return (
