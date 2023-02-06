@@ -246,7 +246,7 @@ export const ScriptingModal: React.FC<ScriptingModalProps> = ({ isOpen, onClose 
         });
         setTimeout(() => {
           setUpdated(updated+1);
-        }, 1000);
+        }, 3000);
       });
   }, [updated, setUpdated]);
 
