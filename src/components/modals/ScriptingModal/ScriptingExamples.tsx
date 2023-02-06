@@ -15,9 +15,24 @@ const SCRIPT_WEBHOOK = `// Webhook Example
 
 function capturedItem(data) {
   console.log(data.Request.path);
-  if (data.Request.path === "/health") {
-    webhook("POST", "https://webhook.site/c06e80f5-778c-41f5-abd1-c5528db44584", data);
-  }
+  if (data.Request.path === "/health")
+    webhook("POST", WEBHOOK_URL, data);
+}
+
+function capturedPacket(info) {
+  // Your code goes here
+}
+
+function queriedItem(data) {
+  // Your code goes here
+}
+`;
+
+const SCRIPT_SLACK = `// Slack Example
+
+function capturedItem(data) {
+  if (data.Response.status === 500)
+    slack(SLACK_AUTH_TOKEN, SLACK_CHANNEL_ID, "Server-side Error", JSON.stringify(data), "#ff0000");
 }
 
 function capturedPacket(info) {
@@ -72,6 +87,7 @@ function queriedItem(data) {
 
 const EXAMPLE_SCRIPTS = [
   SCRIPT_EMPTY,
+  SCRIPT_SLACK,
   SCRIPT_WEBHOOK,
   SCRIPT_PACKET_AND_BYTE_COUNTER,
   SCRIPT_MONITORING_PASS_HTTP,
@@ -79,7 +95,8 @@ const EXAMPLE_SCRIPTS = [
 
 const EXAMPLE_SCRIPT_TITLES = [
   "Empty",
-  "Webhook",
+  "Message a Slack Channel",
+  "Call a Webhook",
   "Packet and Byte Counter",
   "Monitoring: Pass HTTP Traffic, Fail Anything Else",
 ]
