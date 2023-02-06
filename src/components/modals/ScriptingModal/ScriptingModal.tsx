@@ -201,6 +201,7 @@ export const ScriptingModal: React.FC<ScriptingModalProps> = ({ isOpen, onClose 
   const [updated, setUpdated] = React.useState(-1);
 
   const [scriptMap, setScriptMap] = React.useState({} as ScriptMap);
+  const [fetchTimeout, setFetchTimeout] = React.useState(3000);
 
   const handleChange = (event: React.SyntheticEvent, newKey: number) => {
     setSelected(newKey);
@@ -233,6 +234,7 @@ export const ScriptingModal: React.FC<ScriptingModalProps> = ({ isOpen, onClose 
 
   useEffect(() => {
     setTimeout(() => {
+      setFetchTimeout(0);
       fetch(`${HubBaseUrl}/scripts`)
         .then(response => response.ok ? response : response.text().then(err => Promise.reject(err)))
         .then(response => response.json())
@@ -246,8 +248,8 @@ export const ScriptingModal: React.FC<ScriptingModalProps> = ({ isOpen, onClose 
             theme: "colored"
           });
         });
-    }, 3000);
-  }, [updated, setUpdated]);
+    }, fetchTimeout);
+  }, [updated, setUpdated, setFetchTimeout]);
 
   return (
     <Modal
