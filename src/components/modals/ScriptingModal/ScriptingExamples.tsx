@@ -11,7 +11,7 @@ function queriedItem(data) {
 }
 `;
 
-const SCRIPT_WEBHOOK = `// Webhook Example
+const SCRIPT_WEBHOOK = `// Call a Webhook For Each Health Check
 
 function capturedItem(data) {
   console.log(data.Request.path);
@@ -20,7 +20,7 @@ function capturedItem(data) {
 }
 `;
 
-const SCRIPT_SLACK = `// Slack Example
+const SCRIPT_SLACK = `// Report To a Slack Channel If Response Status Code is 500
 
 function capturedItem(data) {
   if (data.Response.status === 500)
@@ -28,7 +28,7 @@ function capturedItem(data) {
 }
 `;
 
-const SCRIPT_PACKET_AND_BYTE_COUNTER = `// Packet and Byte Counter Example
+const SCRIPT_PACKET_AND_BYTE_COUNTER = `// Packet and Byte Counter
 
 var packetCount = 0;
 var totalBytes = 0;
@@ -44,7 +44,7 @@ function capturedPacket(info) {
 }
 `;
 
-const SCRIPT_MONITORING_PASS_HTTP = `// Monitoring: Pass HTTP Traffic, Fail Anything Else Example
+const SCRIPT_MONITORING_PASS_HTTP = `// Monitoring: Pass HTTP Traffic, Fail Anything Else
 
 function queriedItem(data) {
   if (data.Protocol.Name == "http")
@@ -54,7 +54,8 @@ function queriedItem(data) {
 }
 `;
 
-const SCRIPT_PRINT_CONSTS = `// Print Constants Example
+const SCRIPT_PRINT_CONSTS = `// Print Constants
+
 console.log(CONSTS);
 `
 
@@ -69,8 +70,8 @@ const EXAMPLE_SCRIPTS = [
 
 const EXAMPLE_SCRIPT_TITLES = [
   "Empty",
-  "Message a Slack Channel",
-  "Call a Webhook",
+  "Report To a Slack Channel If Response Status Code is 500",
+  "Call a Webhook For Each Health Check",
   "Packet and Byte Counter",
   "Monitoring: Pass HTTP Traffic, Fail Anything Else",
   "Print Constants",

@@ -244,6 +244,9 @@ export const ScriptingModal: React.FC<ScriptingModalProps> = ({ isOpen, onClose 
         toast.error(err.toString(), {
           theme: "colored"
         });
+        setTimeout(() => {
+          setUpdated(updated+1);
+        }, 1000);
       });
   }, [updated, setUpdated]);
 
