@@ -231,9 +231,18 @@ export const ScriptingModal: React.FC<ScriptingModalProps> = ({ isOpen, onClose 
       });
   };
 
-  useEffect(() => {
+  const fetchScripts = () => {
     fetch(`${HubBaseUrl}/scripts`)
-      .then(response => response.ok ? response : response.text().then(err => Promise.reject(err)))
+      .then((response) => {
+        if (response.status === 425) {
+          setTimeout(() => {
+            fetchScripts();
+          }, 1000);
+        }
+
+        return response;
+      })
+      .then(response => response.ok || response.status === 425 ? response : response.text().then(err => Promise.reject(err)))
       .then(response => response.json())
       .then((data: ScriptMap) => {
         setScriptMap(data);
@@ -244,11 +253,12 @@ export const ScriptingModal: React.FC<ScriptingModalProps> = ({ isOpen, onClose 
         toast.error(err.toString(), {
           theme: "colored"
         });
-        setTimeout(() => {
-          setUpdated(updated+1);
-        }, 1000);
       });
-  }, [updated, setUpdated]);
+  };
+
+  useEffect(() => {
+    fetchScripts();
+  }, [updated]);
 
   return (
     <Modal
