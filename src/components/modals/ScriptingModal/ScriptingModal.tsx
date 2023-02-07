@@ -232,21 +232,22 @@ export const ScriptingModal: React.FC<ScriptingModalProps> = ({ isOpen, onClose 
   };
 
   useEffect(() => {
-    setTimeout(() => {
-      fetch(`${HubBaseUrl}/scripts`)
-        .then(response => response.ok ? response : response.text().then(err => Promise.reject(err)))
-        .then(response => response.json())
-        .then((data: ScriptMap) => {
-          setScriptMap(data);
-          setUpdated(-1);
-        })
-        .catch(err => {
-          console.error(err);
-          toast.error(err.toString(), {
-            theme: "colored"
-          });
+    fetch(`${HubBaseUrl}/scripts`)
+      .then(response => response.ok ? response : response.text().then(err => Promise.reject(err)))
+      .then(response => response.json())
+      .then((data: ScriptMap) => {
+        setScriptMap(data);
+        setUpdated(-1);
+      })
+      .catch(err => {
+        console.error(err);
+        toast.error(err.toString(), {
+          theme: "colored"
         });
-    }, 3000);
+        setTimeout(() => {
+          setUpdated(updated+1);
+        }, 3000);
+      });
   }, [updated, setUpdated]);
 
   return (
