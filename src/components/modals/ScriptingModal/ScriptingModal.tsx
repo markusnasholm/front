@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import {
   Box,
   Fade,
@@ -20,10 +20,12 @@ import CloseIcon from '@mui/icons-material/Close';
 import styles from './ScriptingModal.module.sass'
 import CodeEditor from '@uiw/react-textarea-code-editor';
 import { HubBaseUrl, HubScriptLogsWsUrl } from "../../../consts";
-import { LazyLog, ScrollFollow } from 'react-lazylog';
+import { LazyLog } from 'react-lazylog';
 import { toast } from "react-toastify";
 import { SelectChangeEvent } from '@mui/material/Select';
 import { DEFAULT_TITLE, DEFAULT_SCRIPT, EXAMPLE_SCRIPTS, EXAMPLE_SCRIPT_TITLES } from "./ScriptingExamples";
+import useKeyPress from "../../../hooks/useKeyPress"
+import shortcutsKeyboard from "../../../configs/shortcutsKeyboard"
 
 const modalStyle = {
   position: 'absolute',
@@ -47,10 +49,11 @@ interface TabPanelProps {
   scriptKey: number;
   script: Script;
   setUpdated: React.Dispatch<React.SetStateAction<number>>
+  setFollow: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 function TabPanel(props: TabPanelProps) {
-  const { index, selected, scriptKey, script, setUpdated } = props;
+  const { index, selected, scriptKey, script, setUpdated, setFollow } = props;
 
   const [code, setCode] = React.useState(script.code ? script.code : DEFAULT_SCRIPT);
   const [title, setTitle] = React.useState(script.title);
@@ -161,7 +164,11 @@ function TabPanel(props: TabPanelProps) {
               overflow: "scroll",
             }}
           />
-          <Typography style={{ marginBottom: "5px" }}>{`Write your JavaScript code inside the hooks.`}</Typography>
+          <Typography style={{ marginBottom: "5px" }}>
+            {`Write your JavaScript code inside the hooks.`}&nbsp;
+            <a className="kbc-button kbc-button-xs" onClick={() => { setFollow(false) }}>Left-Click</a> in the console stops auto-scroll.&nbsp;
+            <a className="kbc-button kbc-button-xs" onClick={() => { setFollow(true) }}>Page Down</a> resumes it.&nbsp;
+          </Typography>
           <Button
             variant="contained"
             onClick={handleClickSaveScript}
@@ -203,6 +210,9 @@ export const ScriptingModal: React.FC<ScriptingModalProps> = ({ isOpen, onClose 
   const [updated, setUpdated] = React.useState(-1);
 
   const [scriptMap, setScriptMap] = React.useState({} as ScriptMap);
+
+  const [follow, setFollow] = React.useState(true);
+  const lazyLogFollow = useRef(null);
 
   const handleChange = (event: React.SyntheticEvent, newKey: number) => {
     setSelected(newKey);
@@ -261,6 +271,8 @@ export const ScriptingModal: React.FC<ScriptingModalProps> = ({ isOpen, onClose 
   useEffect(() => {
     fetchScripts();
   }, [updated]);
+
+  useKeyPress(shortcutsKeyboard.pageDown, () => { setFollow(true) }, lazyLogFollow.current);
 
   return (
     <Modal
@@ -335,26 +347,21 @@ export const ScriptingModal: React.FC<ScriptingModalProps> = ({ isOpen, onClose 
                           scriptKey={Number(key)}
                           script={scriptMap[key]}
                           setUpdated={setUpdated}
+                          setFollow={setFollow}
                         />
                       })
                     }
                   </Grid>
-                  <Grid item xs={12} style={{ height: "30%", paddingTop: "0px" }}>
-                    <ScrollFollow
-                      startFollowing={true}
-                      render={({ onScroll, follow }) => (
-                        <LazyLog
-                          extraLines={1}
-                          enableSearch
-                          url={HubScriptLogsWsUrl}
-                          websocket
-                          websocketOptions={{}}
-                          stream
-                          onScroll={onScroll}
-                          follow={follow}
-                          selectableLines
-                        />
-                      )}
+                  <Grid item xs={12} style={{ height: "30%", paddingTop: "0px" }} onClick={() => { setFollow(false) }}>
+                    <LazyLog
+                      extraLines={1}
+                      enableSearch
+                      url={HubScriptLogsWsUrl}
+                      websocket
+                      websocketOptions={{}}
+                      stream
+                      follow={follow}
+                      selectableLines
                     />
                   </Grid>
                 </Grid>

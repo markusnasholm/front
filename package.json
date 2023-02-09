@@ -45,6 +45,7 @@
     "highlight.js": "^11.5.1",
     "json-beautify": "^1.1.1",
     "jsonpath": "^1.1.1",
+    "keyboard-css": "^1.2.4",
     "marked": "^4.0.16",
     "material-ui-popup-state": "^2.0.1",
     "mobx": "^6.6.0",

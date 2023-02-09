@@ -6,6 +6,7 @@ import 'react-toastify/dist/ReactToastify.min.css';
 import { RecoilRoot } from "recoil";
 import App from './App';
 import { BrowserRouter } from 'react-router-dom';
+import 'keyboard-css/dist/css/main.css';
 
 ReactDOM.render(
   <BrowserRouter>
