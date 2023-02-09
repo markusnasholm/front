@@ -21,7 +21,7 @@ const App: React.FC = () => {
 
   const [licenseEdition, setLicenseEdition] = useState("community");
   const [licenseExpired, setLicenseExpired] = useState(false);
-  const [licenseEnd, setLicenseEnd] = useState(Date.now());
+  const [licenseEnd, setLicenseEnd] = useState(new Date().getTime());
 
   const getLicense = () => {
     fetch(`${HubBaseUrl}/license`)
