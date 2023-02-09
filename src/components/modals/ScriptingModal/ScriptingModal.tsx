@@ -162,22 +162,22 @@ function TabPanel(props: TabPanelProps) {
                 </FormControl>
               </Grid>
             </Grid>
-            <CodeEditor
-              value={code}
-              language="js"
-              placeholder="Please enter JS code."
-              onChange={(event) => setCode(event.target.value)}
-              padding={8}
-              style={{
-                fontSize: 14,
-                backgroundColor: "#f5f5f5",
-                fontFamily: 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
-                marginTop: 10,
-                marginBottom: 10,
-                maxHeight: "64%",
-                overflow: "scroll",
-              }}
-            />
+            <div style={{ maxHeight: "64%", overflow: "auto" }}>
+              <CodeEditor
+                value={code}
+                language="js"
+                placeholder="Please enter JS code."
+                onChange={(event) => setCode(event.target.value)}
+                padding={8}
+                style={{
+                  fontSize: 14,
+                  backgroundColor: "#f5f5f5",
+                  fontFamily: 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
+                  marginTop: 10,
+                  marginBottom: 10,
+                }}
+              />
+            </div>
             <Typography>
               {`Write your JavaScript code inside the hooks.`}&nbsp;
               <a className="kbc-button kbc-button-xs">Ctrl</a> + <a className="kbc-button kbc-button-xs">Enter</a> saves the script.&nbsp;

@@ -37,7 +37,7 @@
     "@mui/lab": "^5.0.0-alpha.84",
     "@mui/material": "^5.8.2",
     "@mui/styles": "^5.8.0",
-    "@uiw/react-textarea-code-editor": "^1.6.0",
+    "@uiw/react-textarea-code-editor": "^2.1.1",
     "ace-builds": "^1.6.0",
     "axios": "^0.27.2",
     "core-js": "^3.22.7",
