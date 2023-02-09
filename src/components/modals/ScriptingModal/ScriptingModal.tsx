@@ -59,6 +59,8 @@ function TabPanel(props: TabPanelProps) {
   const [title, setTitle] = React.useState(script.title);
   const [example, setExample] = React.useState(script.code === DEFAULT_SCRIPT ? "0" : "");
 
+  const formRef = useRef<HTMLFormElement>(null);
+
   const handleClickSaveScript = () => {
     const obj: Script = {title: title, code: code };
     fetch(
@@ -109,6 +111,13 @@ function TabPanel(props: TabPanelProps) {
     setTitle(EXAMPLE_SCRIPT_TITLES[event.target.value]);
   };
 
+  const handleSubmit = (e) => {
+    handleClickSaveScript();
+    e.preventDefault();
+  }
+
+  useKeyPress(shortcutsKeyboard.ctrlEnter, handleSubmit, formRef.current);
+
   return (
     <>
       {index === selected &&  <div
@@ -117,74 +126,81 @@ function TabPanel(props: TabPanelProps) {
         aria-labelledby={`vertical-tab-${index}`}
         style={{ width: '100%', height: "100%" }}
       >
-        <Box sx={{ p: 3, height: "100%" }}>
-          <TextField
-            variant="standard"
-            defaultValue={title}
-            value={title}
-            type="string"
-            style={{width: "100%", marginBottom: "20px" }}
-            inputProps={{style: {fontSize: 28, fontWeight: 600}}}
-            onChange={(event) => setTitle(event.target.value)}
-          />
-          <Grid container spacing={2}>
-            <Grid item xs={4}>
-              <Typography><b>Script Index:</b> {scriptKey}</Typography>
+        <form
+          ref={formRef}
+          onSubmit={handleSubmit}
+          style={{ width: '100%', height: "100%" }}
+        >
+          <Box sx={{ p: 3, height: "100%" }}>
+            <TextField
+              variant="standard"
+              defaultValue={title}
+              value={title}
+              type="string"
+              style={{width: "100%", marginBottom: "20px" }}
+              inputProps={{style: {fontSize: 28, fontWeight: 600}}}
+              onChange={(event) => setTitle(event.target.value)}
+            />
+            <Grid container spacing={2}>
+              <Grid item xs={4}>
+                <Typography><b>Script Index:</b> {scriptKey}</Typography>
+              </Grid>
+              <Grid item xs={8}>
+                <FormControl fullWidth size="small">
+                  <InputLabel id="example-script-select-label">Examples</InputLabel>
+                  <Select
+                    labelId="example-script-select-label"
+                    id="example-script-select"
+                    value={example}
+                    label="Example"
+                    onChange={handleExampleChange}
+                  >
+                    {EXAMPLE_SCRIPT_TITLES.map((title, i) => {
+                      return <MenuItem value={i}>{title}</MenuItem>
+                    })}
+                  </Select>
+                </FormControl>
+              </Grid>
             </Grid>
-            <Grid item xs={8}>
-              <FormControl fullWidth size="small">
-                <InputLabel id="example-script-select-label">Examples</InputLabel>
-                <Select
-                  labelId="example-script-select-label"
-                  id="example-script-select"
-                  value={example}
-                  label="Example"
-                  onChange={handleExampleChange}
-                >
-                  {EXAMPLE_SCRIPT_TITLES.map((title, i) => {
-                    return <MenuItem value={i}>{title}</MenuItem>
-                  })}
-                </Select>
-              </FormControl>
-            </Grid>
-          </Grid>
-          <CodeEditor
-            value={code}
-            language="js"
-            placeholder="Please enter JS code."
-            onChange={(event) => setCode(event.target.value)}
-            padding={8}
-            style={{
-              fontSize: 14,
-              backgroundColor: "#f5f5f5",
-              fontFamily: 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
-              marginTop: 10,
-              marginBottom: 10,
-              maxHeight: "64%",
-              overflow: "scroll",
-            }}
-          />
-          <Typography style={{ marginBottom: "5px" }}>
-            {`Write your JavaScript code inside the hooks.`}&nbsp;
-            <a className="kbc-button kbc-button-xs" onClick={() => { setFollow(false) }}>Left-Click</a> in the console stops auto-scroll.&nbsp;
-            <a className="kbc-button kbc-button-xs" onClick={() => { setFollow(true) }}>Page Down</a> resumes it.&nbsp;
-          </Typography>
-          <Button
-            variant="contained"
-            onClick={handleClickSaveScript}
-            style={{ margin: 10 }}
-          >
-            Save
-          </Button>
-          <Button
-            variant="contained"
-            onClick={handleClickDeleteScript}
-            color="error"
-            style={{ margin: 10 }}
-          >
-            Delete
-          </Button>
-        </Box>
+            <CodeEditor
+              value={code}
+              language="js"
+              placeholder="Please enter JS code."
+              onChange={(event) => setCode(event.target.value)}
+              padding={8}
+              style={{
+                fontSize: 14,
+                backgroundColor: "#f5f5f5",
+                fontFamily: 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
+                marginTop: 10,
+                marginBottom: 10,
+                maxHeight: "64%",
+                overflow: "scroll",
+              }}
+            />
+            <Typography style={{ marginBottom: "5px" }}>
+              {`Write your JavaScript code inside the hooks.`}&nbsp;
+              <a className="kbc-button kbc-button-xs">Ctrl</a> + <a className="kbc-button kbc-button-xs">Enter</a> saves the script.&nbsp;
+              <a className="kbc-button kbc-button-xs" onClick={() => { setFollow(false) }}>Left-Click</a> in the console stops auto-scroll.&nbsp;
+              <a className="kbc-button kbc-button-xs" onClick={() => { setFollow(true) }}>Page Down</a> resumes it.&nbsp;
+            </Typography>
+            <Button
+              variant="contained"
+              onClick={handleClickSaveScript}
+              style={{ margin: 10 }}
+            >
+              Save
+            </Button>
+            <Button
+              variant="contained"
+              onClick={handleClickDeleteScript}
+              color="error"
+              style={{ margin: 10 }}
+            >
+              Delete
+            </Button>
+          </Box>
+        </form>
       </div>}
     </>
   );
