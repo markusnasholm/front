@@ -352,6 +352,7 @@ export const ScriptingModal: React.FC<ScriptingModalProps> = ({ isOpen, onClose 
                           stream
                           onScroll={onScroll}
                           follow={follow}
+                          selectableLines
                         />
                       )}
                     />
