@@ -14,8 +14,9 @@ import {
   InputLabel,
   MenuItem,
   Select,
+  IconButton,
 } from "@mui/material";
-import closeIcon from "./assets/close.svg"
+import CloseIcon from '@mui/icons-material/Close';
 import styles from './ScriptingModal.module.sass'
 import CodeEditor from '@uiw/react-textarea-code-editor';
 import { HubBaseUrl, HubScriptLogsWsUrl } from "../../../consts";
@@ -26,11 +27,11 @@ import { DEFAULT_TITLE, DEFAULT_SCRIPT, EXAMPLE_SCRIPTS, EXAMPLE_SCRIPT_TITLES }
 
 const modalStyle = {
   position: 'absolute',
-  top: '6%',
+  top: '4%',
   left: '50%',
   transform: 'translate(-50%, 0%)',
-  width: '89vw',
-  height: '82vh',
+  width: '92vw',
+  height: '85vh',
   bgcolor: '#F0F5FF',
   borderRadius: '5px',
   boxShadow: 24,
@@ -111,9 +112,9 @@ function TabPanel(props: TabPanelProps) {
         role="tabpanel"
         id={`vertical-tabpanel-${index}`}
         aria-labelledby={`vertical-tab-${index}`}
-        style={{ width: '100%' }}
+        style={{ width: '100%', height: "100%" }}
       >
-        <Box sx={{ p: 3 }}>
+        <Box sx={{ p: 3, height: "100%" }}>
           <TextField
             variant="standard"
             defaultValue={title}
@@ -154,8 +155,9 @@ function TabPanel(props: TabPanelProps) {
               fontSize: 14,
               backgroundColor: "#f5f5f5",
               fontFamily: 'ui-monospace,SFMono-Regular,SF Mono,Consolas,Liberation Mono,Menlo,monospace',
-              margin: 10,
-              maxHeight: "320px",
+              marginTop: 10,
+              marginBottom: 10,
+              maxHeight: "64%",
               overflow: "scroll",
             }}
           />
@@ -271,83 +273,91 @@ export const ScriptingModal: React.FC<ScriptingModalProps> = ({ isOpen, onClose 
       BackdropProps={{ timeout: 500 }}>
       <Fade in={isOpen}>
         <Box sx={modalStyle}>
-          <div className={styles.closeIcon}>
-            <img src={closeIcon} alt="close" onClick={() => onClose()} style={{ cursor: "pointer", userSelect: "none" }} />
-          </div>
           <div className={styles.headerContainer}>
-            <div className={styles.headerSection}>
-              <span className={styles.title}>Scripting</span>
-            </div>
+            <Grid container spacing={2}>
+              <Grid item xs={11}>
+                <div className={styles.headerSection}>
+                  <span className={styles.title}>Scripting</span>
+                </div>
+              </Grid>
+              <Grid item xs={1}>
+                <IconButton onClick={() => onClose()} style={{
+                  margin: "10px",
+                  float: "right",
+                  padding: "2px",
+                }}>
+                  <CloseIcon />
+                </IconButton>
+              </Grid>
+            </Grid>
           </div>
 
           <div className={styles.modalContainer}>
-            <div className={styles.graphSection}>
-              <div style={{ display: "flex", justifyContent: "space-between" }}>
-              </div>
-              <div style={{ height: "100%", width: "100%" }}>
-                <Box
-                  sx={{ flexGrow: 1, bgcolor: 'background.paper', display: 'flex', height: '100%' }}
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+            </div>
+            <div style={{ height: "100%", width: "100%" }}>
+              <Box
+                sx={{ flexGrow: 1, bgcolor: 'background.paper', display: 'flex', height: '100%' }}
+              >
+                <Tabs
+                  orientation="vertical"
+                  variant="scrollable"
+                  value={selected}
+                  onChange={handleChange}
+                  aria-label="Scripts"
+                  sx={{ borderRight: 1, borderColor: 'divider', minWidth: '300px' }}
                 >
-                  <Tabs
-                    orientation="vertical"
-                    variant="scrollable"
-                    value={selected}
-                    onChange={handleChange}
-                    aria-label="Vertical tabs example"
-                    sx={{ borderRight: 1, borderColor: 'divider', minWidth: '300px' }}
+                  {
+                    Object.keys(scriptMap).map(function(key) {
+                      return <Tab
+                        key={key}
+                        label={scriptMap[key].title}
+                      />
+                    })
+                  }
+                  <Button
+                    variant="contained"
+                    onClick={handleClickAddScript}
+                    title="Add a new script"
+                    sx={{ margin: "70px", marginTop: "20px" }}
                   >
+                    Add script
+                  </Button>
+                </Tabs>
+                <Grid container spacing={2} style={{ height: "100%", width: "100%", marginTop: "0px" }}>
+                  <Grid item xs={12} style={{ height: "70%", overflow: "hidden", paddingTop: "0px" }}>
                     {
-                      Object.keys(scriptMap).map(function(key) {
-                        return <Tab
+                      Object.keys(scriptMap).map(function(key: string, i: number) {
+                        return <TabPanel
                           key={key}
-                          label={scriptMap[key].title}
+                          index={i}
+                          selected={selected}
+                          scriptKey={Number(key)}
+                          script={scriptMap[key]}
+                          setUpdated={setUpdated}
                         />
                       })
                     }
-                    <Button
-                      variant="contained"
-                      onClick={handleClickAddScript}
-                      title="Add a new script"
-                      sx={{ margin: "70px", marginTop: "20px" }}
-                    >
-                      Add script
-                    </Button>
-                  </Tabs>
-                  <Grid container spacing={2}>
-                    <Grid item xs={12} style={{ height: "70%", overflow: "hidden" }}>
-                      {
-                        Object.keys(scriptMap).map(function(key: string, i: number) {
-                          return <TabPanel
-                            key={key}
-                            index={i}
-                            selected={selected}
-                            scriptKey={Number(key)}
-                            script={scriptMap[key]}
-                            setUpdated={setUpdated}
-                          />
-                        })
-                      }
-                    </Grid>
-                    <Grid item xs={12} style={{ height: "30%" }}>
-                      <ScrollFollow
-                        startFollowing={true}
-                        render={({ onScroll, follow }) => (
-                          <LazyLog
-                            extraLines={1}
-                            enableSearch
-                            url={HubScriptLogsWsUrl}
-                            websocket
-                            websocketOptions={{}}
-                            stream
-                            onScroll={onScroll}
-                            follow={follow}
-                          />
-                        )}
-                      />
-                    </Grid>
                   </Grid>
-                </Box>
-              </div>
+                  <Grid item xs={12} style={{ height: "30%", paddingTop: "0px" }}>
+                    <ScrollFollow
+                      startFollowing={true}
+                      render={({ onScroll, follow }) => (
+                        <LazyLog
+                          extraLines={1}
+                          enableSearch
+                          url={HubScriptLogsWsUrl}
+                          websocket
+                          websocketOptions={{}}
+                          stream
+                          onScroll={onScroll}
+                          follow={follow}
+                        />
+                      )}
+                    />
+                  </Grid>
+                </Grid>
+              </Box>
             </div>
           </div>
         </Box>
