@@ -33,14 +33,12 @@ const modalStyle = {
   left: '50%',
   transform: 'translate(-50%, 0%)',
   width: '92vw',
-  height: '85vh',
+  height: '92vh',
   bgcolor: '#F0F5FF',
   borderRadius: '5px',
   boxShadow: 24,
-  p: 4,
   color: '#000',
-  padding: "1px 1px",
-  paddingBottom: "15px"
+  padding: "1px 1px"
 };
 
 interface TabPanelProps {
