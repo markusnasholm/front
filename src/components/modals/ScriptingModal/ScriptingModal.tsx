@@ -114,7 +114,7 @@ function TabPanel(props: TabPanelProps) {
     e.preventDefault();
   }
 
-  useKeyPress(shortcutsKeyboard.ctrlEnter, handleSubmit, formRef.current);
+  useKeyPress(shortcutsKeyboard.ctrlKeyS, handleSubmit, formRef.current);
 
   return (
     <>
@@ -178,7 +178,7 @@ function TabPanel(props: TabPanelProps) {
             </div>
             <Typography>
               {`Write your JavaScript code inside the hooks.`}&nbsp;
-              <a className="kbc-button kbc-button-xs">Ctrl</a> + <a className="kbc-button kbc-button-xs">Enter</a> saves the script.&nbsp;
+              <a className="kbc-button kbc-button-xs">Ctrl</a> + <a className="kbc-button kbc-button-xs">S</a> saves the script.&nbsp;
               <a className="kbc-button kbc-button-xs" onClick={() => { setFollow(false) }}>Left-Click</a> in the console stops auto-scroll.&nbsp;
               <a className="kbc-button kbc-button-xs" onClick={() => { setFollow(true) }}>Page Down</a> resumes it.
             </Typography>

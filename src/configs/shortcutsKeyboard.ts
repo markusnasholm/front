@@ -4,7 +4,11 @@ const dictionary = {
     { ctrlKey: true, code: "Enter" },
     { metaKey: true, code: "NumpadEnter" },
     { ctrlKey: true, code: "NumpadEnter" },
-  ], // support Ctrl/command
+  ],
+  ctrlKeyS: [
+    { metaKey: true, code: "KeyS" },
+    { ctrlKey: true, code: "KeyS" },
+  ],
   enter: [{ code: "Enter" }, { code: "NumpadEnter" }],
   pageDown: [{ code: "PageDown" }]
 };
