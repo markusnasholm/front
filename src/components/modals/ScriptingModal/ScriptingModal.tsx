@@ -178,11 +178,11 @@ function TabPanel(props: TabPanelProps) {
                 overflow: "scroll",
               }}
             />
-            <Typography style={{ marginBottom: "5px" }}>
+            <Typography>
               {`Write your JavaScript code inside the hooks.`}&nbsp;
               <a className="kbc-button kbc-button-xs">Ctrl</a> + <a className="kbc-button kbc-button-xs">Enter</a> saves the script.&nbsp;
               <a className="kbc-button kbc-button-xs" onClick={() => { setFollow(false) }}>Left-Click</a> in the console stops auto-scroll.&nbsp;
-              <a className="kbc-button kbc-button-xs" onClick={() => { setFollow(true) }}>Page Down</a> resumes it.&nbsp;
+              <a className="kbc-button kbc-button-xs" onClick={() => { setFollow(true) }}>Page Down</a> resumes it.
             </Typography>
             <Button
               variant="contained"
