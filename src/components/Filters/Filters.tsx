@@ -394,7 +394,8 @@ export const QueryForm: React.FC<QueryFormProps> = ({ entries, reopenConnection,
           </Grid>
           <br></br>
           <Typography id="modal-modal-description" style={{ fontSize: 12, fontStyle: 'italic' }}>
-            *Please refer to <a href="https://docs.kubeshark.co/en/querying#kfl-syntax-reference"><b>KFL Syntax Reference</b></a> for more information.
+            Please refer to <a href="https://docs.kubeshark.co/en/filtering#kfl-syntax-reference"><b>KFL Syntax Reference</b></a> for more information.&nbsp;
+            <a className="kbc-button kbc-button-xxs">Ctrl</a> + <a className="kbc-button kbc-button-xxs">Enter</a> keyboard shortcut applies the filter.
           </Typography>
         </Box>
       </Fade>
