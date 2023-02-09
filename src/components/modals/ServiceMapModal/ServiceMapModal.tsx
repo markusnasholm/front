@@ -1,7 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { Box, Fade, Modal, Backdrop } from "@mui/material";
+import {
+  Box,
+  Fade,
+  Modal,
+  Backdrop,
+  Grid,
+  IconButton,
+} from "@mui/material";
 import Graph from "react-graph-vis";
-import closeIcon from "./assets/close.svg"
+import CloseIcon from '@mui/icons-material/Close';
 import styles from './ServiceMapModal.module.sass'
 import { GraphData, Node, Edge } from "./ServiceMapModalTypes"
 import ServiceMapOptions from './ServiceMapOptions'
@@ -10,11 +17,11 @@ import variables from '../../../variables.module.scss';
 
 const modalStyle = {
   position: 'absolute',
-  top: '6%',
+  top: '4%',
   left: '50%',
   transform: 'translate(-50%, 0%)',
-  width: '89vw',
-  height: '82vh',
+  width: '92vw',
+  height: '85vh',
   bgcolor: '#F0F5FF',
   borderRadius: '5px',
   boxShadow: 24,
@@ -133,25 +140,33 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({ entries, lastU
       BackdropProps={{ timeout: 500 }}>
       <Fade in={isOpen}>
         <Box sx={modalStyle}>
-          <div className={styles.closeIcon}>
-            <img src={closeIcon} alt="close" onClick={() => onClose()} style={{ cursor: "pointer", userSelect: "none" }} />
-          </div>
           <div className={styles.headerContainer}>
-            <div className={styles.headerSection}>
-              <span className={styles.title}>Service Map</span>
-            </div>
+            <Grid container spacing={2}>
+              <Grid item xs={11}>
+                <div className={styles.headerSection}>
+                  <span className={styles.title}>Service Map</span>
+                </div>
+              </Grid>
+              <Grid item xs={1}>
+                <IconButton onClick={() => onClose()} style={{
+                  margin: "10px",
+                  float: "right",
+                  padding: "2px",
+                }}>
+                  <CloseIcon />
+                </IconButton>
+              </Grid>
+            </Grid>
           </div>
 
           <div className={styles.modalContainer}>
-            <div className={styles.graphSection}>
-              <div style={{ display: "flex", justifyContent: "space-between" }}>
-              </div>
-              <div style={{ height: "100%", width: "100%" }}>
-                <Graph
-                  graph={graphData}
-                  options={graphOptions}
-                />
-              </div>
+            <div style={{ display: "flex", justifyContent: "space-between" }}>
+            </div>
+            <div style={{ height: "100%", width: "100%" }}>
+              <Graph
+                graph={graphData}
+                options={graphOptions}
+              />
             </div>
           </div>
         </Box>
