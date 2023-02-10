@@ -59,13 +59,28 @@ const SCRIPT_PRINT_CONSTS = `// Print Constants
 console.log(CONSTS);
 `
 
+const SCRIPT_INFLUXDB = `// InfluxDB: Write a Point per Item
+
+function capturedItem(data) {
+  influxdb(
+    INFLUXDB_URL,
+    INFLUXDB_TOKEN,
+    INFLUXDB_MEASUREMENT,
+    INFLUXDB_ORGANIZATION,
+    INFLUXDB_BUCKET,
+    data
+  );
+}
+`
+
 const EXAMPLE_SCRIPTS = [
   SCRIPT_EMPTY,
   SCRIPT_SLACK,
   SCRIPT_WEBHOOK,
   SCRIPT_PACKET_AND_BYTE_COUNTER,
   SCRIPT_MONITORING_PASS_HTTP,
-  SCRIPT_PRINT_CONSTS
+  SCRIPT_PRINT_CONSTS,
+  SCRIPT_INFLUXDB,
 ]
 
 const EXAMPLE_SCRIPT_TITLES = [
@@ -75,6 +90,7 @@ const EXAMPLE_SCRIPT_TITLES = [
   "Packet and Byte Counter",
   "Monitoring: Pass HTTP Traffic, Fail Anything Else",
   "Print Constants",
+  "InfluxDB: Write a Point per Item",
 ]
 
 const DEFAULT_TITLE = "New Script"
@@ -82,9 +98,11 @@ const DEFAULT_SCRIPT = SCRIPT_EMPTY
 
 export {
   SCRIPT_EMPTY,
+  SCRIPT_SLACK,
   SCRIPT_WEBHOOK,
   SCRIPT_PACKET_AND_BYTE_COUNTER,
   SCRIPT_MONITORING_PASS_HTTP,
+  SCRIPT_INFLUXDB,
   EXAMPLE_SCRIPTS,
   EXAMPLE_SCRIPT_TITLES,
   DEFAULT_TITLE,
