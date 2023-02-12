@@ -73,6 +73,20 @@ function capturedItem(data) {
 }
 `
 
+const SCRIPT_S3 = `// Upload PCAP file to an AWS S3 Bucket If Response Status Code is 500
+
+function capturedItem(data) {
+  if (data.Response.status === 500)
+    s3(
+      AWS_REGION,
+      AWS_ACCESS_KEY_ID,
+      AWS_SECRET_ACCESS_KEY,
+      S3_BUCKET,
+      data.Stream
+    );
+}
+`;
+
 const EXAMPLE_SCRIPTS = [
   SCRIPT_EMPTY,
   SCRIPT_SLACK,
@@ -81,6 +95,7 @@ const EXAMPLE_SCRIPTS = [
   SCRIPT_MONITORING_PASS_HTTP,
   SCRIPT_PRINT_CONSTS,
   SCRIPT_INFLUXDB,
+  SCRIPT_S3,
 ]
 
 const EXAMPLE_SCRIPT_TITLES = [
@@ -91,6 +106,7 @@ const EXAMPLE_SCRIPT_TITLES = [
   "Monitoring: Pass HTTP Traffic, Fail Anything Else",
   "Print Constants",
   "InfluxDB: Write a Point per Item",
+  "Upload PCAP file to an AWS S3 Bucket If Response Status Code is 500",
 ]
 
 const DEFAULT_TITLE = "New Script"
@@ -103,6 +119,7 @@ export {
   SCRIPT_PACKET_AND_BYTE_COUNTER,
   SCRIPT_MONITORING_PASS_HTTP,
   SCRIPT_INFLUXDB,
+  SCRIPT_S3,
   EXAMPLE_SCRIPTS,
   EXAMPLE_SCRIPT_TITLES,
   DEFAULT_TITLE,
