@@ -76,7 +76,8 @@ function capturedItem(data) {
 const SCRIPT_S3 = `// Upload PCAP file to an AWS S3 Bucket If Response Status Code is 500
 
 function capturedItem(data) {
-  if (data.response.status === 500)
+  if (data.response.status === 500) {
+    // Upload PCAP file
     s3(
       AWS_REGION,
       AWS_ACCESS_KEY_ID,
@@ -84,6 +85,17 @@ function capturedItem(data) {
       S3_BUCKET,
       data.stream
     );
+
+    // Upload name resolution history
+    s3JSON(
+      AWS_REGION,
+      AWS_ACCESS_KEY_ID,
+      AWS_SECRET_ACCESS_KEY,
+      S3_BUCKET,
+      nameResolutionHistory(),
+      "name_resolution_history_" + Date.now()
+    );
+  }
 }
 `;
 
