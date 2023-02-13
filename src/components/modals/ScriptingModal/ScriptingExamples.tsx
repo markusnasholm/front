@@ -47,7 +47,7 @@ function capturedPacket(info) {
 const SCRIPT_MONITORING_PASS_HTTP = `// Monitoring: Pass HTTP Traffic, Fail Anything Else
 
 function queriedItem(data) {
-  if (data.protocol.Name == "http")
+  if (data.protocol.name == "http")
     return pass(data)
   else
     return fail(data)
