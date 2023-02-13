@@ -14,8 +14,8 @@ function queriedItem(data) {
 const SCRIPT_WEBHOOK = `// Call a Webhook For Each Health Check
 
 function capturedItem(data) {
-  console.log(data.Request.path);
-  if (data.Request.path === "/health")
+  console.log(data.request.path);
+  if (data.request.path === "/health")
     webhook("POST", WEBHOOK_URL, data);
 }
 `;
@@ -23,7 +23,7 @@ function capturedItem(data) {
 const SCRIPT_SLACK = `// Report To a Slack Channel If Response Status Code is 500
 
 function capturedItem(data) {
-  if (data.Response.status === 500)
+  if (data.response.status === 500)
     slack(SLACK_AUTH_TOKEN, SLACK_CHANNEL_ID, "Server-side Error", JSON.stringify(data), "#ff0000");
 }
 `;
@@ -40,14 +40,14 @@ function capturedItem(data) {
 
 function capturedPacket(info) {
   packetCount++
-  totalBytes += info.Length
+  totalBytes += info.length
 }
 `;
 
 const SCRIPT_MONITORING_PASS_HTTP = `// Monitoring: Pass HTTP Traffic, Fail Anything Else
 
 function queriedItem(data) {
-  if (data.Protocol.Name == "http")
+  if (data.protocol.Name == "http")
     return pass(data)
   else
     return fail(data)
@@ -76,13 +76,13 @@ function capturedItem(data) {
 const SCRIPT_S3 = `// Upload PCAP file to an AWS S3 Bucket If Response Status Code is 500
 
 function capturedItem(data) {
-  if (data.Response.status === 500)
+  if (data.response.status === 500)
     s3(
       AWS_REGION,
       AWS_ACCESS_KEY_ID,
       AWS_SECRET_ACCESS_KEY,
       S3_BUCKET,
-      data.Stream
+      data.stream
     );
 }
 `;
