@@ -15,6 +15,7 @@ import {
   MenuItem,
   Select,
   IconButton,
+  Link,
 } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import styles from './ScriptingModal.module.sass'
@@ -177,7 +178,7 @@ function TabPanel(props: TabPanelProps) {
               />
             </div>
             <Typography>
-              {`Write your JavaScript code inside the hooks.`}&nbsp;
+              Write your <Link href="https://262.ecma-international.org/5.1/" underline="hover" target="_blank"><b>JavaScript ES5</b></Link> code inside the hooks.&nbsp;
               <a className="kbc-button kbc-button-xs">Ctrl</a> + <a className="kbc-button kbc-button-xs">S</a> saves the script.&nbsp;
               <a className="kbc-button kbc-button-xs" onClick={() => { setFollow(false) }}>Left-Click</a> in the console stops auto-scroll.&nbsp;
               <a className="kbc-button kbc-button-xs" onClick={() => { setFollow(true) }}>Page Down</a> resumes it.
