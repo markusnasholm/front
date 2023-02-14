@@ -132,7 +132,6 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({ entries, lastU
       aria-labelledby="transition-modal-title"
       aria-describedby="transition-modal-description"
       open={isOpen}
-      onClose={onClose}
       closeAfterTransition
       BackdropComponent={Backdrop}
       BackdropProps={{ timeout: 500 }}>

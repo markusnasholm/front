@@ -11,7 +11,6 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({ licenseEdition, licenseExpired, licenseEnd }) => {
-  console.log(licenseEnd);
   return <div className="header">
     <div style={{ display: "flex", alignItems: "center" }}>
       <img className="logo" src={logo} alt="logo" />

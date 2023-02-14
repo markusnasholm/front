@@ -294,7 +294,6 @@ export const ScriptingModal: React.FC<ScriptingModalProps> = ({ isOpen, onClose 
       aria-labelledby="transition-modal-title"
       aria-describedby="transition-modal-description"
       open={isOpen}
-      onClose={onClose}
       closeAfterTransition
       BackdropComponent={Backdrop}
       BackdropProps={{ timeout: 500 }}>
@@ -308,7 +307,10 @@ export const ScriptingModal: React.FC<ScriptingModalProps> = ({ isOpen, onClose 
                 </div>
               </Grid>
               <Grid item xs={1}>
-                <IconButton onClick={() => onClose()} style={{
+                <IconButton onClick={() => {
+                  fetchScripts();
+                  onClose();
+                }} style={{
                   margin: "10px",
                   float: "right",
                   padding: "2px",
