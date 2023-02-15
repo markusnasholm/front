@@ -16,7 +16,7 @@ const SCRIPT_WEBHOOK = `// Call a Webhook For Each Health Check
 function capturedItem(data) {
   console.log(data.request.path);
   if (data.request.path === "/health")
-    webhook("POST", WEBHOOK_URL, data);
+    vendor.webhook("POST", WEBHOOK_URL, data);
 }
 `;
 
@@ -24,7 +24,7 @@ const SCRIPT_SLACK = `// Report To a Slack Channel If Response Status Code is 50
 
 function capturedItem(data) {
   if (data.response.status === 500)
-    slack(SLACK_AUTH_TOKEN, SLACK_CHANNEL_ID, "Server-side Error", JSON.stringify(data), "#ff0000");
+    vendor.slack(SLACK_AUTH_TOKEN, SLACK_CHANNEL_ID, "Server-side Error", JSON.stringify(data), "#ff0000");
 }
 `;
 
@@ -48,9 +48,9 @@ const SCRIPT_MONITORING_PASS_HTTP = `// Monitoring: Pass HTTP Traffic, Fail Anyt
 
 function queriedItem(data) {
   if (data.protocol.name == "http")
-    return pass(data)
+    return test.pass(data)
   else
-    return fail(data)
+    return test.fail(data)
 }
 `;
 
@@ -62,7 +62,7 @@ console.log(CONSTS);
 const SCRIPT_INFLUXDB = `// InfluxDB: Write a Point per Item
 
 function capturedItem(data) {
-  influxdb(
+  vendor.influxdb(
     INFLUXDB_URL,
     INFLUXDB_TOKEN,
     INFLUXDB_MEASUREMENT,
@@ -73,28 +73,40 @@ function capturedItem(data) {
 }
 `
 
-const SCRIPT_S3 = `// Upload PCAP file to an AWS S3 Bucket If Response Status Code is 500
+const SCRIPT_S3 = `// Upload PCAP File of a Stream to an AWS S3 Bucket If Response Status Code is 500
 
 function capturedItem(data) {
   if (data.response.status === 500) {
-    // Upload PCAP file
+    // Get PCAP file path
+    var pcapPath = pcap.path(data.stream);
+
+    // Dump name resolution history into a file
+    var nameResolutionHistory = pcap.nameResolutionHistory();
+    var nameResolutionHistoryPath = file.Write(
+      "name_resolution_history.json",
+      JSON.stringify(nameResolutionHistory),
+    );
+
+
+    // Upload PCAP file to S3 bucket
     s3(
       AWS_REGION,
       AWS_ACCESS_KEY_ID,
       AWS_SECRET_ACCESS_KEY,
       S3_BUCKET,
-      data.stream
+      pcapPath,
     );
+    console.log("Uploaded PCAP to S3:", pcapPath);
 
-    // Upload name resolution history
-    s3JSON(
+    // Upload name resolution history to S3 bucket
+    s3(
       AWS_REGION,
       AWS_ACCESS_KEY_ID,
       AWS_SECRET_ACCESS_KEY,
       S3_BUCKET,
-      nameResolutionHistory(),
-      "name_resolution_history_" + Date.now()
+      nameResolutionHistoryPath,
     );
+    console.log("Uploaded name resolution history to S3:", nameResolutionHistoryPath);
   }
 }
 `;
@@ -118,7 +130,7 @@ const EXAMPLE_SCRIPT_TITLES = [
   "Monitoring: Pass HTTP Traffic, Fail Anything Else",
   "Print Constants",
   "InfluxDB: Write a Point per Item",
-  "Upload PCAP file to an AWS S3 Bucket If Response Status Code is 500",
+  "Upload PCAP File of a Stream to an AWS S3 Bucket If Response Status Code is 500",
 ]
 
 const DEFAULT_TITLE = "New Script"
