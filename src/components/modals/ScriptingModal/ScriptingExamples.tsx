@@ -89,7 +89,7 @@ function capturedItem(data) {
 
 
     // Upload PCAP file to S3 bucket
-    s3(
+    vendor.s3.put(
       AWS_REGION,
       AWS_ACCESS_KEY_ID,
       AWS_SECRET_ACCESS_KEY,
@@ -99,7 +99,7 @@ function capturedItem(data) {
     console.log("Uploaded PCAP to S3:", pcapPath);
 
     // Upload name resolution history to S3 bucket
-    s3(
+    vendor.s3.put(
       AWS_REGION,
       AWS_ACCESS_KEY_ID,
       AWS_SECRET_ACCESS_KEY,
@@ -131,7 +131,7 @@ function capturedItem(data) {
 
 
     // Upload TAR file to S3 bucket
-    s3(
+    vendor.s3.put(
       AWS_REGION,
       AWS_ACCESS_KEY_ID,
       AWS_SECRET_ACCESS_KEY,
