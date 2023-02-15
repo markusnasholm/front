@@ -77,17 +77,16 @@ const SCRIPT_S3 = `// Upload PCAP File of a Stream to an AWS S3 Bucket If Respon
 
 function capturedItem(data) {
   if (data.response.status === 500) {
-    // Get PCAP file path
+    // Get PCAP file path of the TCP/UDP stream
     var pcapPath = pcap.path(data.stream);
 
-    // Dump name resolution history into a file
+    // Dump the name resolution history into a file
     var nameResolutionHistory = pcap.nameResolutionHistory();
     var nameResolutionHistoryPath = "name_resolution_history.json";
     file.write(
       nameResolutionHistoryPath,
       JSON.stringify(nameResolutionHistory)
     );
-
 
     // Upload PCAP file to S3 bucket
     vendor.s3.put(
@@ -109,6 +108,7 @@ function capturedItem(data) {
     );
     console.log("Uploaded name resolution history to S3:", nameResolutionHistoryPath);
 
+    // Clean up the temporary files
     file.delete(nameResolutionHistoryPath);
   }
 }
@@ -118,11 +118,13 @@ const SCRIPT_S3_SNAPSHOT = `// Upload a PCAP Snapshot to an AWS S3 Bucket If Res
 
 function capturedItem(data) {
   if (data.response.status === 500) {
-    // Temporary directory
+    // Create a temporary directory
     var dir = file.mkdirTemp("snapshot");
+
+    // Create the PCAP snapshot in temp directory
     pcap.snapshot(dir);
 
-    // Dump name resolution history into a file
+    // Dump the name resolution history into a file
     var nameResolutionHistory = pcap.nameResolutionHistory();
     file.write(
       dir + "/name_resolution_history.json",
@@ -142,6 +144,12 @@ function capturedItem(data) {
     );
     console.log("Uploaded PCAP snapshot to S3:", tarFile);
 
+    /*
+    The TAR file kubeshark_<TIMESTAMP>.tar.gz can now be downloaded from the Amazon S3 bucket.
+    Use \`kubeshark tap --pcap <TAR_FILE_PATH>\` command to capture from the PCAP snapshot (.tar.gz file)
+    */
+
+    // Clean up the temporary files and directories
     file.delete(dir);
     file.delete(tarFile);
   }
