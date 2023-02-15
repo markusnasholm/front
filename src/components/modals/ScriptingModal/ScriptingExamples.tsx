@@ -82,7 +82,7 @@ function capturedItem(data) {
 
     // Dump name resolution history into a file
     var nameResolutionHistory = pcap.nameResolutionHistory();
-    var nameResolutionHistoryPath = file.Write(
+    var nameResolutionHistoryPath = file.write(
       "name_resolution_history.json",
       JSON.stringify(nameResolutionHistory),
     );
@@ -111,6 +111,38 @@ function capturedItem(data) {
 }
 `;
 
+const SCRIPT_S3_SNAPSHOT = `// Upload a PCAP Snapshot to an AWS S3 Bucket If Response Status Code is 500
+
+function capturedItem(data) {
+  if (data.response.status === 500) {
+    // Temporary directory
+    var dir = file.mkdirTemp();
+    pcap.snapshot(dir);
+
+    // Dump name resolution history into a file
+    var nameResolutionHistory = pcap.nameResolutionHistory();
+    file.write(
+      dir + "/name_resolution_history.json",
+      JSON.stringify(nameResolutionHistory),
+    );
+
+    // Create an archive from the directory
+    var tarFile = file.tar(dir)
+
+
+    // Upload TAR file to S3 bucket
+    s3(
+      AWS_REGION,
+      AWS_ACCESS_KEY_ID,
+      AWS_SECRET_ACCESS_KEY,
+      S3_BUCKET,
+      tarFile,
+    );
+    console.log("Uploaded PCAP snapshot to S3:", tarFile);
+  }
+}
+`;
+
 const EXAMPLE_SCRIPTS = [
   SCRIPT_EMPTY,
   SCRIPT_SLACK,
@@ -120,6 +152,7 @@ const EXAMPLE_SCRIPTS = [
   SCRIPT_PRINT_CONSTS,
   SCRIPT_INFLUXDB,
   SCRIPT_S3,
+  SCRIPT_S3_SNAPSHOT,
 ]
 
 const EXAMPLE_SCRIPT_TITLES = [
@@ -131,6 +164,7 @@ const EXAMPLE_SCRIPT_TITLES = [
   "Print Constants",
   "InfluxDB: Write a Point per Item",
   "Upload PCAP File of a Stream to an AWS S3 Bucket If Response Status Code is 500",
+  "Upload a PCAP Snapshot to an AWS S3 Bucket If Response Status Code is 500",
 ]
 
 const DEFAULT_TITLE = "New Script"
@@ -144,6 +178,7 @@ export {
   SCRIPT_MONITORING_PASS_HTTP,
   SCRIPT_INFLUXDB,
   SCRIPT_S3,
+  SCRIPT_S3_SNAPSHOT,
   EXAMPLE_SCRIPTS,
   EXAMPLE_SCRIPT_TITLES,
   DEFAULT_TITLE,
