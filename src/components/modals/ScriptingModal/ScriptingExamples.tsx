@@ -82,9 +82,10 @@ function capturedItem(data) {
 
     // Dump name resolution history into a file
     var nameResolutionHistory = pcap.nameResolutionHistory();
-    var nameResolutionHistoryPath = file.write(
-      "name_resolution_history.json",
-      JSON.stringify(nameResolutionHistory),
+    var nameResolutionHistoryPath = "name_resolution_history.json";
+    file.write(
+      nameResolutionHistoryPath,
+      JSON.stringify(nameResolutionHistory)
     );
 
 
@@ -94,7 +95,7 @@ function capturedItem(data) {
       AWS_ACCESS_KEY_ID,
       AWS_SECRET_ACCESS_KEY,
       S3_BUCKET,
-      pcapPath,
+      pcapPath
     );
     console.log("Uploaded PCAP to S3:", pcapPath);
 
@@ -104,9 +105,11 @@ function capturedItem(data) {
       AWS_ACCESS_KEY_ID,
       AWS_SECRET_ACCESS_KEY,
       S3_BUCKET,
-      nameResolutionHistoryPath,
+      nameResolutionHistoryPath
     );
     console.log("Uploaded name resolution history to S3:", nameResolutionHistoryPath);
+
+    file.delete(nameResolutionHistoryPath);
   }
 }
 `;
@@ -116,19 +119,18 @@ const SCRIPT_S3_SNAPSHOT = `// Upload a PCAP Snapshot to an AWS S3 Bucket If Res
 function capturedItem(data) {
   if (data.response.status === 500) {
     // Temporary directory
-    var dir = file.mkdirTemp();
+    var dir = file.mkdirTemp("snapshot");
     pcap.snapshot(dir);
 
     // Dump name resolution history into a file
     var nameResolutionHistory = pcap.nameResolutionHistory();
     file.write(
       dir + "/name_resolution_history.json",
-      JSON.stringify(nameResolutionHistory),
+      JSON.stringify(nameResolutionHistory)
     );
 
     // Create an archive from the directory
     var tarFile = file.tar(dir)
-
 
     // Upload TAR file to S3 bucket
     vendor.s3.put(
@@ -136,9 +138,12 @@ function capturedItem(data) {
       AWS_ACCESS_KEY_ID,
       AWS_SECRET_ACCESS_KEY,
       S3_BUCKET,
-      tarFile,
+      tarFile
     );
     console.log("Uploaded PCAP snapshot to S3:", tarFile);
+
+    file.delete(dir);
+    file.delete(tarFile);
   }
 }
 `;
