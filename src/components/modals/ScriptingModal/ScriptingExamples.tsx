@@ -45,7 +45,7 @@ function logPacketCountTotalBytes() {
   totalKB = 0;
 }
 
-jobs.schedule("log_packet_count_total_bytes", "*/1 * * * *", logPacketCountTotalBytes)
+jobs.schedule("log_packet_count_total_bytes", "* */1 * * * *", logPacketCountTotalBytes)
 `;
 
 const SCRIPT_MONITORING_PASS_HTTP = `// Monitoring: Pass HTTP Traffic, Fail Anything Else
