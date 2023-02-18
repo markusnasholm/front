@@ -28,20 +28,24 @@ function capturedItem(data) {
 }
 `;
 
-const SCRIPT_PACKET_AND_BYTE_COUNTER = `// Packet and Byte Counter
+const SCRIPT_LOG_TOTAL_CAPTURED_PACKET_KB_PER_MIN = `// Log Total Captured Packet and KB per Minute
 
 var packetCount = 0;
-var totalBytes = 0;
-
-function capturedItem(data) {
-  console.log("Captured packet count:", packetCount)
-  console.log("Total bytes processed:", totalBytes)
-}
+var totalKB = 0;
 
 function capturedPacket(info) {
-  packetCount++
-  totalBytes += info.length
+  packetCount++;
+  totalKB += info.length / 1000;
 }
+
+function logPacketCountTotalBytes() {
+  console.log("Captured packet count per minute:", packetCount);
+  packetCount = 0;
+  console.log("Total KB captured per minute:", totalKB);
+  totalKB = 0;
+}
+
+jobs.schedule("log_packet_count_total_bytes", "*/1 * * * *", logPacketCountTotalBytes)
 `;
 
 const SCRIPT_MONITORING_PASS_HTTP = `// Monitoring: Pass HTTP Traffic, Fail Anything Else
@@ -160,7 +164,7 @@ const EXAMPLE_SCRIPTS = [
   SCRIPT_EMPTY,
   SCRIPT_SLACK,
   SCRIPT_WEBHOOK,
-  SCRIPT_PACKET_AND_BYTE_COUNTER,
+  SCRIPT_LOG_TOTAL_CAPTURED_PACKET_KB_PER_MIN,
   SCRIPT_MONITORING_PASS_HTTP,
   SCRIPT_PRINT_CONSTS,
   SCRIPT_INFLUXDB,
@@ -172,7 +176,7 @@ const EXAMPLE_SCRIPT_TITLES = [
   "Empty",
   "Report To a Slack Channel If Response Status Code is 500",
   "Call a Webhook For Each Health Check",
-  "Packet and Byte Counter",
+  "Log Total Captured Packet and KB per Minute",
   "Monitoring: Pass HTTP Traffic, Fail Anything Else",
   "Print Constants",
   "InfluxDB: Write a Point per Item",
@@ -187,7 +191,7 @@ export {
   SCRIPT_EMPTY,
   SCRIPT_SLACK,
   SCRIPT_WEBHOOK,
-  SCRIPT_PACKET_AND_BYTE_COUNTER,
+  SCRIPT_LOG_TOTAL_CAPTURED_PACKET_KB_PER_MIN,
   SCRIPT_MONITORING_PASS_HTTP,
   SCRIPT_INFLUXDB,
   SCRIPT_S3,
