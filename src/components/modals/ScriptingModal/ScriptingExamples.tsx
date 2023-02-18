@@ -1,4 +1,7 @@
-const SCRIPT_EMPTY = `function onItemCaptured(data) {
+const SCRIPT_EMPTY = `// Define your global variables here
+// var example = 0;
+
+function onItemCaptured(data) {
   // Your code goes here
 }
 
@@ -9,6 +12,9 @@ function onPacketCaptured(info) {
 function onItemQueried(data) {
   // Your code goes here
 }
+
+// Schedule your jobs here
+// jobs.schedule("example_job", "*/5 * * * * *", exampleJob)
 `;
 
 const SCRIPT_WEBHOOK = `// Call a Webhook For Each Health Check
@@ -45,7 +51,7 @@ function logPacketCountTotalBytes() {
   totalKB = 0;
 }
 
-jobs.schedule("log_packet_count_total_bytes", "* */1 * * * *", logPacketCountTotalBytes)
+jobs.schedule("log_packet_count_total_bytes", "* */1 * * * *", logPacketCountTotalBytes);
 `;
 
 const SCRIPT_MONITORING_PASS_HTTP = `// Monitoring: Pass HTTP Traffic, Fail Anything Else
