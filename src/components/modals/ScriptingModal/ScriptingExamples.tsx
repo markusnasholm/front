@@ -1,19 +1,19 @@
-const SCRIPT_EMPTY = `function capturedItem(data) {
+const SCRIPT_EMPTY = `function onItemCaptured(data) {
   // Your code goes here
 }
 
-function capturedPacket(info) {
+function onPacketCaptured(info) {
   // Your code goes here
 }
 
-function queriedItem(data) {
+function onItemQueried(data) {
   // Your code goes here
 }
 `;
 
 const SCRIPT_WEBHOOK = `// Call a Webhook For Each Health Check
 
-function capturedItem(data) {
+function onItemCaptured(data) {
   console.log(data.request.path);
   if (data.request.path === "/health")
     vendor.webhook("POST", WEBHOOK_URL, data);
@@ -22,7 +22,7 @@ function capturedItem(data) {
 
 const SCRIPT_SLACK = `// Report To a Slack Channel If Response Status Code is 500
 
-function capturedItem(data) {
+function onItemCaptured(data) {
   if (data.response.status === 500)
     vendor.slack(SLACK_AUTH_TOKEN, SLACK_CHANNEL_ID, "Server-side Error", JSON.stringify(data), "#ff0000");
 }
@@ -33,7 +33,7 @@ const SCRIPT_LOG_TOTAL_CAPTURED_PACKET_KB_PER_MIN = `// Log Total Captured Packe
 var packetCount = 0;
 var totalKB = 0;
 
-function capturedPacket(info) {
+function onPacketCaptured(info) {
   packetCount++;
   totalKB += info.length / 1000;
 }
@@ -50,7 +50,7 @@ jobs.schedule("log_packet_count_total_bytes", "*/1 * * * *", logPacketCountTotal
 
 const SCRIPT_MONITORING_PASS_HTTP = `// Monitoring: Pass HTTP Traffic, Fail Anything Else
 
-function queriedItem(data) {
+function onItemQueried(data) {
   if (data.protocol.name == "http")
     return test.pass(data)
   else
@@ -65,7 +65,7 @@ console.log(CONSTS);
 
 const SCRIPT_INFLUXDB = `// InfluxDB: Write a Point per Item
 
-function capturedItem(data) {
+function onItemCaptured(data) {
   vendor.influxdb(
     INFLUXDB_URL,
     INFLUXDB_TOKEN,
@@ -79,7 +79,7 @@ function capturedItem(data) {
 
 const SCRIPT_S3 = `// Upload PCAP File of a Stream to an AWS S3 Bucket If Response Status Code is 500
 
-function capturedItem(data) {
+function onItemCaptured(data) {
   if (data.response.status === 500) {
     // Get PCAP file path of the TCP/UDP stream
     var pcapPath = pcap.path(data.stream);
@@ -120,7 +120,7 @@ function capturedItem(data) {
 
 const SCRIPT_S3_SNAPSHOT = `// Upload a PCAP Snapshot to an AWS S3 Bucket If Response Status Code is 500
 
-function capturedItem(data) {
+function onItemCaptured(data) {
   if (data.response.status === 500) {
     // Create a temporary directory
     var dir = file.mkdirTemp("snapshot");
