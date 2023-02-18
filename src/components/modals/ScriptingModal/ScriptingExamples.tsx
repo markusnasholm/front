@@ -14,7 +14,7 @@ function onItemQueried(data) {
 }
 
 // Schedule your jobs here
-// jobs.schedule("example_job", "*/5 * * * * *", exampleJob)
+// jobs.schedule("example-job", "*/5 * * * * *", exampleJob)
 `;
 
 const SCRIPT_WEBHOOK = `// Call a Webhook For Each Health Check
