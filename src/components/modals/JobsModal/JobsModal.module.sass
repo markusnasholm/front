@@ -1,0 +1,37 @@
+@import "../../../variables.module"
+@import "../../../components"
+
+$modalMargin-from-edge : 35px
+
+.closeIcon
+  position: absolute
+  right: 20px
+  top: 20px
+
+.modalContainer
+  display: flex
+  height: 92.8%
+  background: #F0F5FF
+  padding: 10px
+
+.headerContainer
+  width: 100%
+  background: white
+  display: flex
+  align-items: center
+
+.headerSection
+  display: flex
+  align-content: center
+  align-items: center
+  margin-left: $modalMargin-from-edge
+  margin-bottom: 10px
+  margin-top: 10px
+
+  & .title
+    font-size: 28px
+    color: $blue-gray
+    font-weight: 600
+    margin-right: 35px
+    white-space: nowrap
+

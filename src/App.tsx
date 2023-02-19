@@ -6,8 +6,10 @@ import { ThemeProvider, StyledEngineProvider, createTheme } from '@mui/material'
 import { useRecoilState } from "recoil";
 import serviceMapModalOpenAtom from "./recoil/serviceMapModalOpen";
 import scriptingModalOpenAtom from "./recoil/scriptingModalOpen";
+import jobsModalOpenAtom from "./recoil/jobsModalOpen";
 import { ServiceMapModal } from './components/modals/ServiceMapModal/ServiceMapModal';
 import { ScriptingModal } from './components/modals/ScriptingModal/ScriptingModal';
+import { JobsModal } from './components/modals/JobsModal/JobsModal';
 import { Entry } from "./components/EntryListItem/Entry";
 import { HubBaseUrl } from "./consts";
 import { toast } from "react-toastify";
@@ -18,6 +20,7 @@ const App: React.FC = () => {
   const [lastUpdated, setLastUpdated] = useState(0);
   const [serviceMapModalOpen, setServiceMapModalOpen] = useRecoilState(serviceMapModalOpenAtom);
   const [scriptingModalOpen, setScriptingModalOpen] = useRecoilState(scriptingModalOpenAtom);
+  const [jobsModalOpen, setJobsModalOpen] = useRecoilState(jobsModalOpenAtom);
 
   const [licenseEdition, setLicenseEdition] = useState("community");
   const [licenseExpired, setLicenseExpired] = useState(false);
@@ -55,16 +58,20 @@ const App: React.FC = () => {
             setLastUpdated={setLastUpdated}
             getLicense={getLicense}
           />
-          <ServiceMapModal
+          {serviceMapModalOpen && <ServiceMapModal
             entries={entries}
             lastUpdated={lastUpdated}
             isOpen={serviceMapModalOpen}
             onClose={() => setServiceMapModalOpen(false)}
-          />
-          <ScriptingModal
+          />}
+          {scriptingModalOpen && <ScriptingModal
             isOpen={scriptingModalOpen}
             onClose={() => setScriptingModalOpen(false)}
-          />
+          />}
+          {jobsModalOpen && <JobsModal
+            isOpen={jobsModalOpen}
+            onClose={() => setJobsModalOpen(false)}
+          />}
         </div>
       </ThemeProvider>
     </StyledEngineProvider>
