@@ -47,12 +47,12 @@ interface TabPanelProps {
   selected: number;
   scriptKey: number;
   script: Script;
-  setUpdated: React.Dispatch<React.SetStateAction<number>>
+  fetchScripts: () => void;
   setFollow: React.Dispatch<React.SetStateAction<boolean>>
 }
 
 function TabPanel(props: TabPanelProps) {
-  const { index, selected, scriptKey, script, setUpdated, setFollow } = props;
+  const { index, selected, scriptKey, script, fetchScripts, setFollow } = props;
 
   const [code, setCode] = React.useState(script.code ? script.code : DEFAULT_SCRIPT);
   const [title, setTitle] = React.useState(script.title);
@@ -74,9 +74,7 @@ function TabPanel(props: TabPanelProps) {
     )
       .then(response => response.ok ? response : response.text().then(err => Promise.reject(err)))
       .then(response => response.json())
-      .then(data => {
-        setUpdated(data.key);
-      })
+      .then(() => fetchScripts())
       .catch(err => {
         console.error(err);
         toast.error(err.toString(), {
@@ -93,9 +91,7 @@ function TabPanel(props: TabPanelProps) {
       },
     )
       .then(response => response.ok ? response : response.text().then(err => Promise.reject(err)))
-      .then(() => {
-        setUpdated(scriptKey);
-      })
+      .then(() => fetchScripts())
       .catch(err => {
         console.error(err);
         toast.error(err.toString(), {
@@ -222,8 +218,6 @@ interface ScriptingModalProps {
 export const ScriptingModal: React.FC<ScriptingModalProps> = ({ isOpen, onClose }) => {
 
   const [selected, setSelected] = React.useState(0);
-  const [updated, setUpdated] = React.useState(-1);
-
   const [scriptMap, setScriptMap] = React.useState({} as ScriptMap);
 
   const [follow, setFollow] = React.useState(true);
@@ -247,9 +241,7 @@ export const ScriptingModal: React.FC<ScriptingModalProps> = ({ isOpen, onClose 
     )
       .then(response => response.ok ? response : response.text().then(err => Promise.reject(err)))
       .then(response => response.json())
-      .then(data => {
-        setUpdated(data.key);
-      })
+      .then(() => fetchScripts())
       .catch(err => {
         console.error(err);
         toast.error(err.toString(), {
@@ -273,7 +265,6 @@ export const ScriptingModal: React.FC<ScriptingModalProps> = ({ isOpen, onClose 
       .then(response => response.json())
       .then((data: ScriptMap) => {
         setScriptMap(data);
-        setUpdated(-1);
       })
       .catch(err => {
         console.error(err);
@@ -285,7 +276,7 @@ export const ScriptingModal: React.FC<ScriptingModalProps> = ({ isOpen, onClose 
 
   useEffect(() => {
     fetchScripts();
-  }, [updated]);
+  }, []);
 
   useKeyPress(shortcutsKeyboard.pageDown, () => { setFollow(true) }, lazyLogFollow.current);
 
@@ -363,7 +354,7 @@ export const ScriptingModal: React.FC<ScriptingModalProps> = ({ isOpen, onClose 
                           selected={selected}
                           scriptKey={Number(key)}
                           script={scriptMap[key]}
-                          setUpdated={setUpdated}
+                          fetchScripts={fetchScripts}
                           setFollow={setFollow}
                         />
                       })
