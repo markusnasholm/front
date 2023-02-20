@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useRef } from "react";
 import {
   Box,
   Fade,
@@ -17,6 +17,7 @@ import { LazyLog } from 'react-lazylog';
 import { toast } from "react-toastify";
 import useKeyPress from "../../../hooks/useKeyPress"
 import shortcutsKeyboard from "../../../configs/shortcutsKeyboard"
+import { useInterval } from "../../../helpers/interval";
 
 const modalStyle = {
   position: 'absolute',
@@ -171,9 +172,9 @@ export const JobsModal: React.FC<JobsModalProps> = ({ isOpen, onClose }) => {
       });
   };
 
-  useEffect(() => {
+  useInterval(async () => {
     fetchJobs();
-  }, []);
+  }, 3000, true);
 
   useKeyPress(shortcutsKeyboard.pageDown, () => { setFollow(true) }, lazyLogFollow.current);
 
