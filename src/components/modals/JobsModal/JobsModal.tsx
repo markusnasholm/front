@@ -50,6 +50,7 @@ function TabPanel(props: TabPanelProps) {
       },
     )
       .then(response => response.ok ? response : response.text().then(err => Promise.reject(err)))
+      .then(() => fetchJobs())
       .catch(err => {
         console.error(err);
         toast.error(err.toString(), {
@@ -114,6 +115,7 @@ interface Job {
   runCount: number;
   scheduledAtTimes: string[];
   isRunning: boolean;
+  isPending: boolean;
 }
 
 type Jobs = Job[];
@@ -121,6 +123,25 @@ type Jobs = Job[];
 interface JobsModalProps {
   isOpen: boolean;
   onClose: () => void;
+}
+
+const getJobIndicator = (job: Job) => {
+  if (job.isRunning)
+    return <div
+      className={`${styles.indicatorContainer} ${styles.greenIndicatorContainer}`}>
+      <div className={`${styles.indicator} ${styles.greenIndicator}`} />
+    </div>
+
+  if (job.isPending)
+    return <div
+      className={`${styles.indicatorContainer} ${styles.orangeIndicatorContainer}`}>
+      <div className={`${styles.indicator} ${styles.orangeIndicator}`} />
+    </div>
+
+  return <div
+    className={`${styles.indicatorContainer} ${styles.greyIndicatorContainer}`}>
+    <div className={`${styles.indicator} ${styles.greyIndicator}`} />
+  </div>
 }
 
 export const JobsModal: React.FC<JobsModalProps> = ({ isOpen, onClose }) => {
@@ -201,15 +222,27 @@ export const JobsModal: React.FC<JobsModalProps> = ({ isOpen, onClose }) => {
                   value={selected}
                   onChange={handleChange}
                   aria-label="Scripts"
-                  sx={{ borderRight: 1, borderColor: 'divider', minWidth: '300px' }}
+                  sx={{ borderRight: 1, borderColor: 'divider', minWidth: '500px' }}
                 >
                   {
                     jobs.map(function(job, i) {
-                      console.log(jobs);
                       return <Tab
                         key={i}
                         label={`[${job.node}] ${job.tag}`}
-                        style={{ textTransform: "none" }}
+                        style={{
+                          textTransform: "none",
+                          whiteSpace: "nowrap",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                          maxWidth: "500px",
+                          textAlign: "left",
+                          justifyContent: "start",
+                          minHeight: "42px",
+                          paddingLeft: "0px",
+                          paddingRight: "0px",
+                        }}
+                        icon={getJobIndicator(job)}
+                        iconPosition="start"
                       />
                     })
                   }

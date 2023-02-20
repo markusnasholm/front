@@ -35,3 +35,38 @@ $modalMargin-from-edge : 35px
     margin-right: 35px
     white-space: nowrap
 
+.indicatorContainer
+    border-radius: 50%
+    padding: 2px
+    margin-left: 10px
+
+.indicator
+    height: 8px
+    width: 8px
+    border-radius: 50%
+
+@keyframes biggerIndication
+    0%
+        transform: scale(2.0)
+    100%
+        transform: scale(0.7)
+
+.greenIndicatorContainer
+    border: 2px #6fcf9770 solid
+
+.greenIndicator
+    background-color: #27AE60
+    animation: biggerIndication 1.5s ease-out 0s alternate infinite none running
+
+.orangeIndicatorContainer
+    border: 2px #fabd5970 solid
+
+.orangeIndicator
+    background-color: #ffb530
+    animation: biggerIndication 1.5s ease-out 0s alternate infinite none running
+
+.greyIndicatorContainer
+    border: 2px #8b8b8b45 solid
+
+.greyIndicator
+    background-color: #8c8c8c
