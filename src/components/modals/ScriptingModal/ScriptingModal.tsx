@@ -190,7 +190,7 @@ function TabPanel(props: TabPanelProps) {
               variant="contained"
               onClick={handleClickDeleteScript}
               color="error"
-              style={{ margin: 10 }}
+              style={{ margin: 10, marginLeft: 24 }}
             >
               Delete
             </Button>

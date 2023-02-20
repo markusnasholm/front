@@ -104,6 +104,7 @@ function TabPanel(props: TabPanelProps) {
       },
     )
       .then(response => response.ok || response.status === 425 ? response : response.text().then(err => Promise.reject(err)))
+      .then(() => fetchJobs())
       .catch(err => {
         console.error(err);
         toast.error(err.toString(), {
@@ -120,12 +121,81 @@ function TabPanel(props: TabPanelProps) {
       },
     )
       .then(response => response.ok || response.status === 425 ? response : response.text().then(err => Promise.reject(err)))
+      .then(() => fetchJobs())
       .catch(err => {
         console.error(err);
         toast.error(err.toString(), {
           theme: "colored"
         });
       });
+  };
+
+  const handleClickRunTag = () => {
+    fetch(
+      `${HubBaseUrl}/jobs/workers/run/${job.tag}`,
+      {
+        method: 'POST',
+      },
+    )
+      .then(response => response.ok ? response : response.text().then(err => Promise.reject(err)))
+      .then(() => fetchJobs())
+      .catch(err => {
+        console.error(err);
+        toast.error(err.toString(), {
+          theme: "colored"
+        });
+      });
+  };
+
+  const handleClickDeleteTag = () => {
+    fetch(
+      `${HubBaseUrl}/jobs/workers/${job.tag}`,
+      {
+        method: 'DELETE',
+      },
+    )
+      .then(response => response.ok ? response : response.text().then(err => Promise.reject(err)))
+      .then(() => fetchJobs())
+      .catch(err => {
+        console.error(err);
+        toast.error(err.toString(), {
+          theme: "colored"
+        });
+      })
+  };
+
+  const handleClickRunAllJobs = () => {
+    fetch(
+      `${HubBaseUrl}/jobs/run`,
+      {
+        method: 'POST',
+      },
+    )
+      .then(response => response.ok ? response : response.text().then(err => Promise.reject(err)))
+      .then(() => fetchJobs())
+      .catch(err => {
+        console.error(err);
+        toast.error(err.toString(), {
+          theme: "colored"
+        });
+      });
+  };
+
+  const handleClickDeleteAllJobs = () => {
+    fetch(
+      `${HubBaseUrl}/jobs`,
+      {
+        method: 'DELETE',
+      },
+    )
+      .then(response => response.ok ? response : response.text().then(err => Promise.reject(err)))
+      .then(() => fetchJobs())
+      .catch(err => {
+        console.error(err);
+        toast.error(err.toString(), {
+          theme: "colored"
+        });
+      })
   };
 
   useInterval(async () => {
@@ -142,7 +212,7 @@ function TabPanel(props: TabPanelProps) {
       >
         <Box sx={{ height: "100%" }}>
           <Grid sx={{ p: 3 }} container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-            <Grid item xs={8}>
+            <Grid item xs={7}>
               <Grid item xs={12}>
                 <Typography variant="h4" component="h4">
                   {`[${job.node}] ${job.tag}`}
@@ -182,23 +252,23 @@ function TabPanel(props: TabPanelProps) {
                 variant="contained"
                 onClick={handleClickDeleteJob}
                 color="error"
-                style={{ margin: 10 }}
+                style={{ margin: 10, marginLeft: 24 }}
               >
                 Delete
               </Button>
             </Grid>
             <Divider orientation="vertical" flexItem />
-            <Grid item xs={3}>
+            <Grid item xs={4}>
               <Grid item xs={12}>
                 <Grid item xs={12} sx={{ display: "flex" }}>
                   <Typography><b>Scheduler Status:</b> {scheduler.isRunning ? "Running" : "Stopped" }</Typography>
                   <div style={{ marginTop: "2px" }}>{getSchedulerIndicator(scheduler)}</div>
                 </Grid>
-                <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-                  <Grid item xs={4} sx={{ margin: "auto" }}>
+                <Grid sx={{ marginTop: "10px" }} container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+                  <Grid item xs={3} sx={{ margin: "auto" }}>
                     <Typography><b>Scheduler:</b></Typography>
                   </Grid>
-                  <Grid item xs={4}>
+                  <Grid item xs={3}>
                     <Button
                       variant="contained"
                       onClick={handleClickStartScheduler}
@@ -208,7 +278,7 @@ function TabPanel(props: TabPanelProps) {
                       Start
                     </Button>
                   </Grid>
-                  <Grid item xs={4}>
+                  <Grid item xs={6}>
                     <Button
                       variant="contained"
                       onClick={handleClickStopScheduler}
@@ -216,6 +286,44 @@ function TabPanel(props: TabPanelProps) {
                       style={{ margin: 10 }}
                     >
                       Stop
+                    </Button>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Button
+                      variant="contained"
+                      onClick={handleClickRunTag}
+                      style={{ margin: 10 }}
+                    >
+                      Run This Tag
+                    </Button>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Button
+                      variant="contained"
+                      onClick={handleClickDeleteTag}
+                      color="error"
+                      style={{ margin: 10 }}
+                    >
+                      Delete This Tag
+                    </Button>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Button
+                      variant="contained"
+                      onClick={handleClickRunAllJobs}
+                      style={{ margin: 10 }}
+                    >
+                      Run All Jobs
+                    </Button>
+                  </Grid>
+                  <Grid item xs={6}>
+                    <Button
+                      variant="contained"
+                      onClick={handleClickDeleteAllJobs}
+                      color="error"
+                      style={{ margin: 10 }}
+                    >
+                      Delete All Jobs
                     </Button>
                   </Grid>
                 </Grid>
@@ -361,7 +469,7 @@ export const JobsModal: React.FC<JobsModalProps> = ({ isOpen, onClose }) => {
                   value={selected}
                   onChange={handleChange}
                   aria-label="Scripts"
-                  sx={{ borderRight: 1, borderColor: 'divider', minWidth: '500px' }}
+                  sx={{ borderRight: 1, borderColor: 'divider', minWidth: '400px' }}
                 >
                   {
                     jobs.map(function(job, i) {
@@ -373,7 +481,7 @@ export const JobsModal: React.FC<JobsModalProps> = ({ isOpen, onClose }) => {
                           whiteSpace: "nowrap",
                           overflow: "hidden",
                           textOverflow: "ellipsis",
-                          maxWidth: "500px",
+                          maxWidth: "400px",
                           textAlign: "left",
                           justifyContent: "start",
                           minHeight: "42px",
