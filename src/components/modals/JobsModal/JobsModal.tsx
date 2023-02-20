@@ -9,6 +9,7 @@ import {
   Button,
   Grid,
   IconButton,
+  Typography,
 } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import styles from './JobsModal.module.sass'
@@ -86,6 +87,34 @@ function TabPanel(props: TabPanelProps) {
         style={{ width: '100%', height: "100%" }}
       >
         <Box sx={{ p: 3, height: "100%" }}>
+          <Typography variant="h4" component="h4">
+            {`[${job.node}] ${job.tag}`}
+          </Typography>
+          <Grid sx={{ p: 3 }} container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+            <Grid item xs={12} sx={{ display: "flex" }}>
+              <Typography><b>Status:</b> {job.isRunning ? "Running" : job.isPending ? "Pending" : "Waiting" } </Typography>
+              <div style={{ marginTop: "3px" }}>{getJobIndicator(job)}</div>
+            </Grid>
+            <Grid item xs={12}>
+              <Typography><b>Worker:</b> {job.worker}</Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <Typography><b>Node:</b> {job.node}</Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <Typography><b>Tag:</b> {job.tag}</Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <Typography><b>Last Run:</b> {job.lastRun}</Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <Typography><b>Next Run:</b> {job.nextRun}</Typography>
+            </Grid>
+            <Grid item xs={12}>
+              <Typography><b>Run Count:</b> {job.runCount}</Typography>
+            </Grid>
+          </Grid>
+          <Typography><i>Note: Jobs that are <u>shorter than 3 seconds</u> will always appear as &quot;Waiting&quot;.</i></Typography>
           <Button
             variant="contained"
             onClick={handleClickRunJob}
