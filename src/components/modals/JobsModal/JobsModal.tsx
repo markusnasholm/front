@@ -10,6 +10,7 @@ import {
   Grid,
   IconButton,
   Typography,
+  Divider,
 } from "@mui/material";
 import CloseIcon from '@mui/icons-material/Close';
 import styles from './JobsModal.module.sass'
@@ -43,6 +44,8 @@ interface TabPanelProps {
 
 function TabPanel(props: TabPanelProps) {
   const { index, selected, job, fetchJobs } = props;
+
+  const [scheduler, setScheduler] = React.useState({} as Scheduler);
 
   const handleClickRunJob = () => {
     fetch(
@@ -78,6 +81,57 @@ function TabPanel(props: TabPanelProps) {
       })
   };
 
+  const fetchScheduler = () => {
+    fetch(`${HubBaseUrl}/jobs/${job.worker}/scheduler/status`)
+      .then(response => response.ok || response.status === 425 ? response : response.text().then(err => Promise.reject(err)))
+      .then(response => response.json())
+      .then((data) => {
+        setScheduler(data);
+      })
+      .catch(err => {
+        console.error(err);
+        toast.error(err.toString(), {
+          theme: "colored"
+        });
+      });
+  };
+
+  const handleClickStartScheduler = () => {
+    fetch(
+      `${HubBaseUrl}/jobs/${job.worker}/scheduler/start`,
+      {
+        method: 'POST',
+      },
+    )
+      .then(response => response.ok || response.status === 425 ? response : response.text().then(err => Promise.reject(err)))
+      .catch(err => {
+        console.error(err);
+        toast.error(err.toString(), {
+          theme: "colored"
+        });
+      });
+  };
+
+  const handleClickStopScheduler = () => {
+    fetch(
+      `${HubBaseUrl}/jobs/${job.worker}/scheduler/stop`,
+      {
+        method: 'POST',
+      },
+    )
+      .then(response => response.ok || response.status === 425 ? response : response.text().then(err => Promise.reject(err)))
+      .catch(err => {
+        console.error(err);
+        toast.error(err.toString(), {
+          theme: "colored"
+        });
+      });
+  };
+
+  useInterval(async () => {
+    fetchScheduler();
+  }, 3000, true);
+
   return (
     <>
       {index === selected &&  <div
@@ -86,50 +140,88 @@ function TabPanel(props: TabPanelProps) {
         aria-labelledby={`vertical-tab-${index}`}
         style={{ width: '100%', height: "100%" }}
       >
-        <Box sx={{ p: 3, height: "100%" }}>
-          <Typography variant="h4" component="h4">
-            {`[${job.node}] ${job.tag}`}
-          </Typography>
+        <Box sx={{ height: "100%" }}>
           <Grid sx={{ p: 3 }} container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
-            <Grid item xs={12} sx={{ display: "flex" }}>
-              <Typography><b>Status:</b> {job.isRunning ? "Running" : job.isPending ? "Pending" : "Waiting" } </Typography>
-              <div style={{ marginTop: "3px" }}>{getJobIndicator(job)}</div>
+            <Grid item xs={8}>
+              <Grid item xs={12}>
+                <Typography variant="h4" component="h4">
+                  {`[${job.node}] ${job.tag}`}
+                </Typography>
+              </Grid>
+              <Grid item xs={12} sx={{ display: "flex" }}>
+                <Typography><b>Job Status:</b> {job.isRunning ? "Running" : job.isPending ? "Pending" : "Waiting" }</Typography>
+                <div style={{ marginTop: "2px" }}>{getJobIndicator(job)}</div>
+              </Grid>
+              <Grid item xs={12}>
+                <Typography><b>Worker:</b> {job.worker}</Typography>
+              </Grid>
+              <Grid item xs={12}>
+                <Typography><b>Node:</b> {job.node}</Typography>
+              </Grid>
+              <Grid item xs={12}>
+                <Typography><b>Tag:</b> {job.tag}</Typography>
+              </Grid>
+              <Grid item xs={12}>
+                <Typography><b>Last Run:</b> {job.lastRun}</Typography>
+              </Grid>
+              <Grid item xs={12}>
+                <Typography><b>Next Run:</b> {job.nextRun}</Typography>
+              </Grid>
+              <Grid item xs={12}>
+                <Typography><b>Run Count:</b> {job.runCount}</Typography>
+              </Grid>
+              <Typography style={{ marginTop: "20px" }}><i>Note: Jobs that are <u>shorter than 3 seconds</u> will always appear as &quot;Waiting&quot;.</i></Typography>
+              <Button
+                variant="contained"
+                onClick={handleClickRunJob}
+                style={{ margin: 10 }}
+              >
+                Run
+              </Button>
+              <Button
+                variant="contained"
+                onClick={handleClickDeleteJob}
+                color="error"
+                style={{ margin: 10 }}
+              >
+                Delete
+              </Button>
             </Grid>
-            <Grid item xs={12}>
-              <Typography><b>Worker:</b> {job.worker}</Typography>
-            </Grid>
-            <Grid item xs={12}>
-              <Typography><b>Node:</b> {job.node}</Typography>
-            </Grid>
-            <Grid item xs={12}>
-              <Typography><b>Tag:</b> {job.tag}</Typography>
-            </Grid>
-            <Grid item xs={12}>
-              <Typography><b>Last Run:</b> {job.lastRun}</Typography>
-            </Grid>
-            <Grid item xs={12}>
-              <Typography><b>Next Run:</b> {job.nextRun}</Typography>
-            </Grid>
-            <Grid item xs={12}>
-              <Typography><b>Run Count:</b> {job.runCount}</Typography>
+            <Divider orientation="vertical" flexItem />
+            <Grid item xs={3}>
+              <Grid item xs={12}>
+                <Grid item xs={12} sx={{ display: "flex" }}>
+                  <Typography><b>Scheduler Status:</b> {scheduler.isRunning ? "Running" : "Stopped" }</Typography>
+                  <div style={{ marginTop: "2px" }}>{getSchedulerIndicator(scheduler)}</div>
+                </Grid>
+                <Grid container rowSpacing={1} columnSpacing={{ xs: 1, sm: 2, md: 3 }}>
+                  <Grid item xs={4} sx={{ margin: "auto" }}>
+                    <Typography><b>Scheduler:</b></Typography>
+                  </Grid>
+                  <Grid item xs={4}>
+                    <Button
+                      variant="contained"
+                      onClick={handleClickStartScheduler}
+                      color="success"
+                      style={{ margin: 10 }}
+                    >
+                      Start
+                    </Button>
+                  </Grid>
+                  <Grid item xs={4}>
+                    <Button
+                      variant="contained"
+                      onClick={handleClickStopScheduler}
+                      color="error"
+                      style={{ margin: 10 }}
+                    >
+                      Stop
+                    </Button>
+                  </Grid>
+                </Grid>
+              </Grid>
             </Grid>
           </Grid>
-          <Typography><i>Note: Jobs that are <u>shorter than 3 seconds</u> will always appear as &quot;Waiting&quot;.</i></Typography>
-          <Button
-            variant="contained"
-            onClick={handleClickRunJob}
-            style={{ margin: 10 }}
-          >
-            Run
-          </Button>
-          <Button
-            variant="contained"
-            onClick={handleClickDeleteJob}
-            color="error"
-            style={{ margin: 10 }}
-          >
-            Delete
-          </Button>
         </Box>
       </div>}
     </>
@@ -146,6 +238,10 @@ interface Job {
   scheduledAtTimes: string[];
   isRunning: boolean;
   isPending: boolean;
+}
+
+interface Scheduler {
+  isRunning: boolean;
 }
 
 type Jobs = Job[];
@@ -171,6 +267,19 @@ const getJobIndicator = (job: Job) => {
   return <div
     className={`${styles.indicatorContainer} ${styles.greyIndicatorContainer}`}>
     <div className={`${styles.indicator} ${styles.greyIndicator}`} />
+  </div>
+}
+
+const getSchedulerIndicator = (scheduler: Scheduler) => {
+  if (scheduler.isRunning)
+    return <div
+      className={`${styles.indicatorContainer} ${styles.greenIndicatorContainer}`}>
+      <div className={`${styles.indicator} ${styles.greenIndicator}`} />
+    </div>
+
+  return <div
+    className={`${styles.indicatorContainer} ${styles.redIndicatorContainer}`}>
+    <div className={`${styles.indicator} ${styles.redIndicator}`} />
   </div>
 }
 
