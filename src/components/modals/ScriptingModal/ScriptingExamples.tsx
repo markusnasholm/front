@@ -34,7 +34,7 @@ function onItemCaptured(data) {
 }
 `;
 
-const SCRIPT_LOG_TOTAL_CAPTURED_PACKET_KB_PER_MIN = `// Log Total Captured Packet and KB per Minute
+const SCRIPT_LOG_TOTAL_CAPTURED_PACKET_KB_PER_MIN = `// Log Total Captured Packet and KB Every Minute
 
 var packetCount = 0;
 var totalKB = 0;
@@ -51,7 +51,7 @@ function logPacketCountTotalBytes() {
   totalKB = 0;
 }
 
-jobs.schedule("log_packet_count_total_bytes", "* */1 * * * *", logPacketCountTotalBytes);
+jobs.schedule("log-packet-count-total-bytes", "0 */1 * * * *", logPacketCountTotalBytes);
 `;
 
 const SCRIPT_MONITORING_PASS_HTTP = `// Monitoring: Pass HTTP Traffic, Fail Anything Else
@@ -69,18 +69,36 @@ const SCRIPT_PRINT_CONSTS = `// Print Constants
 console.log(CONSTS);
 `
 
-const SCRIPT_INFLUXDB = `// InfluxDB: Write a Point per Item
+const SCRIPT_INFLUXDB = `// Aggregate the HTTP Status Sodes and Push Them to InfluxDB Every Minute
+
+var statusCodes = {};
 
 function onItemCaptured(data) {
+  if (data.protocol.name !== "http") return;
+
+  if (statusCodes.hasOwnProperty(data.response.status)) {
+    statusCodes[data.response.status]++;
+  } else {
+    statusCodes[data.response.status] = 0;
+  }
+}
+
+function pushStatusCodesToInfluxDB() {
+  console.log("Status Codes:", JSON.stringify(statusCodes))
+
   vendor.influxdb(
     INFLUXDB_URL,
     INFLUXDB_TOKEN,
-    INFLUXDB_MEASUREMENT,
+    "Status Codes",
     INFLUXDB_ORGANIZATION,
     INFLUXDB_BUCKET,
-    data
+    statusCodes
   );
+
+  statusCodes = {};
 }
+
+jobs.schedule("push-status-codes-to-influxdb", "0 */1 * * * *", pushStatusCodesToInfluxDB);
 `
 
 const SCRIPT_S3 = `// Upload PCAP File of a Stream to an AWS S3 Bucket If Response Status Code is 500
@@ -182,10 +200,10 @@ const EXAMPLE_SCRIPT_TITLES = [
   "Empty",
   "Report To a Slack Channel If Response Status Code is 500",
   "Call a Webhook For Each Health Check",
-  "Log Total Captured Packet and KB per Minute",
+  "Log Total Captured Packet and KB Every Minute",
   "Monitoring: Pass HTTP Traffic, Fail Anything Else",
   "Print Constants",
-  "InfluxDB: Write a Point per Item",
+  "Aggregate the HTTP Status Sodes and Push Them to InfluxDB Every Minute",
   "Upload PCAP File of a Stream to an AWS S3 Bucket If Response Status Code is 500",
   "Upload a PCAP Snapshot to an AWS S3 Bucket If Response Status Code is 500",
 ]
