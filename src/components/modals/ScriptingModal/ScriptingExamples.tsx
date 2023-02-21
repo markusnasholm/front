@@ -79,7 +79,7 @@ function onItemCaptured(data) {
   if (statusCodes.hasOwnProperty(data.response.status)) {
     statusCodes[data.response.status]++;
   } else {
-    statusCodes[data.response.status] = 0;
+    statusCodes[data.response.status] = 1;
   }
 }
 
