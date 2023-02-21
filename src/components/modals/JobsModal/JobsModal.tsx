@@ -200,7 +200,7 @@ function TabPanel(props: TabPanelProps) {
 
   useInterval(async () => {
     fetchScheduler();
-  }, 3000, true);
+  }, 1000, true);
 
   return (
     <>
@@ -240,7 +240,7 @@ function TabPanel(props: TabPanelProps) {
               <Grid item xs={12}>
                 <Typography><b>Run Count:</b> {job.runCount}</Typography>
               </Grid>
-              <Typography style={{ marginTop: "20px" }}><i>Note: Jobs that are <u>shorter than 3 seconds</u> will always appear as &quot;Waiting&quot;.</i></Typography>
+              <Typography style={{ marginTop: "20px" }}><i>Note: Jobs that are <u>shorter than a second</u> will always appear as &quot;Waiting&quot;.</i></Typography>
               <Button
                 variant="contained"
                 onClick={handleClickRunJob}
@@ -420,7 +420,7 @@ export const JobsModal: React.FC<JobsModalProps> = ({ isOpen, onClose }) => {
 
   useInterval(async () => {
     fetchJobs();
-  }, 3000, true);
+  }, 1000, true);
 
   useKeyPress(shortcutsKeyboard.pageDown, () => { setFollow(true) }, lazyLogFollow.current);
 
