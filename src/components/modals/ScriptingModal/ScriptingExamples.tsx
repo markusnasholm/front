@@ -72,7 +72,7 @@ function onItemQueried(data) {
 
 const SCRIPT_PRINT_ENV = `// Print Environment Variables
 
-console.log(env);
+console.log(JSON.stringify(env));
 `
 
 const SCRIPT_INFLUXDB = `// Aggregate the HTTP Status Sodes and Push Them to InfluxDB Every Minute
