@@ -22,7 +22,7 @@ const SCRIPT_WEBHOOK = `// Call a Webhook For Each Health Check
 function onItemCaptured(data) {
   console.log(data.request.path);
   if (data.request.path === "/health")
-    vendor.webhook("POST", WEBHOOK_URL, data);
+    vendor.webhook("POST", env.WEBHOOK_URL, data);
 }
 `;
 
@@ -30,7 +30,13 @@ const SCRIPT_SLACK = `// Report To a Slack Channel If Response Status Code is 50
 
 function onItemCaptured(data) {
   if (data.response.status === 500)
-    vendor.slack(SLACK_AUTH_TOKEN, SLACK_CHANNEL_ID, "Server-side Error", JSON.stringify(data), "#ff0000");
+    vendor.slack(
+      env.SLACK_AUTH_TOKEN,
+      env.SLACK_CHANNEL_ID,
+      "Server-side Error",
+      JSON.stringify(data),
+      "#ff0000"
+    );
 }
 `;
 
@@ -64,9 +70,9 @@ function onItemQueried(data) {
 }
 `;
 
-const SCRIPT_PRINT_CONSTS = `// Print Constants
+const SCRIPT_PRINT_ENV = `// Print Constants
 
-console.log(CONSTS);
+console.log(env);
 `
 
 const SCRIPT_INFLUXDB = `// Aggregate the HTTP Status Sodes and Push Them to InfluxDB Every Minute
@@ -87,11 +93,11 @@ function pushStatusCodesToInfluxDB() {
   console.log("Status Codes:", JSON.stringify(statusCodes))
 
   vendor.influxdb(
-    INFLUXDB_URL,
-    INFLUXDB_TOKEN,
+    env.INFLUXDB_URL,
+    env.INFLUXDB_TOKEN,
     "Status Codes",
-    INFLUXDB_ORGANIZATION,
-    INFLUXDB_BUCKET,
+    env.INFLUXDB_ORGANIZATION,
+    env.INFLUXDB_BUCKET,
     statusCodes
   );
 
@@ -118,20 +124,20 @@ function onItemCaptured(data) {
 
     // Upload PCAP file to S3 bucket
     vendor.s3.put(
-      AWS_REGION,
-      AWS_ACCESS_KEY_ID,
-      AWS_SECRET_ACCESS_KEY,
-      S3_BUCKET,
+      env.AWS_REGION,
+      env.AWS_ACCESS_KEY_ID,
+      env.AWS_SECRET_ACCESS_KEY,
+      env.S3_BUCKET,
       pcapPath
     );
     console.log("Uploaded PCAP to S3:", pcapPath);
 
     // Upload name resolution history to S3 bucket
     vendor.s3.put(
-      AWS_REGION,
-      AWS_ACCESS_KEY_ID,
-      AWS_SECRET_ACCESS_KEY,
-      S3_BUCKET,
+      env.AWS_REGION,
+      env.AWS_ACCESS_KEY_ID,
+      env.AWS_SECRET_ACCESS_KEY,
+      env.S3_BUCKET,
       nameResolutionHistoryPath
     );
     console.log("Uploaded name resolution history to S3:", nameResolutionHistoryPath);
@@ -164,10 +170,10 @@ function onItemCaptured(data) {
 
     // Upload TAR file to S3 bucket
     vendor.s3.put(
-      AWS_REGION,
-      AWS_ACCESS_KEY_ID,
-      AWS_SECRET_ACCESS_KEY,
-      S3_BUCKET,
+      env.AWS_REGION,
+      env.AWS_ACCESS_KEY_ID,
+      env.AWS_SECRET_ACCESS_KEY,
+      env.S3_BUCKET,
       tarFile
     );
     console.log("Uploaded PCAP snapshot to S3:", tarFile);
@@ -190,7 +196,7 @@ const EXAMPLE_SCRIPTS = [
   SCRIPT_WEBHOOK,
   SCRIPT_LOG_TOTAL_CAPTURED_PACKET_KB_PER_MIN,
   SCRIPT_MONITORING_PASS_HTTP,
-  SCRIPT_PRINT_CONSTS,
+  SCRIPT_PRINT_ENV,
   SCRIPT_INFLUXDB,
   SCRIPT_S3,
   SCRIPT_S3_SNAPSHOT,
