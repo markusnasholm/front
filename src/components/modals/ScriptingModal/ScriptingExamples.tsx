@@ -70,7 +70,7 @@ function onItemQueried(data) {
 }
 `;
 
-const SCRIPT_PRINT_ENV = `// Print Constants
+const SCRIPT_PRINT_ENV = `// Print Environment Variables
 
 console.log(env);
 `
@@ -208,7 +208,7 @@ const EXAMPLE_SCRIPT_TITLES = [
   "Call a Webhook For Each Health Check",
   "Log Total Captured Packet and KB Every Minute",
   "Monitoring: Pass HTTP Traffic, Fail Anything Else",
-  "Print Constants",
+  "Print Environment Variables",
   "Aggregate the HTTP Status Sodes and Push Them to InfluxDB Every Minute",
   "Upload PCAP File of a Stream to an AWS S3 Bucket If Response Status Code is 500",
   "Upload a PCAP Snapshot to an AWS S3 Bucket If Response Status Code is 500",
