@@ -110,6 +110,8 @@ export const TrafficViewer: React.FC<TrafficViewerProps> = ({ entries, setEntrie
     setEntries([]);
     setLastUpdated(Date.now());
 
+    let timer;
+
     try {
       ws.current = new WebSocket(HubWsUrl);
       sendQueryWhenWsOpen();
@@ -120,10 +122,16 @@ export const TrafficViewer: React.FC<TrafficViewerProps> = ({ entries, setEntrie
           theme: "colored",
           autoClose: 1000,
         });
+
         getLicense();
+        timer = setTimeout(() => {
+          getLicense();
+        }, 1000 * 60);
       }
 
       ws.current.onclose = (e) => {
+        clearTimeout(timer);
+
         setWsReadyState(ws?.current?.readyState);
         let delay = 3000;
         let msg = "Trying to reconnect...";
@@ -157,6 +165,8 @@ export const TrafficViewer: React.FC<TrafficViewerProps> = ({ entries, setEntrie
       }
 
       ws.current.onerror = (err) => {
+        clearTimeout(timer);
+
         console.error("WebSocket error:", err);
         toast.error("Hub is down!", {
           theme: "colored",
