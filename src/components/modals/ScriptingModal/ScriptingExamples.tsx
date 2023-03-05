@@ -63,9 +63,9 @@ const SCRIPT_MONITORING_PASS_HTTP = `// Monitoring: Pass HTTP Traffic, Fail Anyt
 
 function onItemQueried(data) {
   if (data.protocol.name == "http")
-    return test.pass(data)
+    return test.pass(data);
   else
-    return test.fail(data)
+    return test.fail(data);
 }
 `;
 
@@ -89,7 +89,7 @@ function onItemCaptured(data) {
 }
 
 function pushStatusCodesToInfluxDB() {
-  console.log("Status Codes:", JSON.stringify(statusCodes))
+  console.log("Status Codes:", JSON.stringify(statusCodes));
 
   vendor.influxdb(
     env.INFLUXDB_URL,
@@ -165,7 +165,7 @@ function onItemCaptured(data) {
     );
 
     // Create an archive from the directory
-    var tarFile = file.tar(dir)
+    var tarFile = file.tar(dir);
 
     // Upload TAR file to S3 bucket
     vendor.s3.put(
@@ -195,13 +195,13 @@ function onItemCaptured(data) {
   try {
     // Invalid KFL query throws an error
     if (kfl.match("htt ??? a : p", data)) {
-      console.log(true)
+      console.log(true);
     } else {
-      console.log(false)
+      console.log(false);
     }
   } catch (error) {
     // Should print \`Caught an error! Error: 1:5: unexpected token "?"\`
-    console.log("Caught an error!", error)
+    console.log("Caught an error!", error);
   }
 }
 `
