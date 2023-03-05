@@ -94,9 +94,9 @@ function pushStatusCodesToInfluxDB() {
   vendor.influxdb(
     env.INFLUXDB_URL,
     env.INFLUXDB_TOKEN,
-    "Status Codes",
     env.INFLUXDB_ORGANIZATION,
     env.INFLUXDB_BUCKET,
+    "Status Codes",
     statusCodes
   );
 
