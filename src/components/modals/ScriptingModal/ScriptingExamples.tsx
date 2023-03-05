@@ -31,8 +31,7 @@ const SCRIPT_SLACK = `// Report To a Slack Channel If Response Status Code is 50
 function onItemCaptured(data) {
   if (data.response.status === 500)
     vendor.slack(
-      env.SLACK_AUTH_TOKEN,
-      env.SLACK_CHANNEL_ID,
+      env.SLACK_WEBHOOK,
       "Server-side Error",
       JSON.stringify(data),
       "#ff0000"
