@@ -189,13 +189,31 @@ function onItemCaptured(data) {
 }
 `;
 
+const SCRIPT_ERROR_HANDLING = `// Error Handling
+
+function onItemCaptured(data) {
+  try {
+    // Invalid KFL query throws an error
+    if (kfl.match("htt ??? a : p", data)) {
+      console.log(true)
+    } else {
+      console.log(false)
+    }
+  } catch (error) {
+    // Should print \`Caught an error! Error: 1:5: unexpected token "?"\`
+    console.log("Caught an error!", error)
+  }
+}
+`
+
 const EXAMPLE_SCRIPTS = [
   SCRIPT_EMPTY,
+  SCRIPT_PRINT_ENV,
+  SCRIPT_ERROR_HANDLING,
   SCRIPT_SLACK,
   SCRIPT_WEBHOOK,
   SCRIPT_LOG_TOTAL_CAPTURED_PACKET_KB_PER_MIN,
   SCRIPT_MONITORING_PASS_HTTP,
-  SCRIPT_PRINT_ENV,
   SCRIPT_INFLUXDB,
   SCRIPT_S3,
   SCRIPT_S3_SNAPSHOT,
@@ -203,11 +221,12 @@ const EXAMPLE_SCRIPTS = [
 
 const EXAMPLE_SCRIPT_TITLES = [
   "Empty",
+  "Print Environment Variables",
+  "Error Handling",
   "Report To a Slack Channel If Response Status Code is 500",
   "Call a Webhook For Each Health Check",
   "Log Total Captured Packet and KB Every Minute",
   "Monitoring: Pass HTTP Traffic, Fail Anything Else",
-  "Print Environment Variables",
   "Aggregate the HTTP Status Sodes and Push Them to InfluxDB Every Minute",
   "Upload PCAP File of a Stream to an AWS S3 Bucket If Response Status Code is 500",
   "Upload a PCAP Snapshot to an AWS S3 Bucket If Response Status Code is 500",
@@ -218,6 +237,8 @@ const DEFAULT_SCRIPT = SCRIPT_EMPTY
 
 export {
   SCRIPT_EMPTY,
+  SCRIPT_PRINT_ENV,
+  SCRIPT_ERROR_HANDLING,
   SCRIPT_SLACK,
   SCRIPT_WEBHOOK,
   SCRIPT_LOG_TOTAL_CAPTURED_PACKET_KB_PER_MIN,
