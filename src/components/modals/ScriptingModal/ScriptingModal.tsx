@@ -178,7 +178,7 @@ function TabPanel(props: TabPanelProps) {
               <a className="kbc-button kbc-button-xs">Ctrl</a> + <a className="kbc-button kbc-button-xs">S</a> saves the script.&nbsp;
               <a className="kbc-button kbc-button-xs" onClick={() => { setFollow(false) }}>Left-Click</a> in the console stops auto-scroll.&nbsp;
               <a className="kbc-button kbc-button-xs" onClick={() => { setFollow(true) }}>Page Down</a> resumes it.&nbsp;
-              See <a href="https://docs.kubeshark.co/en/scripting_api_reference">Scripting API Reference</a> for more info.
+              See <Link href="https://docs.kubeshark.co/en/scripting_api_reference" underline="hover" target="_blank"><b>Scripting API Reference</b></Link> for more info.
             </Typography>
             <Button
               variant="contained"
