@@ -190,6 +190,20 @@ function onItemCaptured(data) {
     file.delete(tarFile);
   }
 }
+
+// // Shorter version of the example above
+// function onItemCaptured(data) {
+//   if (data.response.status === 500) {
+//     var location = pcap.snapshotS3(
+//       env.AWS_REGION,
+//       env.AWS_ACCESS_KEY_ID,
+//       env.AWS_SECRET_ACCESS_KEY,
+//       env.S3_BUCKET
+//     )
+
+//     console.log("Uploaded PCAP snapshot to S3:", location);
+//   }
+// }
 `;
 
 const SCRIPT_ERROR_HANDLING = `// Error Handling
