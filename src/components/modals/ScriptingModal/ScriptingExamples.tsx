@@ -158,7 +158,7 @@ function onItemCaptured(data) {
     var snapshot = pcap.snapshot();
 
     // Move the snapshot into the temporary directory
-    file.move(snapshot, dir)
+    file.move(snapshot, dir);
 
     // Dump the name resolution history into a file
     var nameResolutionHistory = pcap.nameResolutionHistory();
