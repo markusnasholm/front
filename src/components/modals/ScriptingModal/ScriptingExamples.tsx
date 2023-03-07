@@ -194,7 +194,7 @@ function onItemCaptured(data) {
 // // Shorter version of the example above
 // function onItemCaptured(data) {
 //   if (data.response.status === 500) {
-//     var location = pcap.snapshotS3(
+//     var location = wrapper.pcapSnapshot(
 //       env.AWS_REGION,
 //       env.AWS_ACCESS_KEY_ID,
 //       env.AWS_SECRET_ACCESS_KEY,
