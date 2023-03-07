@@ -154,8 +154,11 @@ function onItemCaptured(data) {
     // Create a temporary directory
     var dir = file.mkdirTemp("snapshot");
 
-    // Create the PCAP snapshot in temp directory
-    pcap.snapshot(dir);
+    // Create the PCAP snapshot
+    var snapshot = pcap.snapshot();
+
+    // Move the snapshot into the temporary directory
+    file.move(snapshot, dir)
 
     // Dump the name resolution history into a file
     var nameResolutionHistory = pcap.nameResolutionHistory();
