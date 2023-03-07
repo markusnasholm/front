@@ -122,24 +122,24 @@ function onItemCaptured(data) {
     );
 
     // Upload PCAP file to S3 bucket
-    vendor.s3.put(
+    var location = vendor.s3.put(
       env.AWS_REGION,
       env.AWS_ACCESS_KEY_ID,
       env.AWS_SECRET_ACCESS_KEY,
       env.S3_BUCKET,
       pcapPath
     );
-    console.log("Uploaded PCAP to S3:", pcapPath);
+    console.log("Uploaded PCAP to S3:", pcapPath, "URL:", location);
 
     // Upload name resolution history to S3 bucket
-    vendor.s3.put(
+    location = vendor.s3.put(
       env.AWS_REGION,
       env.AWS_ACCESS_KEY_ID,
       env.AWS_SECRET_ACCESS_KEY,
       env.S3_BUCKET,
       nameResolutionHistoryPath
     );
-    console.log("Uploaded name resolution history to S3:", nameResolutionHistoryPath);
+    console.log("Uploaded name resolution history to S3:", nameResolutionHistoryPath, "URL:", location);
 
     // Clean up the temporary files
     file.delete(nameResolutionHistoryPath);
@@ -168,14 +168,14 @@ function onItemCaptured(data) {
     var tarFile = file.tar(dir);
 
     // Upload TAR file to S3 bucket
-    vendor.s3.put(
+    var location = vendor.s3.put(
       env.AWS_REGION,
       env.AWS_ACCESS_KEY_ID,
       env.AWS_SECRET_ACCESS_KEY,
       env.S3_BUCKET,
       tarFile
     );
-    console.log("Uploaded PCAP snapshot to S3:", tarFile);
+    console.log("Uploaded PCAP snapshot to S3:", tarFile, "URL:", location);
 
     /*
     The TAR file kubeshark_<TIMESTAMP>.tar.gz can now be downloaded from the Amazon S3 bucket.
