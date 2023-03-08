@@ -199,7 +199,7 @@ function onItemCaptured(data) {
 //       env.AWS_ACCESS_KEY_ID,
 //       env.AWS_SECRET_ACCESS_KEY,
 //       env.S3_BUCKET
-//     )
+//     );
 
 //     console.log("Uploaded PCAP snapshot to S3:", location);
 //   }
