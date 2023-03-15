@@ -31,10 +31,10 @@ const SCRIPT_SLACK = `// Report To a Slack Channel If Response Status Code is 50
 function onItemCaptured(data) {
   if (data.response.status === 500)
     vendor.slack(
-      env.SLACK_WEBHOOK,
-      "Server-side Error",
-      JSON.stringify(data),
-      "#ff0000"
+      env.SLACK_WEBHOOK,      // Webhook URL
+      "Server-side Error",    // Pretext (title)
+      JSON.stringify(data),   // Message text
+      "#ff0000"               // Color code of the message
     );
 }
 `;
@@ -74,7 +74,7 @@ const SCRIPT_PRINT_ENV = `// Print Environment Variables
 console.log(JSON.stringify(env));
 `
 
-const SCRIPT_INFLUXDB = `// Aggregate the HTTP Status Sodes and Push Them to InfluxDB Every Minute
+const SCRIPT_INFLUXDB = `// Aggregate the HTTP Status Codes and Push Them to InfluxDB Every Minute
 
 var statusCodes = {};
 
@@ -96,14 +96,47 @@ function pushStatusCodesToInfluxDB() {
     env.INFLUXDB_TOKEN,
     env.INFLUXDB_ORGANIZATION,
     env.INFLUXDB_BUCKET,
-    "Status Codes",
-    statusCodes
+    "Status Codes",               // Measurement
+    statusCodes                   // Payload
   );
 
   statusCodes = {};
 }
 
 jobs.schedule("push-status-codes-to-influxdb", "0 */1 * * * *", pushStatusCodesToInfluxDB);
+`
+
+const SCRIPT_ELASTIC = `// Aggregate the HTTP Status Codes and Push Them to Elastic Cloud Every Minute
+
+var statusCodes = {};
+
+function onItemCaptured(data) {
+  if (data.protocol.name !== "http") return;
+
+  if (statusCodes.hasOwnProperty(data.response.status)) {
+    statusCodes[data.response.status]++;
+  } else {
+    statusCodes[data.response.status] = 1;
+  }
+}
+
+function pushStatusCodesToElasticsearch() {
+  console.log("Status Codes:", JSON.stringify(statusCodes));
+
+  vendor.elastic(
+    "",                     // URL is ignored for Elastic Cloud
+    env.ELASTIC_INDEX,
+    statusCodes,            // Payload
+    "",                     // Username is ignored for Elastic Cloud
+    "",                     // Password is ignored for Elastic Cloud
+    env.ELASTIC_CLOUD_ID,
+    env.ELASTIC_API_KEY
+  );
+
+  statusCodes = {};
+}
+
+jobs.schedule("push-status-codes-to-elastic", "0 */1 * * * *", pushStatusCodesToElasticsearch);
 `
 
 const SCRIPT_S3 = `// Upload PCAP File of a Stream to an AWS S3 Bucket If Response Status Code is 500
@@ -232,6 +265,7 @@ const EXAMPLE_SCRIPTS = [
   SCRIPT_LOG_TOTAL_CAPTURED_PACKET_KB_PER_MIN,
   SCRIPT_MONITORING_PASS_HTTP,
   SCRIPT_INFLUXDB,
+  SCRIPT_ELASTIC,
   SCRIPT_S3,
   SCRIPT_S3_SNAPSHOT,
 ]
@@ -244,7 +278,8 @@ const EXAMPLE_SCRIPT_TITLES = [
   "Call a Webhook For Each Health Check",
   "Log Total Captured Packet and KB Every Minute",
   "Monitoring: Pass HTTP Traffic, Fail Anything Else",
-  "Aggregate the HTTP Status Sodes and Push Them to InfluxDB Every Minute",
+  "Aggregate the HTTP Status Codes and Push Them to InfluxDB Every Minute",
+  "Aggregate the HTTP Status Codes and Push Them to Elastic Cloud Every Minute",
   "Upload PCAP File of a Stream to an AWS S3 Bucket If Response Status Code is 500",
   "Upload a PCAP Snapshot to an AWS S3 Bucket If Response Status Code is 500",
 ]
@@ -261,6 +296,7 @@ export {
   SCRIPT_LOG_TOTAL_CAPTURED_PACKET_KB_PER_MIN,
   SCRIPT_MONITORING_PASS_HTTP,
   SCRIPT_INFLUXDB,
+  SCRIPT_ELASTIC,
   SCRIPT_S3,
   SCRIPT_S3_SNAPSHOT,
   EXAMPLE_SCRIPTS,
