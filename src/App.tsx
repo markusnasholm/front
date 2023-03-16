@@ -25,6 +25,8 @@ const App: React.FC = () => {
   const [licenseEdition, setLicenseEdition] = useState("community");
   const [licenseExpired, setLicenseExpired] = useState(false);
   const [licenseEnd, setLicenseEnd] = useState(new Date().getTime());
+  const [licenseCurrentNodeCount, setLicenseCurrentNodeCount] = useState(0);
+  const [licenseNodeLimit, setLicenseNodeLimit] = useState(0);
 
   const getLicense = () => {
     fetch(`${HubBaseUrl}/license`)
@@ -34,6 +36,8 @@ const App: React.FC = () => {
         setLicenseEdition(data.doc.edition);
         setLicenseExpired(data.expired);
         setLicenseEnd(data.doc.end);
+        setLicenseCurrentNodeCount(data.currentNodeCount);
+        setLicenseNodeLimit(data.doc.nodes);
       })
       .catch(err => {
         console.error(err);
@@ -51,6 +55,8 @@ const App: React.FC = () => {
             licenseEdition={licenseEdition}
             licenseExpired={licenseExpired}
             licenseEnd={licenseEnd}
+            licenseCurrentNodeCount={licenseCurrentNodeCount}
+            licenseNodeLimit={licenseNodeLimit}
           />
           <TrafficPage
             entries={entries}
