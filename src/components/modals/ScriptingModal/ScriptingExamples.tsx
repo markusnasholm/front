@@ -26,7 +26,7 @@ function onItemCaptured(data) {
 }
 `;
 
-const SCRIPT_SLACK = `// Report To a Slack Channel If HTTP Response Status Code is 500 Example
+const SCRIPT_SLACK = `// Report To a Slack Channel If HTTP Status Code is 500 Example
 
 function onItemCaptured(data) {
   // Check if it's an HTTP request and the response status is 500
@@ -85,10 +85,10 @@ function logPacketCountTotalBytes() {
 jobs.schedule("log-packet-count-total-bytes", "0 */1 * * * *", logPacketCountTotalBytes);
 `;
 
-const SCRIPT_MONITORING_PASS_HTTP = `// Monitoring: Pass HTTP Traffic, Fail Anything Else
+const SCRIPT_MONITORING_PASS_HTTP = `// Monitoring: Fail HTTP Status Code is 500, Pass Anything Else
 
 function onItemQueried(data) {
-  if (data.response.status === 500)
+  if (data.protocol.name === "http" && data.response.status === 500)
     return test.pass(data);
   else
     return test.fail(data);
@@ -165,10 +165,10 @@ function pushStatusCodesToElasticsearch() {
 jobs.schedule("push-status-codes-to-elastic", "0 */1 * * * *", pushStatusCodesToElasticsearch);
 `
 
-const SCRIPT_S3 = `// Upload PCAP File of a Stream to an AWS S3 Bucket If Response Status Code is 500
+const SCRIPT_S3 = `// Upload PCAP File of a Stream to an AWS S3 Bucket If HTTP Status Code is 500
 
 function onItemCaptured(data) {
-  if (data.response.status === 500) {
+  if (data.protocol.name === "http" && data.response.status === 500) {
     // Get PCAP file path of the TCP/UDP stream
     var pcapPath = pcap.path(data.stream);
 
@@ -206,10 +206,10 @@ function onItemCaptured(data) {
 }
 `;
 
-const SCRIPT_S3_SNAPSHOT = `// Upload a PCAP Snapshot to an AWS S3 Bucket If Response Status Code is 500
+const SCRIPT_S3_SNAPSHOT = `// Upload a PCAP Snapshot to an AWS S3 Bucket If HTTP Status Code is 500
 
 function onItemCaptured(data) {
-  if (data.response.status === 500) {
+  if (data.protocol.name === "http" && data.response.status === 500) {
     // Create a temporary directory
     var dir = file.mkdirTemp("snapshot");
 
@@ -286,14 +286,14 @@ const EXAMPLE_SCRIPT_TITLES = [
   "Empty",
   "Print Environment Variables",
   "Error Handling",
-  "Report To a Slack Channel If HTTP Response Status Code is 500",
+  "Report To a Slack Channel If HTTP Status Code is 500",
   "Call a Webhook For Each Health Check",
   "Log Total Captured Packet and KB Every Minute",
-  "Monitoring: Pass HTTP Traffic, Fail Anything Else",
+  "Monitoring: Fail HTTP Status Code is 500, Pass Anything Else",
   "Aggregate the HTTP Status Codes and Push Them to InfluxDB Every Minute",
   "Aggregate the HTTP Status Codes and Push Them to Elastic Cloud Every Minute",
-  "Upload PCAP File of a Stream to an AWS S3 Bucket If Response Status Code is 500",
-  "Upload a PCAP Snapshot to an AWS S3 Bucket If Response Status Code is 500",
+  "Upload PCAP File of a Stream to an AWS S3 Bucket If HTTP Status Code is 500",
+  "Upload a PCAP Snapshot to an AWS S3 Bucket If HTTP Status Code is 500",
 ]
 
 const DEFAULT_TITLE = "New Script"
