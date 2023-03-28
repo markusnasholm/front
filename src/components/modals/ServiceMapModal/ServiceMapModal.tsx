@@ -17,11 +17,11 @@ import variables from '../../../variables.module.scss';
 
 const modalStyle = {
   position: 'absolute',
-  top: '4%',
+  top: '2%',
   left: '50%',
   transform: 'translate(-50%, 0%)',
-  width: '92vw',
-  height: '92vh',
+  width: '96vw',
+  height: '96vh',
   bgcolor: '#F0F5FF',
   borderRadius: '5px',
   boxShadow: 24,
