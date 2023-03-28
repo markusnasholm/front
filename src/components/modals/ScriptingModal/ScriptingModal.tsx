@@ -173,7 +173,7 @@ function TabPanel(props: TabPanelProps) {
                 }}
               />
             </div>
-            <Typography>
+            <Typography noWrap={true}>
               Write your <Link href="https://262.ecma-international.org/5.1/" underline="hover" target="_blank"><b>JavaScript ES5</b></Link> code inside the hooks.&nbsp;
               <a className="kbc-button kbc-button-xs">Ctrl</a> + <a className="kbc-button kbc-button-xs">S</a> saves the script.&nbsp;
               <a className="kbc-button kbc-button-xs" onClick={() => { setFollow(false) }}>Left-Click</a> in the console stops auto-scroll.&nbsp;
@@ -326,7 +326,7 @@ export const ScriptingModal: React.FC<ScriptingModalProps> = ({ isOpen, onClose 
                   value={selected}
                   onChange={handleChange}
                   aria-label="Scripts"
-                  sx={{ borderRight: 1, borderColor: 'divider', minWidth: '300px' }}
+                  sx={{ borderRight: 1, borderColor: 'divider', width: '20%' }}
                 >
                   {
                     Object.keys(scriptMap).map(function(key) {
@@ -345,7 +345,7 @@ export const ScriptingModal: React.FC<ScriptingModalProps> = ({ isOpen, onClose 
                     Add script
                   </Button>
                 </Tabs>
-                <Grid container spacing={2} style={{ height: "100%", width: "100%", marginTop: "0px" }}>
+                <Grid container spacing={2} style={{ height: "100%", width: "80%", marginTop: "0px" }}>
                   <Grid item xs={12} style={{ height: "70%", overflow: "hidden", paddingTop: "0px" }}>
                     {
                       Object.keys(scriptMap).map(function(key: string, i: number) {
