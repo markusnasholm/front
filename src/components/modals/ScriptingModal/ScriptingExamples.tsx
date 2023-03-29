@@ -268,7 +268,7 @@ function onItemCaptured(data) {
 }
 `
 
-const SCRIPT_CHATGPT = `// Use ChatGPT to Detect Failed HTTP Requests
+const SCRIPT_CHATGPT = `// Use ChatGPT to Detect Health Checks
 
 function onItemCaptured(data) {
   if (data.protocol.name == "http") {
@@ -277,16 +277,17 @@ function onItemCaptured(data) {
     delete data.failed
 
     var payload = JSON.stringify(data);
+    var prompt = "Does this HTTP request-response pair contain a health check? " + payload;
 
     var response = chatgpt.prompt(
       env.OPENAI_API_KEY,
-      "Did the HTTP request failed in this HTTP request-response pair? " + payload
+      prompt.slice(0, 4097)
     );
-    console.log("ChatGPT:", response);
+    // console.log("Actual HTTP status:", data.response.status, "ChatGPT:", response);
 
     var score = chatgpt.sentiment(response);
-    if (score.pos > 0.4) {
-      console.log("ALERT! ChatGPT is detected a failed HTTP request:", response, "Payload:", payload);
+    if (score.pos > 0) {
+      console.log("ALERT! ChatGPT is detected a health check:", response, "Payload:", payload);
     }
   }
 }
@@ -319,7 +320,7 @@ const EXAMPLE_SCRIPT_TITLES = [
   "Aggregate the HTTP Status Codes and Push Them to Elastic Cloud Every Minute",
   "Upload PCAP File of a Stream to an AWS S3 Bucket If HTTP Status Code is 500",
   "Upload a PCAP Snapshot to an AWS S3 Bucket If HTTP Status Code is 500",
-  "Use ChatGPT to Detect Failed HTTP Requests",
+  "Use ChatGPT to Detect Health Checks",
 ]
 
 const DEFAULT_TITLE = "New Script"
