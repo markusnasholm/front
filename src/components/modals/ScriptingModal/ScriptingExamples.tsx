@@ -268,26 +268,25 @@ function onItemCaptured(data) {
 }
 `
 
-const SCRIPT_CHATGPT = `// Use ChatGPT to Detect Health Checks
+const SCRIPT_CHATGPT = `// Use ChatGPT to Detect Unprocessable HTTP Requests
 
 function onItemCaptured(data) {
   if (data.protocol.name == "http") {
-    // Delete internally used fields to not confuse ChatGPT
-    delete data.passed
-    delete data.failed
+    // Extract only the fields that we are interested in to not confuse ChatGPT
+    var fieldsOfInterest = { request: data.request, response: data.response }
 
-    var payload = JSON.stringify(data);
-    var prompt = "Does this HTTP request-response pair contain a health check? " + payload;
+    var payload = JSON.stringify(fieldsOfInterest);
+    var prompt = "Is the HTTP request unprocessable by the HTTP server in this HTTP request-response pair? " + payload;
 
     var response = chatgpt.prompt(
       env.OPENAI_API_KEY,
-      prompt.slice(0, 4097)
+      prompt.slice(0, 3000)   // Limit the prompt size to not exceed 4097 tokens limit
     );
     // console.log("Actual HTTP status:", data.response.status, "ChatGPT:", response);
 
     var score = chatgpt.sentiment(response);
     if (score.pos > 0) {
-      console.log("ALERT! ChatGPT is detected a health check:", response, "Payload:", payload);
+      console.log("ALERT! ChatGPT is detected an unprocessable request:", response, "Payload:", payload);
     }
   }
 }
@@ -320,7 +319,7 @@ const EXAMPLE_SCRIPT_TITLES = [
   "Aggregate the HTTP Status Codes and Push Them to Elastic Cloud Every Minute",
   "Upload PCAP File of a Stream to an AWS S3 Bucket If HTTP Status Code is 500",
   "Upload a PCAP Snapshot to an AWS S3 Bucket If HTTP Status Code is 500",
-  "Use ChatGPT to Detect Health Checks",
+  "Use ChatGPT to Detect Unprocessable HTTP Requests",
 ]
 
 const DEFAULT_TITLE = "New Script"
