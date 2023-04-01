@@ -56,14 +56,11 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({ entries, lastU
       let srcName = entry.src.name;
       if (srcName.length === 0) {
         srcName = entry.src.ip;
-      } else {
-        srcName = `${srcName}(${entry.src.ip})`
       }
+
       let dstName = entry.dst.name;
       if (dstName.length === 0) {
         dstName = entry.dst.ip;
-      } else {
-        dstName = `${dstName}(${entry.dst.ip})`
       }
 
       let srcId: number;
