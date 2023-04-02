@@ -9,9 +9,9 @@ interface Resolution {
   ip: string;
   port: string;
   name: string;
-  pod?: object;
-  endpoint?: object;
-  service?: object;
+  pod?: any;
+  endpoint?: any;
+  service?: any;
 }
 
 export interface Entry {

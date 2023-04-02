@@ -49,6 +49,14 @@ enum EdgeTypes {
   Size = "size",
 }
 
+enum NodeTypes {
+  Name = "name",
+  Namespace = "namespace",
+  Pod = "pod",
+  Endpoint = "endpoint",
+  Service = "service",
+}
+
 /**
  * Converts a long string of bytes into a readable format e.g KB, MB, GB, TB, YB
  *
@@ -66,7 +74,8 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({ entries, lastU
   const [graphOptions, setGraphOptions] = useState(ServiceMapOptions);
   const [lastEntriesLength, setLastEntriesLength] = useState(0);
 
-  const [edgeType, setEdgeType] = useState("");
+  const [edgeType, setEdgeType] = useState("count");
+  const [nodeType, setNodeType] = useState("name");
 
   useEffect(() => {
     if (entries.length === lastEntriesLength) {
@@ -81,11 +90,71 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({ entries, lastU
 
     entries.map(entry => {
       let srcName = entry.src.name;
+      let dstName = entry.dst.name;
+
+      switch (nodeType) {
+      case NodeTypes.Name:
+        srcName = entry.src.name;
+        break;
+      case NodeTypes.Namespace:
+        if (entry.src.pod) {
+          srcName = entry.src.pod.metadata.namespace;
+        } else if (entry.src.endpoint) {
+          srcName = entry.src.endpoint.metadata.namespace;
+        } else if (entry.src.service) {
+          srcName = entry.src.service.metadata.namespace;
+        }
+        break;
+      case NodeTypes.Pod:
+        if (entry.src.pod) {
+          srcName = `${entry.src.pod.metadata.name}.${entry.src.pod.metadata.namespace}`;
+        }
+        break;
+      case NodeTypes.Endpoint:
+        if (entry.src.endpoint) {
+          srcName = `${entry.src.endpoint.metadata.name}.${entry.src.endpoint.metadata.namespace}`;
+        }
+        break;
+      case NodeTypes.Service:
+        if (entry.src.service) {
+          srcName = `${entry.src.service.metadata.name}.${entry.src.service.metadata.namespace}`;
+        }
+        break;
+      }
+
+      switch (nodeType) {
+      case NodeTypes.Name:
+        dstName = entry.dst.name;
+        break;
+      case NodeTypes.Namespace:
+        if (entry.dst.pod) {
+          dstName = entry.dst.pod.metadata.namespace;
+        } else if (entry.dst.endpoint) {
+          dstName = entry.dst.endpoint.metadata.namespace;
+        } else if (entry.dst.service) {
+          dstName = entry.dst.service.metadata.namespace;
+        }
+        break;
+      case NodeTypes.Pod:
+        if (entry.dst.pod) {
+          dstName = `${entry.dst.pod.metadata.name}.${entry.dst.pod.metadata.namespace}`;
+        }
+        break;
+      case NodeTypes.Endpoint:
+        if (entry.dst.endpoint) {
+          dstName = `${entry.dst.endpoint.metadata.name}.${entry.dst.endpoint.metadata.namespace}`;
+        }
+        break;
+      case NodeTypes.Service:
+        if (entry.dst.service) {
+          dstName = `${entry.dst.service.metadata.name}.${entry.dst.service.metadata.namespace}`;
+        }
+        break;
+      }
+
       if (srcName.length === 0) {
         srcName = entry.src.ip;
       }
-
-      let dstName = entry.dst.name;
       if (dstName.length === 0) {
         dstName = entry.dst.ip;
       }
@@ -155,7 +224,6 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({ entries, lastU
   }, [entries, lastUpdated]);
 
   useEffect(() => {
-    setEdgeType(EdgeTypes.Count);
     if (graphData?.nodes?.length === 0) return;
     const options = { ...graphOptions };
     setGraphOptions(options);
@@ -163,6 +231,12 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({ entries, lastU
 
   const handleEdgeChange = (event: SelectChangeEvent) => {
     setEdgeType(event.target.value as string);
+    setLastEntriesLength(0);
+    setLastUpdated(Date.now());
+  };
+
+  const handleNodeChange = (event: SelectChangeEvent) => {
+    setNodeType(event.target.value as string);
     setLastEntriesLength(0);
     setLastUpdated(Date.now());
   };
@@ -213,6 +287,23 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({ entries, lastU
                     >
                       <MenuItem value={EdgeTypes.Count}>Number of Items</MenuItem>
                       <MenuItem value={EdgeTypes.Size}>Traffic Load</MenuItem>
+                    </Select>
+                  </FormControl>
+
+                  <FormControl fullWidth size="small" sx={{marginTop: "20px"}}>
+                    <InputLabel id="node-select-label">Node</InputLabel>
+                    <Select
+                      labelId="node-select-label"
+                      id="node-select"
+                      value={nodeType}
+                      label="Node"
+                      onChange={handleNodeChange}
+                    >
+                      <MenuItem value={NodeTypes.Name}>Resolved Name</MenuItem>
+                      <MenuItem value={NodeTypes.Namespace}>Resolved Namespace</MenuItem>
+                      <MenuItem value={NodeTypes.Pod}>Pod</MenuItem>
+                      <MenuItem value={NodeTypes.Endpoint}>Endpoint</MenuItem>
+                      <MenuItem value={NodeTypes.Service}>Service</MenuItem>
                     </Select>
                   </FormControl>
                 </CardContent>
