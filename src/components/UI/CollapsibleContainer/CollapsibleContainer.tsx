@@ -12,7 +12,7 @@ interface Props {
 }
 
 const CollapsibleContainer: React.FC<Props> = ({ title, children, expanded, titleClassName, className, stickyHeader = false }) => {
-  const classNames = `${styles.CollapsibleContainer} ${expanded ? `${styles.CollapsibleContainerExpanded}` : `${styles.CollapsibleContainerCollapsed}`} ${className ? className : ''}`;
+  const classNames = `${expanded ? `${styles.CollapsibleContainerExpanded}` : `${styles.CollapsibleContainerCollapsed}`} ${className ? className : ''}`;
 
   // This is needed to achieve the sticky header feature.
   // It is needed an un-contained component for the css to work properly.

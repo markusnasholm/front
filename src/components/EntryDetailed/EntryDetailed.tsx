@@ -163,6 +163,8 @@ export const EntryDetailed: React.FC = () => {
       />
       <EntryViewer
         representation={entryData.representation}
+        source={entryData.data.src}
+        destination={entryData.data.dst}
         color={entryData.protocol.backgroundColor}
       />
     </React.Fragment>}

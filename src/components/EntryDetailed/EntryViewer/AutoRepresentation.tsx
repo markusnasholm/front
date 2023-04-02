@@ -1,20 +1,24 @@
 import React, { useState, useCallback, useEffect, useMemo } from "react"
 import SectionsRepresentation from "./SectionsRepresentation";
+import Kubernetes, { Resolution } from "./Kubernetes";
 import styles from './EntryViewer.module.sass';
 import { Tabs } from "../../UI";
 
 export enum TabsEnum {
   Request = 0,
-  Response = 1
+  Response = 1,
+  Kubernetes = 2
 }
 
 interface AutoRepresentationProps {
   representation: string;
+  source: Resolution;
+  destination: Resolution;
   color: string;
   openedTab?: TabsEnum;
 }
 
-export const AutoRepresentation: React.FC<AutoRepresentationProps> = ({ representation, color, openedTab = TabsEnum.Request }) => {
+export const AutoRepresentation: React.FC<AutoRepresentationProps> = ({ representation, source, destination, color, openedTab = TabsEnum.Request }) => {
   const { request, response } = JSON.parse(representation);
 
   const TABS = useMemo(() => {
@@ -22,14 +26,16 @@ export const AutoRepresentation: React.FC<AutoRepresentationProps> = ({ represen
       {
         tab: 'Request',
         badge: null
-      }]
-
-    if (response && response.length > 0) {
-      arr.push({
+      },
+      {
         tab: 'Response',
         badge: null
-      });
-    }
+      },
+      {
+        tab: 'Kubernetes',
+        badge: null
+      }
+    ]
 
     return arr
   }, [response]);
@@ -63,6 +69,10 @@ export const AutoRepresentation: React.FC<AutoRepresentationProps> = ({ represen
       {response && response.length > 0 && getOpenedTabIndex() === TabsEnum.Response && <React.Fragment>
         <SectionsRepresentation data={response} color={color} />
       </React.Fragment>}
+      {getOpenedTabIndex() === TabsEnum.Kubernetes && <React.Fragment>
+        <Kubernetes source={source} destination={destination} color={color} />
+      </React.Fragment>}
+      <div style={{height: "50px"}}></div>
     </div>}
   </div>;
 }
