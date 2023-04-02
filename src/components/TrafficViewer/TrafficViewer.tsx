@@ -49,7 +49,7 @@ interface TrafficViewerProps {
   actionButtons?: JSX.Element,
 }
 
-const DEFAULT_QUERY = window.__RUNTIME_CONFIG__.REACT_APP_DEFAULT_FILTER ? window.__RUNTIME_CONFIG__.REACT_APP_DEFAULT_FILTER.trim() : "timestamp >= now()" ;
+const DEFAULT_QUERY = window.__RUNTIME_CONFIG__.REACT_APP_DEFAULT_FILTER ? window.__RUNTIME_CONFIG__.REACT_APP_DEFAULT_FILTER.trim() : "" ;
 
 export const TrafficViewer: React.FC<TrafficViewerProps> = ({ entries, setEntries, setLastUpdated, getLicense, actionButtons }) => {
 
