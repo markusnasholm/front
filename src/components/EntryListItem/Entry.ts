@@ -5,10 +5,13 @@ export interface Node {
   name: string;
 }
 
-interface TCPInterface {
+interface Resolution {
   ip: string;
   port: string;
   name: string;
+  pod?: object;
+  endpoint?: object;
+  service?: object;
 }
 
 export interface Entry {
@@ -26,10 +29,11 @@ export interface Entry {
   status?: number;
   statusQuery?: string;
   timestamp: Date;
-  src: TCPInterface;
-  dst: TCPInterface;
+  src: Resolution;
+  dst: Resolution;
   outgoing: boolean;
   elapsedTime: number;
   passed: boolean;
   failed: boolean;
+  size: number;
 }

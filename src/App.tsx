@@ -67,6 +67,7 @@ const App: React.FC = () => {
           {serviceMapModalOpen && <ServiceMapModal
             entries={entries}
             lastUpdated={lastUpdated}
+            setLastUpdated={setLastUpdated}
             isOpen={serviceMapModalOpen}
             onClose={() => setServiceMapModalOpen(false)}
           />}

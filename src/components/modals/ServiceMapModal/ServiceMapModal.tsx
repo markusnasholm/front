@@ -6,7 +6,14 @@ import {
   Backdrop,
   Grid,
   IconButton,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  Card,
+  CardContent,
 } from "@mui/material";
+import { SelectChangeEvent } from '@mui/material/Select';
 import Graph from "react-graph-vis";
 import CloseIcon from '@mui/icons-material/Close';
 import styles from './ServiceMapModal.module.sass'
@@ -32,14 +39,34 @@ const modalStyle = {
 interface ServiceMapModalProps {
   entries: Entry[];
   lastUpdated: number;
+  setLastUpdated: React.Dispatch<React.SetStateAction<number>>;
   isOpen: boolean;
   onClose: () => void;
 }
 
-export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({ entries, lastUpdated, isOpen, onClose }) => {
+enum EdgeTypes {
+  Count = "count",
+  Size = "size",
+}
+
+/**
+ * Converts a long string of bytes into a readable format e.g KB, MB, GB, TB, YB
+ *
+ * @param {Int} num The number of bytes.
+ */
+function humanReadableBytes(bytes): string {
+  const i = Math.floor(Math.log(bytes) / Math.log(1024));
+  const sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
+  const result = (bytes / Math.pow(1024, i)).toFixed(2);
+  return result + ' ' + sizes[i];
+}
+
+export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({ entries, lastUpdated, setLastUpdated, isOpen, onClose }) => {
   const [graphData, setGraphData] = useState<GraphData>({ nodes: [], edges: [] });
   const [graphOptions, setGraphOptions] = useState(ServiceMapOptions);
   const [lastEntriesLength, setLastEntriesLength] = useState(0);
+
+  const [edgeType, setEdgeType] = useState("");
 
   useEffect(() => {
     if (entries.length === lastEntriesLength) {
@@ -96,19 +123,28 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({ entries, lastU
       let edge: Edge;
       if (edgeKey in edgeMap) {
         edge = edgeMap[edgeKey];
-        edgeMap[edgeKey].value++;
-        edgeMap[edgeKey].label = `${edgeMap[edgeKey].value}`;
       } else {
         edge = {
           from: srcId,
           to: dstId,
-          value: 1,
-          label: "1",
+          value: 0,
+          label: "",
           title: entry.proto.longName,
           color: entry.proto.backgroundColor,
         }
         edgeMap[edgeKey] = edge;
         edges.push(edge);
+      }
+
+      switch (edgeType) {
+      case EdgeTypes.Count:
+        edgeMap[edgeKey].value++;
+        edgeMap[edgeKey].label = `${edgeMap[edgeKey].value}`;
+        break;
+      case EdgeTypes.Size:
+        edgeMap[edgeKey].value += entry.size;
+        edgeMap[edgeKey].label = humanReadableBytes(edgeMap[edgeKey].value);
+        break;
       }
     });
 
@@ -119,10 +155,17 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({ entries, lastU
   }, [entries, lastUpdated]);
 
   useEffect(() => {
+    setEdgeType(EdgeTypes.Count);
     if (graphData?.nodes?.length === 0) return;
     const options = { ...graphOptions };
     setGraphOptions(options);
   }, [graphData?.nodes?.length]);
+
+  const handleEdgeChange = (event: SelectChangeEvent) => {
+    setEdgeType(event.target.value as string);
+    setLastEntriesLength(0);
+    setLastUpdated(Date.now());
+  };
 
   return (
     <Modal
@@ -157,6 +200,24 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({ entries, lastU
             <div style={{ display: "flex", justifyContent: "space-between" }}>
             </div>
             <div style={{ height: "100%", width: "100%" }}>
+              <Card sx={{ maxWidth: "20%" }}>
+                <CardContent>
+                  <FormControl fullWidth size="small">
+                    <InputLabel id="edge-select-label">Edge</InputLabel>
+                    <Select
+                      labelId="edge-select-label"
+                      id="edge-select"
+                      value={edgeType}
+                      label="Edge"
+                      onChange={handleEdgeChange}
+                    >
+                      <MenuItem value={EdgeTypes.Count}>Number of Items</MenuItem>
+                      <MenuItem value={EdgeTypes.Size}>Traffic Load</MenuItem>
+                    </Select>
+                  </FormControl>
+                </CardContent>
+              </Card>
+
               <Graph
                 graph={graphData}
                 options={graphOptions}
