@@ -51,10 +51,10 @@ interface ServiceMapModalProps {
 }
 
 enum EdgeTypes {
-  Count = "count",
   Size = "size",
   SizeRequest = "size_request",
   SizeResponse = "size_response",
+  Count = "count",
 }
 
 enum NodeTypes {
@@ -82,7 +82,7 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({ entries, lastU
   const [graphOptions, setGraphOptions] = useState(ServiceMapOptions);
   const [lastEntriesLength, setLastEntriesLength] = useState(0);
 
-  const [edgeType, setEdgeType] = useState("count");
+  const [edgeType, setEdgeType] = useState("size");
   const [nodeType, setNodeType] = useState("name");
 
   const [legendData, setLegendData] = useState<LegendData>({});
@@ -114,25 +114,23 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({ entries, lastU
       let srcVerb = "";
       let dstVerb = "";
 
-      if (entry.src.pod) {
-        srcVerb = NodeTypes.Pod;
-      } else if (entry.src.endpoint) {
-        srcVerb = NodeTypes.Endpoints;
-      } else if (entry.src.service) {
-        srcVerb = NodeTypes.Service;
-      }
-
-      if (entry.dst.pod) {
-        dstVerb = NodeTypes.Pod;
-      } else if (entry.dst.endpoint) {
-        dstVerb = NodeTypes.Endpoints;
-      } else if (entry.dst.service) {
-        dstVerb = NodeTypes.Service;
-      }
-
       switch (nodeType) {
       case NodeTypes.Name:
         srcLabel = entry.src.name;
+
+        if (entry.src.pod) {
+          srcVerb = NodeTypes.Pod;
+          srcName = entry.src.pod.metadata.name;
+          srcNamespace = entry.src.pod.metadata.namespace;
+        } else if (entry.src.endpoint) {
+          srcVerb = NodeTypes.Endpoints;
+          srcName = entry.src.endpoint.metadata.name;
+          srcNamespace = entry.src.endpoint.metadata.namespace;
+        } else if (entry.src.service) {
+          srcVerb = NodeTypes.Service;
+          srcName = entry.src.service.metadata.name;
+          srcNamespace = entry.src.service.metadata.namespace;
+        }
         break;
       case NodeTypes.Namespace:
         if (entry.src.pod) {
@@ -144,6 +142,7 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({ entries, lastU
         }
 
         srcVerb = NodeTypes.Namespace;
+        srcName = srcLabel;
         break;
       case NodeTypes.Pod:
         if (entry.src.pod) {
@@ -151,6 +150,8 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({ entries, lastU
           srcName = entry.src.pod.metadata.name;
           srcNamespace = entry.src.pod.metadata.namespace;
         }
+
+        srcVerb = NodeTypes.Pod;
         break;
       case NodeTypes.Endpoints:
         if (entry.src.endpoint) {
@@ -158,6 +159,8 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({ entries, lastU
           srcName = entry.src.endpoint.metadata.name;
           srcNamespace = entry.src.endpoint.metadata.namespace;
         }
+
+        srcVerb = NodeTypes.Endpoints;
         break;
       case NodeTypes.Service:
         if (entry.src.service) {
@@ -165,12 +168,28 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({ entries, lastU
           srcName = entry.src.service.metadata.name;
           srcNamespace = entry.src.service.metadata.namespace;
         }
+
+        srcVerb = NodeTypes.Service;
         break;
       }
 
       switch (nodeType) {
       case NodeTypes.Name:
         dstLabel = entry.dst.name;
+
+        if (entry.dst.pod) {
+          dstVerb = NodeTypes.Pod;
+          dstName = entry.dst.pod.metadata.name;
+          dstNamespace = entry.dst.pod.metadata.namespace;
+        } else if (entry.dst.endpoint) {
+          dstVerb = NodeTypes.Endpoints;
+          dstName = entry.dst.endpoint.metadata.name;
+          dstNamespace = entry.dst.endpoint.metadata.namespace;
+        } else if (entry.dst.service) {
+          dstVerb = NodeTypes.Service;
+          dstName = entry.dst.service.metadata.name;
+          dstNamespace = entry.dst.service.metadata.namespace;
+        }
         break;
       case NodeTypes.Namespace:
         if (entry.dst.pod) {
@@ -182,6 +201,7 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({ entries, lastU
         }
 
         dstVerb = NodeTypes.Namespace;
+        dstName = dstLabel;
         break;
       case NodeTypes.Pod:
         if (entry.dst.pod) {
@@ -189,6 +209,8 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({ entries, lastU
           dstName = entry.dst.pod.metadata.name;
           dstNamespace = entry.dst.pod.metadata.namespace;
         }
+
+        dstVerb = NodeTypes.Pod;
         break;
       case NodeTypes.Endpoints:
         if (entry.dst.endpoint) {
@@ -196,6 +218,8 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({ entries, lastU
           dstName = entry.dst.endpoint.metadata.name;
           dstNamespace = entry.dst.endpoint.metadata.namespace;
         }
+
+        dstVerb = NodeTypes.Endpoints;
         break;
       case NodeTypes.Service:
         if (entry.dst.service) {
@@ -203,6 +227,8 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({ entries, lastU
           dstName = entry.dst.service.metadata.name;
           dstNamespace = entry.dst.service.metadata.namespace;
         }
+
+        dstVerb = NodeTypes.Service;
         break;
       }
 
@@ -300,12 +326,14 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({ entries, lastU
   }, [graphData?.nodes?.length]);
 
   const handleEdgeChange = (event: SelectChangeEvent) => {
+    setSelectedEdges([]);
     setEdgeType(event.target.value as string);
     setLastEntriesLength(0);
     setLastUpdated(Date.now());
   };
 
   const handleNodeChange = (event: SelectChangeEvent) => {
+    setSelectedNodes([]);
     setNodeType(event.target.value as string);
     setLastEntriesLength(0);
     setLastUpdated(Date.now());
@@ -362,10 +390,10 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({ entries, lastU
                       label="Edge"
                       onChange={handleEdgeChange}
                     >
-                      <MenuItem value={EdgeTypes.Count}>Number of Items</MenuItem>
                       <MenuItem value={EdgeTypes.Size}>Traffic Load</MenuItem>
                       <MenuItem value={EdgeTypes.SizeRequest}>Traffic Load (requests only)</MenuItem>
                       <MenuItem value={EdgeTypes.SizeResponse}>Traffic Load (responses only)</MenuItem>
+                      <MenuItem value={EdgeTypes.Count}>Number of Items</MenuItem>
                     </Select>
                   </FormControl>
 
@@ -419,17 +447,22 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({ entries, lastU
                 </CardContent>
               </Card>}
 
-              <Card sx={{ maxWidth: "30%", position: "absolute", left: "45%", bottom: "10px", zIndex: 1 }}>
+              <Card sx={{ maxWidth: "30%", position: "absolute", left: "50%", transform: "translate(-50%, 0%)", bottom: "10px", zIndex: 1 }}>
                 <CardContent>
                   {selectedNodes.length === 0 && "Select a node to display its kubectl command."}
                   {
                     selectedNodes.length > 0 && selectedNodes.map(id => {
                       const node = graphData.nodes[id];
-                      return <SyntaxHighlighter
-                        showLineNumbers={false}
-                        code={`kubectl describe ${node.verb} ${node.name} -n ${node.namespace}`}
-                        language="python"
-                      />
+                      let namespaceFlag = "";
+                      if (node.verb !== NodeTypes.Namespace) namespaceFlag = "-n";
+                      if (node.name.length)
+                        return <SyntaxHighlighter
+                          showLineNumbers={false}
+                          code={`kubectl describe ${node.verb} ${node.name} ${namespaceFlag} ${node.namespace}`}
+                          language="bash"
+                        />
+                      else
+                        return <></>
                     })
                   }
                 </CardContent>

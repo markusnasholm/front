@@ -12,6 +12,7 @@ import wasm from 'highlight.js/lib/languages/wasm'
 import handlebars from 'highlight.js/lib/languages/handlebars'
 import yaml from 'highlight.js/lib/languages/yaml'
 import python from 'highlight.js/lib/languages/python'
+import bash from 'highlight.js/lib/languages/bash'
 
 Lowlight.registerLanguage('python', python);
 Lowlight.registerLanguage('xml', xml);
@@ -22,6 +23,7 @@ Lowlight.registerLanguage('javascript', javascript);
 Lowlight.registerLanguage('actionscript', actionscript);
 Lowlight.registerLanguage('wasm', wasm);
 Lowlight.registerLanguage('handlebars', handlebars);
+Lowlight.registerLanguage('bash', bash);
 
 interface Props {
   code: string;
