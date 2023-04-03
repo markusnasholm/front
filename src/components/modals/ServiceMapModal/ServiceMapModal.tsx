@@ -12,12 +12,17 @@ import {
   MenuItem,
   Card,
   CardContent,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
 } from "@mui/material";
 import { SelectChangeEvent } from '@mui/material/Select';
 import Graph from "react-graph-vis";
 import CloseIcon from '@mui/icons-material/Close';
+import RectangleIcon from '@mui/icons-material/Rectangle';
 import styles from './ServiceMapModal.module.sass'
-import { GraphData, Node, Edge } from "./ServiceMapModalTypes"
+import { GraphData, Node, Edge, LegendData } from "./ServiceMapModalTypes"
 import ServiceMapOptions from './ServiceMapOptions'
 import { Entry } from "../../EntryListItem/Entry";
 import variables from '../../../variables.module.scss';
@@ -77,6 +82,8 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({ entries, lastU
   const [edgeType, setEdgeType] = useState("count");
   const [nodeType, setNodeType] = useState("name");
 
+  const [legendData, setLegendData] = useState<LegendData>({});
+
   useEffect(() => {
     if (entries.length === lastEntriesLength) {
       return;
@@ -87,8 +94,10 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({ entries, lastU
     const edgeMap = {};
     const nodes: Node[] = [];
     const edges: Edge[] = [];
+    const legendMap = {};
 
     entries.map(entry => {
+      legendMap[entry.proto.name] = entry.proto;
       let srcName = entry.src.name;
       let dstName = entry.dst.name;
 
@@ -220,7 +229,8 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({ entries, lastU
     setGraphData({
       nodes: nodes,
       edges: edges,
-    })
+    });
+    setLegendData(legendMap);
   }, [entries, lastUpdated]);
 
   useEffect(() => {
@@ -274,10 +284,10 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({ entries, lastU
             <div style={{ display: "flex", justifyContent: "space-between" }}>
             </div>
             <div style={{ height: "100%", width: "100%" }}>
-              <Card sx={{ maxWidth: "20%" }}>
+              <Card sx={{ maxWidth: "20%", position: "absolute", zIndex: 1 }}>
                 <CardContent>
                   <FormControl fullWidth size="small">
-                    <InputLabel id="edge-select-label">Edge</InputLabel>
+                    <InputLabel id="edge-select-label">Edges</InputLabel>
                     <Select
                       labelId="edge-select-label"
                       id="edge-select"
@@ -291,7 +301,7 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({ entries, lastU
                   </FormControl>
 
                   <FormControl fullWidth size="small" sx={{marginTop: "20px"}}>
-                    <InputLabel id="node-select-label">Node</InputLabel>
+                    <InputLabel id="node-select-label">Nodes</InputLabel>
                     <Select
                       labelId="node-select-label"
                       id="node-select"
@@ -308,6 +318,37 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({ entries, lastU
                   </FormControl>
                 </CardContent>
               </Card>
+
+              {Object.keys(legendData).length && <Card sx={{ maxWidth: "30%", position: "absolute", bottom: "10px", zIndex: 1 }}>
+                <CardContent>
+                  <List dense disablePadding>
+                    {
+                      Object.keys(legendData).map(function(key) {
+                        const proto = legendData[key];
+                        const primaryStyle = {
+                          color: proto.backgroundColor,
+                          fontWeight: "bold",
+                        };
+                        const secondaryStyle = {
+                          color: proto.backgroundColor,
+                        };
+
+                        return <ListItem disableGutters disablePadding>
+                          <ListItemIcon sx={{ minWidth: "36px" }}>
+                            <RectangleIcon sx={{ color: proto.backgroundColor }} />
+                          </ListItemIcon>
+                          <ListItemText
+                            primary={proto.abbr}
+                            secondary={proto.longName}
+                            primaryTypographyProps={{ style: primaryStyle }}
+                            secondaryTypographyProps={{ style: secondaryStyle }}
+                          />
+                        </ListItem>
+                      })
+                    }
+                  </List>
+                </CardContent>
+              </Card>}
 
               <Graph
                 graph={graphData}
