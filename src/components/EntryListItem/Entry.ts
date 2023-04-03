@@ -32,8 +32,10 @@ export interface Entry {
   src: Resolution;
   dst: Resolution;
   outgoing: boolean;
+  requestSize: number;
+  responseSize: number;
+  size: number;
   elapsedTime: number;
   passed: boolean;
   failed: boolean;
-  size: number;
 }

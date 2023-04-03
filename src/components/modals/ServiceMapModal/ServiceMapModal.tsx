@@ -53,6 +53,8 @@ interface ServiceMapModalProps {
 enum EdgeTypes {
   Count = "count",
   Size = "size",
+  SizeRequest = "size_request",
+  SizeResponse = "size_response",
 }
 
 enum NodeTypes {
@@ -273,6 +275,14 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({ entries, lastU
         edgeMap[edgeKey].value += entry.size;
         edgeMap[edgeKey].label = humanReadableBytes(edgeMap[edgeKey].value);
         break;
+      case EdgeTypes.SizeRequest:
+        edgeMap[edgeKey].value += entry.requestSize;
+        edgeMap[edgeKey].label = humanReadableBytes(edgeMap[edgeKey].value);
+        break;
+      case EdgeTypes.SizeResponse:
+        edgeMap[edgeKey].value += entry.responseSize;
+        edgeMap[edgeKey].label = humanReadableBytes(edgeMap[edgeKey].value);
+        break;
       }
     });
 
@@ -354,6 +364,8 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({ entries, lastU
                     >
                       <MenuItem value={EdgeTypes.Count}>Number of Items</MenuItem>
                       <MenuItem value={EdgeTypes.Size}>Traffic Load</MenuItem>
+                      <MenuItem value={EdgeTypes.SizeRequest}>Traffic Load (requests only)</MenuItem>
+                      <MenuItem value={EdgeTypes.SizeResponse}>Traffic Load (responses only)</MenuItem>
                     </Select>
                   </FormControl>
 
