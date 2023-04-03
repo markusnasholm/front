@@ -11,9 +11,13 @@ export interface Node {
   label: string;
   title?: string;
   color?: string;
+  name?: string;
+  namespace?: string;
+  verb?: string;
 }
 
 export interface Edge {
+  id: number;
   from: number;
   to: number;
   value: number;

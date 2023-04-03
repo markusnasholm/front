@@ -26,6 +26,7 @@ import { GraphData, Node, Edge, LegendData } from "./ServiceMapModalTypes"
 import ServiceMapOptions from './ServiceMapOptions'
 import { Entry } from "../../EntryListItem/Entry";
 import variables from '../../../variables.module.scss';
+import { SyntaxHighlighter } from "../../UI/SyntaxHighlighter";
 
 const modalStyle = {
   position: 'absolute',
@@ -58,7 +59,7 @@ enum NodeTypes {
   Name = "name",
   Namespace = "namespace",
   Pod = "pod",
-  Endpoint = "endpoint",
+  Endpoints = "endpoints",
   Service = "service",
 }
 
@@ -84,6 +85,9 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({ entries, lastU
 
   const [legendData, setLegendData] = useState<LegendData>({});
 
+  const [selectedEdges, setSelectedEdges] = useState([]);
+  const [selectedNodes, setSelectedNodes] = useState([]);
+
   useEffect(() => {
     if (entries.length === lastEntriesLength) {
       return;
@@ -98,93 +102,138 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({ entries, lastU
 
     entries.map(entry => {
       legendMap[entry.proto.name] = entry.proto;
-      let srcName = entry.src.name;
-      let dstName = entry.dst.name;
+      let srcLabel = entry.src.name;
+      let dstLabel = entry.dst.name;
+
+      let srcName = "";
+      let dstName = "";
+      let srcNamespace = "";
+      let dstNamespace = "";
+      let srcVerb = "";
+      let dstVerb = "";
+
+      if (entry.src.pod) {
+        srcVerb = NodeTypes.Pod;
+      } else if (entry.src.endpoint) {
+        srcVerb = NodeTypes.Endpoints;
+      } else if (entry.src.service) {
+        srcVerb = NodeTypes.Service;
+      }
+
+      if (entry.dst.pod) {
+        dstVerb = NodeTypes.Pod;
+      } else if (entry.dst.endpoint) {
+        dstVerb = NodeTypes.Endpoints;
+      } else if (entry.dst.service) {
+        dstVerb = NodeTypes.Service;
+      }
 
       switch (nodeType) {
       case NodeTypes.Name:
-        srcName = entry.src.name;
+        srcLabel = entry.src.name;
         break;
       case NodeTypes.Namespace:
         if (entry.src.pod) {
-          srcName = entry.src.pod.metadata.namespace;
+          srcLabel = entry.src.pod.metadata.namespace;
         } else if (entry.src.endpoint) {
-          srcName = entry.src.endpoint.metadata.namespace;
+          srcLabel = entry.src.endpoint.metadata.namespace;
         } else if (entry.src.service) {
-          srcName = entry.src.service.metadata.namespace;
+          srcLabel = entry.src.service.metadata.namespace;
         }
+
+        srcVerb = NodeTypes.Namespace;
         break;
       case NodeTypes.Pod:
         if (entry.src.pod) {
-          srcName = `${entry.src.pod.metadata.name}.${entry.src.pod.metadata.namespace}`;
+          srcLabel = `${entry.src.pod.metadata.name}.${entry.src.pod.metadata.namespace}`;
+          srcName = entry.src.pod.metadata.name;
+          srcNamespace = entry.src.pod.metadata.namespace;
         }
         break;
-      case NodeTypes.Endpoint:
+      case NodeTypes.Endpoints:
         if (entry.src.endpoint) {
-          srcName = `${entry.src.endpoint.metadata.name}.${entry.src.endpoint.metadata.namespace}`;
+          srcLabel = `${entry.src.endpoint.metadata.name}.${entry.src.endpoint.metadata.namespace}`;
+          srcName = entry.src.endpoint.metadata.name;
+          srcNamespace = entry.src.endpoint.metadata.namespace;
         }
         break;
       case NodeTypes.Service:
         if (entry.src.service) {
-          srcName = `${entry.src.service.metadata.name}.${entry.src.service.metadata.namespace}`;
+          srcLabel = `${entry.src.service.metadata.name}.${entry.src.service.metadata.namespace}`;
+          srcName = entry.src.service.metadata.name;
+          srcNamespace = entry.src.service.metadata.namespace;
         }
         break;
       }
 
       switch (nodeType) {
       case NodeTypes.Name:
-        dstName = entry.dst.name;
+        dstLabel = entry.dst.name;
         break;
       case NodeTypes.Namespace:
         if (entry.dst.pod) {
-          dstName = entry.dst.pod.metadata.namespace;
+          dstLabel = entry.dst.pod.metadata.namespace;
         } else if (entry.dst.endpoint) {
-          dstName = entry.dst.endpoint.metadata.namespace;
+          dstLabel = entry.dst.endpoint.metadata.namespace;
         } else if (entry.dst.service) {
-          dstName = entry.dst.service.metadata.namespace;
+          dstLabel = entry.dst.service.metadata.namespace;
         }
+
+        dstVerb = NodeTypes.Namespace;
         break;
       case NodeTypes.Pod:
         if (entry.dst.pod) {
-          dstName = `${entry.dst.pod.metadata.name}.${entry.dst.pod.metadata.namespace}`;
+          dstLabel = `${entry.dst.pod.metadata.name}.${entry.dst.pod.metadata.namespace}`;
+          dstName = entry.dst.pod.metadata.name;
+          dstNamespace = entry.dst.pod.metadata.namespace;
         }
         break;
-      case NodeTypes.Endpoint:
+      case NodeTypes.Endpoints:
         if (entry.dst.endpoint) {
-          dstName = `${entry.dst.endpoint.metadata.name}.${entry.dst.endpoint.metadata.namespace}`;
+          dstLabel = `${entry.dst.endpoint.metadata.name}.${entry.dst.endpoint.metadata.namespace}`;
+          dstName = entry.dst.endpoint.metadata.name;
+          dstNamespace = entry.dst.endpoint.metadata.namespace;
         }
         break;
       case NodeTypes.Service:
         if (entry.dst.service) {
-          dstName = `${entry.dst.service.metadata.name}.${entry.dst.service.metadata.namespace}`;
+          dstLabel = `${entry.dst.service.metadata.name}.${entry.dst.service.metadata.namespace}`;
+          dstName = entry.dst.service.metadata.name;
+          dstNamespace = entry.dst.service.metadata.namespace;
         }
         break;
       }
 
-      if (srcName.length === 0) {
-        srcName = entry.src.ip;
+      if (srcLabel.length === 0) {
+        srcLabel = entry.src.ip;
       }
-      if (dstName.length === 0) {
-        dstName = entry.dst.ip;
+      if (dstLabel.length === 0) {
+        dstLabel = entry.dst.ip;
       }
 
       let srcId: number;
       let dstId: number;
 
+      const labelArr: string[] = [srcLabel, dstLabel];
       const nameArr: string[] = [srcName, dstName];
-      for (let i = 0; i < nameArr.length; i++) {
-        const nodeKey: string = nameArr[i];
+      const namespaceArr: string[] = [srcNamespace, dstNamespace];
+      const verbArr: string[] = [srcVerb, dstVerb];
+      for (let i = 0; i < labelArr.length; i++) {
+        const nodeKey: string = labelArr[i];
         let node: Node;
         if (nodeKey in nodeMap) {
           node = nodeMap[nodeKey]
           nodeMap[nodeKey].value++;
         } else {
           node = {
-            id: Object.keys(nodeMap).length,
+            id: nodes.length,
             value: 1,
             label: nodeKey,
             title: nodeKey,
             color: variables.lightBlueColor,
+            name: nameArr[i],
+            namespace: namespaceArr[i],
+            verb: verbArr[i],
           };
           nodeMap[nodeKey] = node;
           nodes.push(node);
@@ -203,6 +252,7 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({ entries, lastU
         edge = edgeMap[edgeKey];
       } else {
         edge = {
+          id: edges.length,
           from: srcId,
           to: dstId,
           value: 0,
@@ -250,6 +300,13 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({ entries, lastU
     setLastEntriesLength(0);
     setLastUpdated(Date.now());
   };
+
+  const events = {
+    select: ({ nodes, edges }) => {
+      setSelectedEdges(edges);
+      setSelectedNodes(nodes);
+    }
+  }
 
   return (
     <Modal
@@ -310,10 +367,10 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({ entries, lastU
                       onChange={handleNodeChange}
                     >
                       <MenuItem value={NodeTypes.Name}>Resolved Name</MenuItem>
-                      <MenuItem value={NodeTypes.Namespace}>Resolved Namespace</MenuItem>
-                      <MenuItem value={NodeTypes.Pod}>Pod</MenuItem>
-                      <MenuItem value={NodeTypes.Endpoint}>Endpoint</MenuItem>
-                      <MenuItem value={NodeTypes.Service}>Service</MenuItem>
+                      <MenuItem value={NodeTypes.Namespace}>Kubernetes Namespace</MenuItem>
+                      <MenuItem value={NodeTypes.Pod}>Kubernetes Pod</MenuItem>
+                      <MenuItem value={NodeTypes.Endpoints}>Kubernetes Endpoints</MenuItem>
+                      <MenuItem value={NodeTypes.Service}>Kubernetes Service</MenuItem>
                     </Select>
                   </FormControl>
                 </CardContent>
@@ -350,9 +407,26 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({ entries, lastU
                 </CardContent>
               </Card>}
 
+              <Card sx={{ maxWidth: "30%", position: "absolute", left: "45%", bottom: "10px", zIndex: 1 }}>
+                <CardContent>
+                  {selectedNodes.length === 0 && "Select a node to display its kubectl command."}
+                  {
+                    selectedNodes.length > 0 && selectedNodes.map(id => {
+                      const node = graphData.nodes[id];
+                      return <SyntaxHighlighter
+                        showLineNumbers={false}
+                        code={`kubectl describe ${node.verb} ${node.name} -n ${node.namespace}`}
+                        language="python"
+                      />
+                    })
+                  }
+                </CardContent>
+              </Card>
+
               <Graph
                 graph={graphData}
                 options={graphOptions}
+                events={events}
               />
             </div>
           </div>
