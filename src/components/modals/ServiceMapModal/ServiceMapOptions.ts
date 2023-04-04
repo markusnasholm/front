@@ -78,6 +78,10 @@ const ServiceMapOptions = {
     shadow: true,
   },
   autoResize: true,
+  interaction:{
+    hover: true,
+    multiselect: true,
+  },
 };
 
 export default ServiceMapOptions
