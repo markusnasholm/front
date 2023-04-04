@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Box,
   Fade,
@@ -18,7 +18,6 @@ import {
   ListItemText,
 } from "@mui/material";
 import { SelectChangeEvent } from '@mui/material/Select';
-import Graph from "react-graph-vis";
 import CloseIcon from '@mui/icons-material/Close';
 import RectangleIcon from '@mui/icons-material/Rectangle';
 import styles from './ServiceMapModal.module.sass'
@@ -27,6 +26,7 @@ import ServiceMapOptions from './ServiceMapOptions'
 import { Entry } from "../../EntryListItem/Entry";
 import variables from '../../../variables.module.scss';
 import { SyntaxHighlighter } from "../../UI/SyntaxHighlighter";
+import ForceGraph from "./ForceGraph";
 
 const modalStyle = {
   position: 'absolute',
@@ -357,6 +357,8 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
     }
   }
 
+  const modalRef = useRef(null);
+
   return (
     <Modal
       aria-labelledby="transition-modal-title"
@@ -366,7 +368,7 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
       BackdropComponent={Backdrop}
       BackdropProps={{ timeout: 500 }}>
       <Fade in={isOpen}>
-        <Box sx={modalStyle}>
+        <Box ref={modalRef} sx={modalStyle}>
           <div className={styles.headerContainer}>
             <Grid container spacing={2}>
               <Grid item xs={11}>
@@ -479,10 +481,11 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
                 </CardContent>
               </Card>
 
-              <Graph
+              <ForceGraph
                 graph={graphData}
                 options={graphOptions}
                 events={events}
+                modalRef={modalRef}
               />
             </div>
           </div>
