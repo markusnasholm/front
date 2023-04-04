@@ -42,14 +42,6 @@ const modalStyle = {
   padding: "1px 1px"
 };
 
-interface ServiceMapModalProps {
-  entries: Entry[];
-  lastUpdated: number;
-  setLastUpdated: React.Dispatch<React.SetStateAction<number>>;
-  isOpen: boolean;
-  onClose: () => void;
-}
-
 enum EdgeTypes {
   Size = "size",
   SizeRequest = "size_request",
@@ -77,13 +69,32 @@ function humanReadableBytes(bytes): string {
   return result + ' ' + sizes[i];
 }
 
-export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({ entries, lastUpdated, setLastUpdated, isOpen, onClose }) => {
+interface ServiceMapModalProps {
+  entries: Entry[];
+  lastUpdated: number;
+  setLastUpdated: React.Dispatch<React.SetStateAction<number>>;
+  isOpen: boolean;
+  onClose: () => void;
+  edgeType: string;
+  setEdgeType: React.Dispatch<React.SetStateAction<string>>;
+  nodeType: string;
+  setNodeType: React.Dispatch<React.SetStateAction<string>>;
+}
+
+export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
+  entries,
+  lastUpdated,
+  setLastUpdated,
+  isOpen,
+  onClose,
+  edgeType,
+  setEdgeType,
+  nodeType,
+  setNodeType,
+}) => {
   const [graphData, setGraphData] = useState<GraphData>({ nodes: [], edges: [] });
   const [graphOptions, setGraphOptions] = useState(ServiceMapOptions);
   const [lastEntriesLength, setLastEntriesLength] = useState(0);
-
-  const [edgeType, setEdgeType] = useState("size");
-  const [nodeType, setNodeType] = useState("name");
 
   const [legendData, setLegendData] = useState<LegendData>({});
 

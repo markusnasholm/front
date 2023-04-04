@@ -28,6 +28,9 @@ const App: React.FC = () => {
   const [licenseCurrentNodeCount, setLicenseCurrentNodeCount] = useState(0);
   const [licenseNodeLimit, setLicenseNodeLimit] = useState(0);
 
+  const [edgeType, setEdgeType] = useState("size");
+  const [nodeType, setNodeType] = useState("name");
+
   const getLicense = () => {
     fetch(`${HubBaseUrl}/license`)
       .then(response => response.ok ? response : response.text().then(err => Promise.reject(err)))
@@ -70,6 +73,10 @@ const App: React.FC = () => {
             setLastUpdated={setLastUpdated}
             isOpen={serviceMapModalOpen}
             onClose={() => setServiceMapModalOpen(false)}
+            edgeType={edgeType}
+            setEdgeType={setEdgeType}
+            nodeType={nodeType}
+            setNodeType={setNodeType}
           />}
           {scriptingModalOpen && <ScriptingModal
             isOpen={scriptingModalOpen}
