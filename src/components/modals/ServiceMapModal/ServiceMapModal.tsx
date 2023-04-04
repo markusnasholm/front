@@ -102,9 +102,7 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
   const [selectedNodes, setSelectedNodes] = useState([]);
 
   useEffect(() => {
-    if (entries.length === lastEntriesLength) {
-      return;
-    }
+    if (entries.length === lastEntriesLength) return;
     setLastEntriesLength(entries.length);
 
     const nodeMap = {};
@@ -486,6 +484,7 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
                 options={graphOptions}
                 events={events}
                 modalRef={modalRef}
+                setSelectedNodes={setSelectedNodes}
               />
             </div>
           </div>

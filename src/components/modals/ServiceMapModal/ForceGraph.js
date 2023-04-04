@@ -99,7 +99,6 @@ class ForceGraph extends Component {
   }
 
   selectNodesFromHighlight() {
-    var fromX, toX, fromY, toY;
     var nodesIdInDrawing = [];
     var xRange = this.getStartToEnd(rect.startX, rect.w);
     var yRange = this.getStartToEnd(rect.startY, rect.h);
@@ -121,6 +120,7 @@ class ForceGraph extends Component {
       }
     }
     network.selectNodes(nodesIdInDrawing);
+    this.props.setSelectedNodes(nodesIdInDrawing);
   }
 
   getStartToEnd(start, theLen) {
