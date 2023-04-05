@@ -48,13 +48,13 @@ const modalStyle = {
 
 enum EdgeTypes {
   Bandwidth = "bandwidth",
-  BandwidthRequest = "bandwidth_request",
-  BandwidthResponse = "bandwidth_response",
-  BandwidthCumulative = "bandwidth_cumulative",
-  BandwidthCumulativeRequest = "bandwidth_cumulative_request",
-  BandwidthCumulativeResponse = "bandwidth_cumulative_response",
+  BandwidthRequest = "bandwidthRequest",
+  BandwidthResponse = "bandwidthResponse",
+  BandwidthCumulative = "bandwidthCumulative",
+  BandwidthCumulativeRequest = "bandwidthCumulativeRequest",
+  BandwidthCumulativeResponse = "bandwidthCumulativeResponse",
   Throughput = "throughput",
-  ThroughputCumulative = "throughput_cumulative",
+  ThroughputCumulative = "throughputCumulative",
   Latency = "latency",
 }
 
@@ -62,7 +62,7 @@ enum NodeTypes {
   Name = "name",
   Namespace = "namespace",
   Pod = "pod",
-  EndpointSlice = "endpoint_slice",
+  EndpointSlice = "endpointSlice",
   Service = "service",
 }
 
@@ -543,7 +543,7 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
               </Card>}
 
               <Card sx={{
-                maxWidth: "30%",
+                maxWidth: "35%",
                 position: "absolute",
                 left: "50%",
                 transform: "translate(-50%, 0%)",
@@ -553,20 +553,20 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
                 maxHeight: "20%",
               }}>
                 <CardContent>
-                  {selectedNodes.length === 0 && "Select a node to display its kubectl command."}
+                  {selectedNodes.length === 0 && "Select a node to display its kubectl command. Right-click and drag for rectangular selection."}
                   {
                     selectedNodes.length > 0 && selectedNodes.map(id => {
                       const node = graphData.nodes[id];
                       let namespaceFlag = "";
                       if (node.verb !== NodeTypes.Namespace) namespaceFlag = "-n";
-                      if (node.name.length)
-                        return <SyntaxHighlighter
+                      return <>
+                        <b>{node.label}</b>
+                        <SyntaxHighlighter
                           showLineNumbers={false}
-                          code={`kubectl describe ${node.verb} ${node.name} ${namespaceFlag} ${node.namespace}`}
+                          code={node.name.length ? `kubectl describe ${node.verb} ${node.name} ${namespaceFlag} ${node.namespace}` : "# NOT APPLICABLE"}
                           language="bash"
                         />
-                      else
-                        return `Node ${node.label} is not not applicable for a kubectl command.`
+                      </>
                     })
                   }
                 </CardContent>
