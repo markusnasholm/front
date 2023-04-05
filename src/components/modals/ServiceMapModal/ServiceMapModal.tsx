@@ -16,6 +16,9 @@ import {
   ListItem,
   ListItemIcon,
   ListItemText,
+  FormControlLabel,
+  DialogContentText,
+  Checkbox,
 } from "@mui/material";
 import { SelectChangeEvent } from '@mui/material/Select';
 import CloseIcon from '@mui/icons-material/Close';
@@ -69,7 +72,8 @@ enum NodeTypes {
  * @param {Int} num The number of bytes.
  */
 function humanReadableBytes(bytes): string {
-  const i = Math.floor(Math.log(bytes) / Math.log(1024));
+  let i = Math.floor(Math.log(bytes) / Math.log(1024));
+  if (i < 0) i = 0;
   const sizes = ['B', 'KB', 'MB', 'GB', 'TB', 'PB', 'EB', 'ZB', 'YB'];
   const result = (bytes / Math.pow(1024, i)).toFixed(2);
   return result + ' ' + sizes[i];
@@ -106,6 +110,10 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
 
   const [selectedEdges, setSelectedEdges] = useState([]);
   const [selectedNodes, setSelectedNodes] = useState([]);
+
+  const [showCumulative, setShowCumulative] = React.useState(false);
+  const [showRequests, setShowRequests] = React.useState(true);
+  const [showResponses, setShowResponses] = React.useState(true);
 
   useEffect(() => {
     if (entries.length === lastEntriesLength) return;
@@ -319,42 +327,36 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
 
       switch (edgeType) {
       case EdgeTypes.Bandwidth:
-        edgeMap[edgeKey].cumulative += entry.requestSize + entry.responseSize;
-        edgeMap[edgeKey].value = edgeMap[edgeKey].cumulative / secondsPassed;
-        edgeMap[edgeKey].label = `${humanReadableBytes(edgeMap[edgeKey].value)}/s`;
-        break;
-      case EdgeTypes.BandwidthRequest:
-        edgeMap[edgeKey].cumulative += entry.requestSize;
-        edgeMap[edgeKey].value = edgeMap[edgeKey].cumulative / secondsPassed;
-        edgeMap[edgeKey].label = `${humanReadableBytes(edgeMap[edgeKey].value)}/s`;
-        break;
-      case EdgeTypes.BandwidthResponse:
-        edgeMap[edgeKey].cumulative += entry.responseSize;
-        edgeMap[edgeKey].value = edgeMap[edgeKey].cumulative / secondsPassed;
-        edgeMap[edgeKey].label = `${humanReadableBytes(edgeMap[edgeKey].value)}/s`;
-        break;
-      case EdgeTypes.BandwidthCumulative:
-        edgeMap[edgeKey].value += entry.requestSize + entry.responseSize;
+        if (showRequests)
+          edgeMap[edgeKey].cumulative += entry.requestSize;
+        if (showResponses)
+          edgeMap[edgeKey].cumulative += entry.responseSize;
+
+        if (showCumulative)
+          edgeMap[edgeKey].value = edgeMap[edgeKey].cumulative;
+        else
+          edgeMap[edgeKey].value = edgeMap[edgeKey].cumulative / secondsPassed;
+
         edgeMap[edgeKey].label = humanReadableBytes(edgeMap[edgeKey].value);
-        break;
-      case EdgeTypes.BandwidthCumulativeRequest:
-        edgeMap[edgeKey].value += entry.requestSize;
-        edgeMap[edgeKey].label = humanReadableBytes(edgeMap[edgeKey].value);
-        break;
-      case EdgeTypes.BandwidthCumulativeResponse:
-        edgeMap[edgeKey].value += entry.responseSize;
-        edgeMap[edgeKey].label = humanReadableBytes(edgeMap[edgeKey].value);
+
+        if (!showCumulative)
+          edgeMap[edgeKey].label += "/s";
         break;
       case EdgeTypes.Throughput:
         edgeMap[edgeKey].cumulative++;
-        edgeMap[edgeKey].value = Math.ceil(
-          edgeMap[edgeKey].cumulative / secondsPassed
-        ) / 100;
-        edgeMap[edgeKey].label = `${edgeMap[edgeKey].value}/s`;
-        break;
-      case EdgeTypes.ThroughputCumulative:
-        edgeMap[edgeKey].value++;
+
+        if (showCumulative)
+          edgeMap[edgeKey].value = edgeMap[edgeKey].cumulative;
+        else
+          edgeMap[edgeKey].value = Math.ceil(
+            edgeMap[edgeKey].cumulative / secondsPassed
+          ) / 100;
+
         edgeMap[edgeKey].label = `${edgeMap[edgeKey].value}`;
+        console.log(edgeMap[edgeKey].label);
+
+        if (!showCumulative)
+          edgeMap[edgeKey].label += "/s";
         break;
       case EdgeTypes.Latency:
         edgeMap[edgeKey].value = Math.ceil(
@@ -400,6 +402,24 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
       setSelectedNodes(nodes);
     }
   }
+
+  const handleShowCumulativeCheck = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setShowCumulative(event.target.checked);
+    setLastEntriesLength(0);
+    setLastUpdated(Date.now());
+  };
+
+  const handleShowRequestsCheck = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setShowRequests(event.target.checked);
+    setLastEntriesLength(0);
+    setLastUpdated(Date.now());
+  };
+
+  const handleShowResponsesCheck = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setShowResponses(event.target.checked);
+    setLastEntriesLength(0);
+    setLastUpdated(Date.now());
+  };
 
   const modalRef = useRef(null);
 
@@ -448,13 +468,7 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
                       onChange={handleEdgeChange}
                     >
                       <MenuItem value={EdgeTypes.Bandwidth}>Bandwidth</MenuItem>
-                      <MenuItem value={EdgeTypes.BandwidthRequest}>Bandwidth (requests only)</MenuItem>
-                      <MenuItem value={EdgeTypes.BandwidthResponse}>Bandwidth (responses only)</MenuItem>
-                      <MenuItem value={EdgeTypes.BandwidthCumulative}>Bandwidth (cumulative)</MenuItem>
-                      <MenuItem value={EdgeTypes.BandwidthCumulativeRequest}>Bandwidth (cumulative, requests only)</MenuItem>
-                      <MenuItem value={EdgeTypes.BandwidthCumulativeResponse}>Bandwidth (cumulative, responses only)</MenuItem>
                       <MenuItem value={EdgeTypes.Throughput}>Throughput</MenuItem>
-                      <MenuItem value={EdgeTypes.ThroughputCumulative}>Throughput (cumulative)</MenuItem>
                       <MenuItem value={EdgeTypes.Latency}>Latency</MenuItem>
                     </Select>
                   </FormControl>
@@ -475,6 +489,25 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
                       <MenuItem value={NodeTypes.Service}>Service</MenuItem>
                     </Select>
                   </FormControl>
+
+                  {(edgeType === EdgeTypes.Bandwidth || edgeType === EdgeTypes.Throughput) && <FormControlLabel
+                    label={<DialogContentText style={{marginTop: "4px"}}>Show cumulative {edgeType === EdgeTypes.Bandwidth ? EdgeTypes.Bandwidth : ""}{edgeType === EdgeTypes.Throughput ? EdgeTypes.Throughput : ""}</DialogContentText>}
+                    control={<Checkbox checked={showCumulative} onChange={handleShowCumulativeCheck} />}
+                    style={{marginTop: "5px"}}
+                    labelPlacement="end"
+                  />}
+
+                  {edgeType === EdgeTypes.Bandwidth && <FormControlLabel
+                    label={<DialogContentText style={{marginTop: "4px"}}>Include request sizes</DialogContentText>}
+                    control={<Checkbox checked={showRequests} onChange={handleShowRequestsCheck} />}
+                    labelPlacement="end"
+                  />}
+
+                  {edgeType === EdgeTypes.Bandwidth && <FormControlLabel
+                    label={<DialogContentText style={{marginTop: "4px"}}>Include response sizes</DialogContentText>}
+                    control={<Checkbox checked={showResponses} onChange={handleShowResponsesCheck} />}
+                    labelPlacement="end"
+                  />}
                 </CardContent>
               </Card>
 
