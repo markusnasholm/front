@@ -59,7 +59,7 @@ enum NodeTypes {
   Name = "name",
   Namespace = "namespace",
   Pod = "pod",
-  Endpoints = "endpoints",
+  EndpointSlice = "endpoint_slice",
   Service = "service",
 }
 
@@ -143,7 +143,7 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
           srcName = entry.src.pod.metadata.name;
           srcNamespace = entry.src.pod.metadata.namespace;
         } else if (entry.src.endpoint) {
-          srcVerb = NodeTypes.Endpoints;
+          srcVerb = NodeTypes.EndpointSlice;
           srcName = entry.src.endpoint.metadata.name;
           srcNamespace = entry.src.endpoint.metadata.namespace;
         } else if (entry.src.service) {
@@ -173,14 +173,14 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
 
         srcVerb = NodeTypes.Pod;
         break;
-      case NodeTypes.Endpoints:
+      case NodeTypes.EndpointSlice:
         if (entry.src.endpoint) {
           srcLabel = `${entry.src.endpoint.metadata.name}.${entry.src.endpoint.metadata.namespace}`;
           srcName = entry.src.endpoint.metadata.name;
           srcNamespace = entry.src.endpoint.metadata.namespace;
         }
 
-        srcVerb = NodeTypes.Endpoints;
+        srcVerb = NodeTypes.EndpointSlice;
         break;
       case NodeTypes.Service:
         if (entry.src.service) {
@@ -202,7 +202,7 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
           dstName = entry.dst.pod.metadata.name;
           dstNamespace = entry.dst.pod.metadata.namespace;
         } else if (entry.dst.endpoint) {
-          dstVerb = NodeTypes.Endpoints;
+          dstVerb = NodeTypes.EndpointSlice;
           dstName = entry.dst.endpoint.metadata.name;
           dstNamespace = entry.dst.endpoint.metadata.namespace;
         } else if (entry.dst.service) {
@@ -232,14 +232,14 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
 
         dstVerb = NodeTypes.Pod;
         break;
-      case NodeTypes.Endpoints:
+      case NodeTypes.EndpointSlice:
         if (entry.dst.endpoint) {
           dstLabel = `${entry.dst.endpoint.metadata.name}.${entry.dst.endpoint.metadata.namespace}`;
           dstName = entry.dst.endpoint.metadata.name;
           dstNamespace = entry.dst.endpoint.metadata.namespace;
         }
 
-        dstVerb = NodeTypes.Endpoints;
+        dstVerb = NodeTypes.EndpointSlice;
         break;
       case NodeTypes.Service:
         if (entry.dst.service) {
@@ -469,10 +469,10 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
                       onChange={handleNodeChange}
                     >
                       <MenuItem value={NodeTypes.Name}>Resolved Name</MenuItem>
-                      <MenuItem value={NodeTypes.Namespace}>Kubernetes Namespace</MenuItem>
-                      <MenuItem value={NodeTypes.Pod}>Kubernetes Pod</MenuItem>
-                      <MenuItem value={NodeTypes.Endpoints}>Kubernetes Endpoints</MenuItem>
-                      <MenuItem value={NodeTypes.Service}>Kubernetes Service</MenuItem>
+                      <MenuItem value={NodeTypes.Namespace}>Namespace</MenuItem>
+                      <MenuItem value={NodeTypes.Pod}>Pod</MenuItem>
+                      <MenuItem value={NodeTypes.EndpointSlice}>EndpointSlice</MenuItem>
+                      <MenuItem value={NodeTypes.Service}>Service</MenuItem>
                     </Select>
                   </FormControl>
                 </CardContent>
