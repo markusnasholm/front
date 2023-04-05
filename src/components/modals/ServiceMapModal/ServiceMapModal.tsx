@@ -509,7 +509,16 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
                 </CardContent>
               </Card>}
 
-              <Card sx={{ maxWidth: "30%", position: "absolute", left: "50%", transform: "translate(-50%, 0%)", bottom: "10px", zIndex: 1 }}>
+              <Card sx={{
+                maxWidth: "30%",
+                position: "absolute",
+                left: "50%",
+                transform: "translate(-50%, 0%)",
+                bottom: "10px",
+                zIndex: 1,
+                overflow: "scroll",
+                maxHeight: "20%",
+              }}>
                 <CardContent>
                   {selectedNodes.length === 0 && "Select a node to display its kubectl command."}
                   {
@@ -524,7 +533,7 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
                           language="bash"
                         />
                       else
-                        return <></>
+                        return `Node ${node.label} is not not applicable for a kubectl command.`
                     })
                   }
                 </CardContent>
