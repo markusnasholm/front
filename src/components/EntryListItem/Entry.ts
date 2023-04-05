@@ -34,7 +34,6 @@ export interface Entry {
   outgoing: boolean;
   requestSize: number;
   responseSize: number;
-  size: number;
   elapsedTime: number;
   passed: boolean;
   failed: boolean;

@@ -1,6 +1,6 @@
 import React, { useState, useCallback, useEffect, useMemo } from "react"
 import SectionsRepresentation from "./SectionsRepresentation";
-import Manifest, { Resolution } from "./Manifest";
+import Manifest, { Resolution } from "./Kubernetes";
 import styles from './EntryViewer.module.sass';
 import { Tabs } from "../../UI";
 

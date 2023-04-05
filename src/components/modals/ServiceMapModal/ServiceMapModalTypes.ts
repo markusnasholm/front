@@ -21,6 +21,8 @@ export interface Edge {
   from: number;
   to: number;
   value: number;
+  count: number;
+  cumulative: number;
   label: string;
   title?: string;
   color?: string;

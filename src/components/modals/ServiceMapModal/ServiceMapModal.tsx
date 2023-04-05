@@ -27,6 +27,7 @@ import { Entry } from "../../EntryListItem/Entry";
 import variables from '../../../variables.module.scss';
 import { SyntaxHighlighter } from "../../UI/SyntaxHighlighter";
 import ForceGraph from "./ForceGraph";
+import Moment from "moment";
 
 const modalStyle = {
   position: 'absolute',
@@ -43,10 +44,15 @@ const modalStyle = {
 };
 
 enum EdgeTypes {
-  Size = "size",
-  SizeRequest = "size_request",
-  SizeResponse = "size_response",
-  Count = "count",
+  Bandwidth = "bandwidth",
+  BandwidthRequest = "bandwidth_request",
+  BandwidthResponse = "bandwidth_response",
+  BandwidthCumulative = "bandwidth_cumulative",
+  BandwidthCumulativeRequest = "bandwidth_cumulative_request",
+  BandwidthCumulativeResponse = "bandwidth_cumulative_response",
+  Throughput = "throughput",
+  ThroughputCumulative = "throughput_cumulative",
+  Latency = "latency",
 }
 
 enum NodeTypes {
@@ -111,7 +117,12 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
     const edges: Edge[] = [];
     const legendMap = {};
 
+    let firstMoment: Moment.Moment;
+
     entries.map(entry => {
+      if (firstMoment === undefined)
+        firstMoment = Moment(+entry.timestamp)?.utc();
+
       legendMap[entry.proto.name] = entry.proto;
       let srcLabel = entry.src.name;
       let dstLabel = entry.dst.name;
@@ -293,6 +304,8 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
           from: srcId,
           to: dstId,
           value: 0,
+          count: 0,
+          cumulative: 0,
           label: "",
           title: entry.proto.longName,
           color: entry.proto.backgroundColor,
@@ -301,24 +314,57 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
         edges.push(edge);
       }
 
+      const timeNow = new Date();
+      const secondsPassed = Moment(timeNow).utc().diff(firstMoment, "seconds");
+
       switch (edgeType) {
-      case EdgeTypes.Count:
-        edgeMap[edgeKey].value++;
-        edgeMap[edgeKey].label = `${edgeMap[edgeKey].value}`;
+      case EdgeTypes.Bandwidth:
+        edgeMap[edgeKey].cumulative += entry.requestSize + entry.responseSize;
+        edgeMap[edgeKey].value = edgeMap[edgeKey].cumulative / secondsPassed;
+        edgeMap[edgeKey].label = `${humanReadableBytes(edgeMap[edgeKey].value)}/s`;
         break;
-      case EdgeTypes.Size:
-        edgeMap[edgeKey].value += entry.size;
+      case EdgeTypes.BandwidthRequest:
+        edgeMap[edgeKey].cumulative += entry.requestSize;
+        edgeMap[edgeKey].value = edgeMap[edgeKey].cumulative / secondsPassed;
+        edgeMap[edgeKey].label = `${humanReadableBytes(edgeMap[edgeKey].value)}/s`;
+        break;
+      case EdgeTypes.BandwidthResponse:
+        edgeMap[edgeKey].cumulative += entry.responseSize;
+        edgeMap[edgeKey].value = edgeMap[edgeKey].cumulative / secondsPassed;
+        edgeMap[edgeKey].label = `${humanReadableBytes(edgeMap[edgeKey].value)}/s`;
+        break;
+      case EdgeTypes.BandwidthCumulative:
+        edgeMap[edgeKey].value += entry.requestSize + entry.responseSize;
         edgeMap[edgeKey].label = humanReadableBytes(edgeMap[edgeKey].value);
         break;
-      case EdgeTypes.SizeRequest:
+      case EdgeTypes.BandwidthCumulativeRequest:
         edgeMap[edgeKey].value += entry.requestSize;
         edgeMap[edgeKey].label = humanReadableBytes(edgeMap[edgeKey].value);
         break;
-      case EdgeTypes.SizeResponse:
+      case EdgeTypes.BandwidthCumulativeResponse:
         edgeMap[edgeKey].value += entry.responseSize;
         edgeMap[edgeKey].label = humanReadableBytes(edgeMap[edgeKey].value);
         break;
+      case EdgeTypes.Throughput:
+        edgeMap[edgeKey].cumulative++;
+        edgeMap[edgeKey].value = Math.ceil(
+          edgeMap[edgeKey].cumulative / secondsPassed
+        ) / 100;
+        edgeMap[edgeKey].label = `${edgeMap[edgeKey].value}/s`;
+        break;
+      case EdgeTypes.ThroughputCumulative:
+        edgeMap[edgeKey].value++;
+        edgeMap[edgeKey].label = `${edgeMap[edgeKey].value}`;
+        break;
+      case EdgeTypes.Latency:
+        edgeMap[edgeKey].value = Math.ceil(
+          (entry.elapsedTime + edgeMap[edgeKey].value * edgeMap[edgeKey].count) / (edgeMap[edgeKey].count + 1)
+        ) / 100;
+        edgeMap[edgeKey].label = `${edgeMap[edgeKey].value} ms`;
+        break;
       }
+
+      edgeMap[edgeKey].count++;
     });
 
     setGraphData({
@@ -401,10 +447,15 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
                       label="Edge"
                       onChange={handleEdgeChange}
                     >
-                      <MenuItem value={EdgeTypes.Size}>Traffic Load</MenuItem>
-                      <MenuItem value={EdgeTypes.SizeRequest}>Traffic Load (requests only)</MenuItem>
-                      <MenuItem value={EdgeTypes.SizeResponse}>Traffic Load (responses only)</MenuItem>
-                      <MenuItem value={EdgeTypes.Count}>Number of Items</MenuItem>
+                      <MenuItem value={EdgeTypes.Bandwidth}>Bandwidth</MenuItem>
+                      <MenuItem value={EdgeTypes.BandwidthRequest}>Bandwidth (requests only)</MenuItem>
+                      <MenuItem value={EdgeTypes.BandwidthResponse}>Bandwidth (responses only)</MenuItem>
+                      <MenuItem value={EdgeTypes.BandwidthCumulative}>Bandwidth (cumulative)</MenuItem>
+                      <MenuItem value={EdgeTypes.BandwidthCumulativeRequest}>Bandwidth (cumulative, requests only)</MenuItem>
+                      <MenuItem value={EdgeTypes.BandwidthCumulativeResponse}>Bandwidth (cumulative, responses only)</MenuItem>
+                      <MenuItem value={EdgeTypes.Throughput}>Throughput</MenuItem>
+                      <MenuItem value={EdgeTypes.ThroughputCumulative}>Throughput (cumulative)</MenuItem>
+                      <MenuItem value={EdgeTypes.Latency}>Latency</MenuItem>
                     </Select>
                   </FormControl>
 

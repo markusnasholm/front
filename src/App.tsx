@@ -28,7 +28,7 @@ const App: React.FC = () => {
   const [licenseCurrentNodeCount, setLicenseCurrentNodeCount] = useState(0);
   const [licenseNodeLimit, setLicenseNodeLimit] = useState(0);
 
-  const [edgeType, setEdgeType] = useState("size");
+  const [edgeType, setEdgeType] = useState("bandwidth");
   const [nodeType, setNodeType] = useState("name");
 
   const getLicense = () => {
