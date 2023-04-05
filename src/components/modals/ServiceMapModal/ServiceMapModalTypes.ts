@@ -24,6 +24,7 @@ export interface Edge {
   count: number;
   cumulative: number;
   label: string;
+  filter: string;
   title?: string;
   color?: string;
 }

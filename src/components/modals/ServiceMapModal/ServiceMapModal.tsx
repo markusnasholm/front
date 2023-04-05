@@ -19,6 +19,7 @@ import {
   FormControlLabel,
   DialogContentText,
   Checkbox,
+  Button,
 } from "@mui/material";
 import { SelectChangeEvent } from '@mui/material/Select';
 import CloseIcon from '@mui/icons-material/Close';
@@ -31,6 +32,8 @@ import variables from '../../../variables.module.scss';
 import { SyntaxHighlighter } from "../../UI/SyntaxHighlighter";
 import ForceGraph from "./ForceGraph";
 import Moment from "moment";
+import { useSetRecoilState } from "recoil";
+import queryBuildAtom from "../../../recoil/queryBuild";
 
 const modalStyle = {
   position: 'absolute',
@@ -114,6 +117,8 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
   const [showCumulative, setShowCumulative] = React.useState(false);
   const [showRequests, setShowRequests] = React.useState(true);
   const [showResponses, setShowResponses] = React.useState(true);
+
+  const setQueryBuild = useSetRecoilState(queryBuildAtom);
 
   useEffect(() => {
     if (entries.length === lastEntriesLength) return;
@@ -303,6 +308,18 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
 
       const edgeKey = `${srcId}_${dstId}`;
 
+      let filter = entry.proto.macro;
+
+      if (entry.src.name)
+        filter += ` and src.name == "${entry.src.name}"`
+      else
+        filter += ` and src.ip == "${entry.src.ip}"`
+
+      if (entry.dst.name)
+        filter += ` and dst.name == "${entry.dst.name}"`
+      else
+        filter += ` and dst.ip == "${entry.dst.ip}"`
+
       let edge: Edge;
       if (edgeKey in edgeMap) {
         edge = edgeMap[edgeKey];
@@ -315,6 +332,7 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
           count: 0,
           cumulative: 0,
           label: "",
+          filter: filter,
           title: entry.proto.longName,
           color: entry.proto.backgroundColor,
         }
@@ -421,6 +439,9 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
     setLastUpdated(Date.now());
   };
 
+  const filter = selectedEdges.reduce((acc, x) => acc === null ? graphData.edges[x].filter : `(${acc}) or \n(${graphData.edges[x].filter})`, null);
+  const handleSetFilter = () => setQueryBuild(filter?.trim());
+
   const modalRef = useRef(null);
 
   return (
@@ -456,7 +477,12 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
             <div style={{ display: "flex", justifyContent: "space-between" }}>
             </div>
             <div style={{ height: "100%", width: "100%" }}>
-              <Card sx={{ maxWidth: "20%", position: "absolute", zIndex: 1 }}>
+              <Card sx={{
+                maxWidth: "20%",
+                position: "absolute",
+                left: "0.5%",
+                zIndex: 1,
+              }}>
                 <CardContent>
                   <FormControl fullWidth size="small">
                     <InputLabel id="edge-select-label">Edges</InputLabel>
@@ -511,7 +537,13 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
                 </CardContent>
               </Card>
 
-              {Object.keys(legendData).length && <Card sx={{ maxWidth: "30%", position: "absolute", bottom: "10px", zIndex: 1 }}>
+              {Object.keys(legendData).length && <Card sx={{
+                maxWidth: "30%",
+                position: "absolute",
+                left: "0.5%",
+                bottom: "1%",
+                zIndex: 1,
+              }}>
                 <CardContent>
                   <List dense disablePadding>
                     {
@@ -546,14 +578,14 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
                 maxWidth: "35%",
                 position: "absolute",
                 left: "50%",
+                bottom: "1%",
                 transform: "translate(-50%, 0%)",
-                bottom: "10px",
                 zIndex: 1,
                 overflow: "scroll",
                 maxHeight: "20%",
               }}>
                 <CardContent>
-                  {selectedNodes.length === 0 && "Select a node to display its kubectl command. Right-click and drag for rectangular selection."}
+                  {selectedNodes.length === 0 && <>Select a node to display its kubectl command. <a className="kbc-button kbc-button-xxs">Right-Click</a> and drag for rectangular selection.</>}
                   {
                     selectedNodes.length > 0 && selectedNodes.map(id => {
                       const node = graphData.nodes[id];
@@ -568,6 +600,37 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
                         />
                       </>
                     })
+                  }
+                </CardContent>
+              </Card>
+
+              <Card sx={{
+                maxWidth: "30%",
+                position: "absolute",
+                right: "0.5%",
+                zIndex: 1,
+                overflow: "scroll",
+                maxHeight: "20%",
+              }}>
+                <CardContent>
+                  {selectedEdges.length === 0 && <>Select an edge to generate its filter. <a className="kbc-button kbc-button-xxs">Ctrl</a> + <a className="kbc-button kbc-button-xxs">Left-Click</a> to multiselect edges.</>}
+                  {
+                    selectedEdges.length > 0 &&
+                    <>
+                      <SyntaxHighlighter
+                        showLineNumbers={false}
+                        code={filter}
+                        language="python"
+                      />
+
+                      <Button
+                        variant="contained"
+                        className={`${styles.bigButton}`}
+                        onClick={handleSetFilter}
+                      >
+                        Set Filter
+                      </Button>
+                    </>
                   }
                 </CardContent>
               </Card>
