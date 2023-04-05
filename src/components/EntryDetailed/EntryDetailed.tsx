@@ -105,10 +105,9 @@ const EntryTitle: React.FC<EntryTitleProps> = ({ protocol, data, elapsedTime }) 
 
 interface EntrySummaryProps {
   entry: Entry;
-  namespace: string;
 }
 
-const EntrySummary: React.FC<EntrySummaryProps> = ({ entry, namespace }) => {
+const EntrySummary: React.FC<EntrySummaryProps> = ({ entry }) => {
   return <EntryItem
     key={entry.id}
     id={entry.id}
@@ -116,7 +115,7 @@ const EntrySummary: React.FC<EntrySummaryProps> = ({ entry, namespace }) => {
     entry={entry}
     style={{}}
     headingMode={true}
-    namespace={namespace}
+    namespace={entry.dst.pod?.metadata.namespace}
   />;
 };
 
@@ -150,7 +149,7 @@ export const EntryDetailed: React.FC = () => {
   return <LoadingWrapper isLoading={isLoading} loaderMargin={50} loaderHeight={60}>
     {entryData && <React.Fragment>
       <EntryTitle protocol={entryData.protocol} data={entryData.data} elapsedTime={entryData.data.elapsedTime} />
-      <EntrySummary entry={entryData.base} namespace={entryData.data.namespace} />
+      <EntrySummary entry={entryData.base} />
       <TcpStream
         index={entryData.data.index}
         stream={entryData.data.stream}

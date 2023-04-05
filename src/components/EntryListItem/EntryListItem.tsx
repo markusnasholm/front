@@ -131,8 +131,8 @@ export const EntryItem: React.FC<EntryProps> = ({ id, stream, entry, style, head
       </div>
 
       <div className={styles.separatorRight}>
-        {headingMode ? <Queryable
-          query={`namespace == "${namespace}"`}
+        {headingMode && namespace ? <Queryable
+          query={`dst.pod.metadata.namespace == "${namespace}"`}
           displayIconOnMouseOver={true}
           flipped={true}
           iconStyle={{ marginRight: "16px" }}
