@@ -1,13 +1,13 @@
 import React, { useState, useCallback, useEffect, useMemo } from "react"
 import SectionsRepresentation from "./SectionsRepresentation";
-import Kubernetes, { Resolution } from "./Kubernetes";
+import Manifest, { Resolution } from "./Manifest";
 import styles from './EntryViewer.module.sass';
 import { Tabs } from "../../UI";
 
 export enum TabsEnum {
   Request = 0,
   Response = 1,
-  Kubernetes = 2
+  Manifest = 2
 }
 
 interface AutoRepresentationProps {
@@ -32,7 +32,7 @@ export const AutoRepresentation: React.FC<AutoRepresentationProps> = ({ represen
         badge: null
       },
       {
-        tab: 'Kubernetes',
+        tab: 'Manifest',
         badge: null
       }
     ]
@@ -69,8 +69,8 @@ export const AutoRepresentation: React.FC<AutoRepresentationProps> = ({ represen
       {response && response.length > 0 && getOpenedTabIndex() === TabsEnum.Response && <React.Fragment>
         <SectionsRepresentation data={response} color={color} />
       </React.Fragment>}
-      {getOpenedTabIndex() === TabsEnum.Kubernetes && <React.Fragment>
-        <Kubernetes source={source} destination={destination} color={color} />
+      {getOpenedTabIndex() === TabsEnum.Manifest && <React.Fragment>
+        <Manifest source={source} destination={destination} color={color} />
       </React.Fragment>}
       <div style={{height: "50px"}}></div>
     </div>}

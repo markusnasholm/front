@@ -8,13 +8,13 @@ export interface Resolution {
   service: Record<string, unknown>;
 }
 
-interface KubernetesProps {
+interface ManifestProps {
   source: Resolution;
   destination: Resolution;
   color: string;
 }
 
-const Kubernetes: React.FC<KubernetesProps> = ({ source, destination, color }) => {
+const Manifest: React.FC<ManifestProps> = ({ source, destination, color }) => {
   const sections = []
 
   if (source) {
@@ -102,4 +102,4 @@ const Kubernetes: React.FC<KubernetesProps> = ({ source, destination, color }) =
   return <React.Fragment>{sections}</React.Fragment>;
 }
 
-export default Kubernetes
+export default Manifest
