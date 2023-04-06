@@ -84,6 +84,10 @@ class ForceGraph extends Component {
     });
   }
 
+  componentDidUpdate() {
+    network.setSelection(this.props.selection);
+  }
+
   saveDrawingSurface() {
     drawingSurfaceImageData = ctx.getImageData(
       0,
@@ -156,6 +160,7 @@ class ForceGraph extends Component {
           graph={this.props.graph}
           options={this.props.options}
           events={this.props.events}
+          getNetwork={this.props.getNetwork}
         />
       </div>
     );

@@ -640,6 +640,10 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
                 modalRef={modalRef}
                 setSelectedNodes={setSelectedNodes}
                 setSelectedEdges={setSelectedEdges}
+                selection={{
+                  nodes: selectedNodes,
+                  edges: selectedEdges,
+                }}
               />
             </div>
           </div>
