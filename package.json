@@ -53,6 +53,7 @@
     "node-fetch": "^3.2.4",
     "numeral": "^2.0.6",
     "protobuf-decoder": "^0.1.2",
+    "randomcolor": "^0.6.2",
     "react-ace": "^9.0.0",
     "react-graph-vis": "^1.0.7",
     "react-lazylog": "^4.5.3",

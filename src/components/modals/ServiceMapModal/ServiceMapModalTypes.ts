@@ -9,6 +9,7 @@ export interface Node {
   id: number;
   value: number;
   label: string;
+  group: string;
   title?: string;
   color?: string;
   name?: string;

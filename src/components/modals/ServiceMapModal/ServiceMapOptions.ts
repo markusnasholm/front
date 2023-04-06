@@ -19,14 +19,6 @@ const ServiceMapOptions = {
   nodes: {
     shape: 'dot',
     chosen: true,
-    color: {
-      background: '#27AE60',
-      border: '#000000',
-      highlight: {
-        background: '#27AE60',
-        border: '#000000',
-      },
-    },
     font: {
       color: '#343434',
       size: 14, // px
@@ -45,7 +37,7 @@ const ServiceMapOptions = {
     scaling: {
       label: {
         min: 12,
-        max: 36,
+        max: 24,
       },
     },
   },
@@ -88,6 +80,7 @@ const ServiceMapOptions = {
     hover: true,
     multiselect: true,
   },
+  groups: {},
 };
 
 export default ServiceMapOptions

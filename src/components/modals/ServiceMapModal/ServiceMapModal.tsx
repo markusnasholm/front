@@ -24,16 +24,17 @@ import {
 import { SelectChangeEvent } from '@mui/material/Select';
 import CloseIcon from '@mui/icons-material/Close';
 import RectangleIcon from '@mui/icons-material/Rectangle';
+import CircleIcon from '@mui/icons-material/Circle';
 import styles from './ServiceMapModal.module.sass'
 import { GraphData, Node, Edge, LegendData } from "./ServiceMapModalTypes"
 import ServiceMapOptions from './ServiceMapOptions'
 import { Entry } from "../../EntryListItem/Entry";
-import variables from '../../../variables.module.scss';
 import { SyntaxHighlighter } from "../../UI/SyntaxHighlighter";
 import ForceGraph from "./ForceGraph";
 import Moment from "moment";
 import { useSetRecoilState } from "recoil";
 import queryBuildAtom from "../../../recoil/queryBuild";
+import randomColor from "randomcolor";
 
 const modalStyle = {
   position: 'absolute',
@@ -93,6 +94,11 @@ interface ServiceMapModalProps {
   nodeType: string;
   setNodeType: React.Dispatch<React.SetStateAction<string>>;
 }
+
+const randomColors = randomColor({
+  count: 10,
+  luminosity: 'light',
+});
 
 export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
   entries,
@@ -282,6 +288,7 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
       for (let i = 0; i < labelArr.length; i++) {
         const nodeKey: string = labelArr[i];
         let node: Node;
+        const namespace = namespaceArr[i];
         if (nodeKey in nodeMap) {
           node = nodeMap[nodeKey]
           nodeMap[nodeKey].value++;
@@ -290,14 +297,20 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
             id: nodes.length,
             value: 1,
             label: nodeKey,
+            group: namespace,
             title: nodeKey,
-            color: variables.lightBlueColor,
             name: nameArr[i],
-            namespace: namespaceArr[i],
+            namespace: namespace,
             verb: verbArr[i],
           };
           nodeMap[nodeKey] = node;
           nodes.push(node);
+
+          if (!(namespace in ServiceMapOptions.groups)) {
+            ServiceMapOptions.groups[namespace] = {
+              color: randomColors[Object.keys(ServiceMapOptions.groups).length % 10]
+            }
+          }
         }
 
         if (i == 0)
@@ -541,6 +554,8 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
                 left: "0.5%",
                 bottom: "1%",
                 zIndex: 1,
+                overflow: "scroll",
+                maxHeight: "20%",
               }}>
                 <CardContent>
                   <List dense disablePadding>
@@ -562,6 +577,32 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
                           <ListItemText
                             primary={proto.abbr}
                             secondary={proto.longName}
+                            primaryTypographyProps={{ style: primaryStyle }}
+                            secondaryTypographyProps={{ style: secondaryStyle }}
+                          />
+                        </ListItem>
+                      })
+                    }
+                    {
+                      Object.keys(ServiceMapOptions.groups).map(function(key) {
+                        if (!key) return <></>;
+
+                        const group = ServiceMapOptions.groups[key];
+                        const primaryStyle = {
+                          color: group.color,
+                          fontWeight: "bold",
+                        };
+                        const secondaryStyle = {
+                          color: group.color,
+                        };
+
+                        return <ListItem key={key} disableGutters disablePadding>
+                          <ListItemIcon sx={{ minWidth: "36px" }}>
+                            <CircleIcon sx={{ color: group.color }} />
+                          </ListItemIcon>
+                          <ListItemText
+                            primary={key}
+                            secondary="Namespace"
                             primaryTypographyProps={{ style: primaryStyle }}
                             secondaryTypographyProps={{ style: secondaryStyle }}
                           />
