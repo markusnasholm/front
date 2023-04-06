@@ -409,7 +409,16 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
       nodes: nodes,
       edges: edges,
     });
-    setLegendData(legendMap);
+
+    const legendMapSorted = Object.keys(legendMap).sort().reduce(
+      (obj, key) => {
+        obj[key] = legendMap[key];
+        return obj;
+      },
+      {}
+    );
+
+    setLegendData(legendMapSorted);
   }, [entries, lastUpdated]);
 
   useEffect(() => {
