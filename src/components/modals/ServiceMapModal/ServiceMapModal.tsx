@@ -36,7 +36,7 @@ import ForceGraph from "./ForceGraph";
 import Moment from "moment";
 import { useSetRecoilState } from "recoil";
 import queryBuildAtom from "../../../recoil/queryBuild";
-import randomColor from "randomcolor";
+import seedrandom from "seedrandom";
 
 const modalStyle = {
   position: 'absolute',
@@ -97,10 +97,17 @@ interface ServiceMapModalProps {
   setNodeType: React.Dispatch<React.SetStateAction<string>>;
 }
 
-const randomColors = randomColor({
-  count: 10,
-  luminosity: 'light',
-});
+const colorPalette = [
+  "#FDFFB6",
+  "#9BF6FF",
+  "#BDB2FF",
+  "#FFFFFC",
+  "#FFD6A5",
+  "#CAFFBF",
+  "#A0C4FF",
+  "#FFC6FF",
+  "#FFADAD",
+]
 
 export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
   entries,
@@ -314,8 +321,11 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
           nodes.push(node);
 
           if (!(namespace in ServiceMapOptions.groups)) {
+            const rng = seedrandom(namespace);
+            let n = rng.int32();
+            if (n < 0) n = -n;
             ServiceMapOptions.groups[namespace] = {
-              color: randomColors[Object.keys(ServiceMapOptions.groups).length % 10]
+              color: colorPalette[n % 9]
             }
           }
         }
@@ -629,7 +639,7 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
                           color: proto.backgroundColor,
                         };
 
-                        return <ListItem key={key} disableGutters disablePadding>
+                        return <ListItem key={key} disableGutters disablePadding sx={{ backgroundColor: "#E8E8E8", padding: "0 5px 0 5px", marginBottom: "5px" }}>
                           <ListItemIcon sx={{ minWidth: "36px" }}>
                             <RectangleIcon sx={{ color: proto.backgroundColor }} />
                           </ListItemIcon>
@@ -655,7 +665,7 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
                           color: group.color,
                         };
 
-                        return <ListItem key={key} disableGutters disablePadding>
+                        return <ListItem key={key} disableGutters disablePadding sx={{ backgroundColor: "#505050", padding: "0 5px 0 5px", marginBottom: "5px" }}>
                           <ListItemIcon sx={{ minWidth: "36px" }}>
                             <CircleIcon sx={{ color: group.color }} />
                           </ListItemIcon>
