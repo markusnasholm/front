@@ -646,7 +646,7 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
                   </IconButton>
                 }
 
-                {maximizeLegendCard && <CardContent sx={{ maxHeight: "20%", overflow: "scroll" }}>
+                {maximizeLegendCard && <CardContent sx={{ maxHeight: "20vh", overflow: "scroll" }}>
                   <List dense disablePadding>
                     {
                       Object.keys(legendData).map(function(key) {
@@ -752,7 +752,7 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
                   </IconButton>
                 }
 
-                {maximizeKubectlCard && <CardContent sx={{ maxHeight: "20%", overflow: "scroll" }}>
+                {maximizeKubectlCard && <CardContent sx={{ maxHeight: "20vh", overflow: "scroll" }}>
                   {selectedNodes.length === 0 && <>Select a node to display its kubectl command. <a className="kbc-button kbc-button-xxs">Right-Click</a> and drag for rectangular selection.</>}
                   {
                     selectedNodes.length > 0 && selectedNodes.map(id => {
@@ -800,7 +800,7 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
                   </IconButton>
                 }
 
-                {maximizeFilterCard && <CardContent sx={{ maxHeight: "20%", overflow: "scroll" }}>
+                {maximizeFilterCard && <CardContent sx={{ maxHeight: "20vh", overflow: "scroll" }}>
                   {selectedEdges.length === 0 && !legendFilter && <>Select an edge to generate its filter. <a className="kbc-button kbc-button-xxs">Ctrl</a> + <a className="kbc-button kbc-button-xxs">Left-Click</a> to multiselect edges.</>}
                   {
                     !legendFilter && selectedEdges.length > 0 &&
