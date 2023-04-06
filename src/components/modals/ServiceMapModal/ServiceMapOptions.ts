@@ -42,6 +42,12 @@ const ServiceMapOptions = {
     labelHighlightBold: true,
     opacity: 1,
     shadow: true,
+    scaling: {
+      label: {
+        min: 12,
+        max: 36,
+      },
+    },
   },
   edges: {
     chosen: true,
