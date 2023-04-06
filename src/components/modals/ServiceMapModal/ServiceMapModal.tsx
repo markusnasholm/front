@@ -23,6 +23,8 @@ import {
 } from "@mui/material";
 import { SelectChangeEvent } from '@mui/material/Select';
 import CloseIcon from '@mui/icons-material/Close';
+import RemoveIcon from '@mui/icons-material/Remove';
+import AddIcon from '@mui/icons-material/Add';
 import RectangleIcon from '@mui/icons-material/Rectangle';
 import CircleIcon from '@mui/icons-material/Circle';
 import styles from './ServiceMapModal.module.sass'
@@ -123,6 +125,11 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
   const [showCumulative, setShowCumulative] = React.useState(false);
   const [showRequests, setShowRequests] = React.useState(true);
   const [showResponses, setShowResponses] = React.useState(true);
+
+  const [maximizeOptionsCard, setMaximizeOptionsCard] = React.useState(true);
+  const [maximizeLegendCard, setMaximizeLegendCard] = React.useState(true);
+  const [maximizeKubectlCard, setMaximizeKubectlCard] = React.useState(true);
+  const [maximizeFilterCard, setMaximizeFilterCard] = React.useState(true);
 
   const setQueryBuild = useSetRecoilState(queryBuildAtom);
 
@@ -494,7 +501,29 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
                 left: "0.5%",
                 zIndex: 1,
               }}>
-                <CardContent>
+                {maximizeOptionsCard ?
+                  <IconButton onClick={() => {
+                    setMaximizeOptionsCard(false);
+                  }} style={{
+                    margin: "2px",
+                    float: "right",
+                    padding: "2px",
+                  }}>
+                    <RemoveIcon />
+                  </IconButton>
+                  :
+                  <IconButton onClick={() => {
+                    setMaximizeOptionsCard(true);
+                  }} style={{
+                    margin: "2px",
+                    float: "right",
+                    padding: "2px",
+                  }}>
+                    <AddIcon />
+                  </IconButton>
+                }
+
+                {maximizeOptionsCard && <CardContent>
                   <FormControl fullWidth size="small">
                     <InputLabel id="edge-select-label">Edges</InputLabel>
                     <Select
@@ -545,7 +574,7 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
                     control={<Checkbox checked={showResponses} onChange={handleShowResponsesCheck} />}
                     labelPlacement="end"
                   />}
-                </CardContent>
+                </CardContent>}
               </Card>
 
               {Object.keys(legendData).length && <Card sx={{
@@ -554,10 +583,31 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
                 left: "0.5%",
                 bottom: "1%",
                 zIndex: 1,
-                overflow: "scroll",
                 maxHeight: "20%",
               }}>
-                <CardContent>
+                {maximizeLegendCard ?
+                  <IconButton onClick={() => {
+                    setMaximizeLegendCard(false);
+                  }} style={{
+                    margin: "2px",
+                    float: "right",
+                    padding: "2px",
+                  }}>
+                    <RemoveIcon />
+                  </IconButton>
+                  :
+                  <IconButton onClick={() => {
+                    setMaximizeLegendCard(true);
+                  }} style={{
+                    margin: "2px",
+                    float: "right",
+                    padding: "2px",
+                  }}>
+                    <AddIcon />
+                  </IconButton>
+                }
+
+                {maximizeLegendCard && <CardContent sx={{ overflow: "scroll" }}>
                   <List dense disablePadding>
                     {
                       Object.keys(legendData).map(function(key) {
@@ -610,7 +660,7 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
                       })
                     }
                   </List>
-                </CardContent>
+                </CardContent>}
               </Card>}
 
               <Card sx={{
@@ -620,10 +670,31 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
                 bottom: "1%",
                 transform: "translate(-50%, 0%)",
                 zIndex: 1,
-                overflow: "scroll",
                 maxHeight: "20%",
               }}>
-                <CardContent>
+                {maximizeKubectlCard ?
+                  <IconButton onClick={() => {
+                    setMaximizeKubectlCard(false);
+                  }} style={{
+                    margin: "2px",
+                    float: "right",
+                    padding: "2px",
+                  }}>
+                    <RemoveIcon />
+                  </IconButton>
+                  :
+                  <IconButton onClick={() => {
+                    setMaximizeKubectlCard(true);
+                  }} style={{
+                    margin: "2px",
+                    float: "right",
+                    padding: "2px",
+                  }}>
+                    <AddIcon />
+                  </IconButton>
+                }
+
+                {maximizeKubectlCard && <CardContent sx={{ overflow: "scroll" }}>
                   {selectedNodes.length === 0 && <>Select a node to display its kubectl command. <a className="kbc-button kbc-button-xxs">Right-Click</a> and drag for rectangular selection.</>}
                   {
                     selectedNodes.length > 0 && selectedNodes.map(id => {
@@ -640,7 +711,7 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
                       </div>
                     })
                   }
-                </CardContent>
+                </CardContent>}
               </Card>
 
               <Card sx={{
@@ -648,10 +719,31 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
                 position: "absolute",
                 right: "0.5%",
                 zIndex: 1,
-                overflow: "scroll",
                 maxHeight: "20%",
               }}>
-                <CardContent>
+                {maximizeFilterCard ?
+                  <IconButton onClick={() => {
+                    setMaximizeFilterCard(false);
+                  }} style={{
+                    margin: "2px",
+                    float: "right",
+                    padding: "2px",
+                  }}>
+                    <RemoveIcon />
+                  </IconButton>
+                  :
+                  <IconButton onClick={() => {
+                    setMaximizeFilterCard(true);
+                  }} style={{
+                    margin: "2px",
+                    float: "right",
+                    padding: "2px",
+                  }}>
+                    <AddIcon />
+                  </IconButton>
+                }
+
+                {maximizeFilterCard && <CardContent sx={{ overflow: "scroll" }}>
                   {selectedEdges.length === 0 && <>Select an edge to generate its filter. <a className="kbc-button kbc-button-xxs">Ctrl</a> + <a className="kbc-button kbc-button-xxs">Left-Click</a> to multiselect edges.</>}
                   {
                     selectedEdges.length > 0 &&
@@ -671,7 +763,7 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
                       </Button>
                     </>
                   }
-                </CardContent>
+                </CardContent>}
               </Card>
 
               <ForceGraph
