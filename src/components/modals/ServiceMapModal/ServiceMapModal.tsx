@@ -125,6 +125,7 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
   const [lastEntriesLength, setLastEntriesLength] = useState(0);
 
   const [legendData, setLegendData] = useState<LegendData>({});
+  const [legendFilter, setLegendFilter] = useState("");
 
   const [selectedEdges, setSelectedEdges] = useState([]);
   const [selectedNodes, setSelectedNodes] = useState([]);
@@ -156,7 +157,7 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
       if (firstMoment === undefined)
         firstMoment = Moment(+entry.timestamp)?.utc();
 
-      legendMap[entry.proto.name] = entry.proto;
+      legendMap[entry.proto.abbr] = entry.proto;
       let srcLabel = entry.src.name;
       let dstLabel = entry.dst.name;
 
@@ -175,10 +176,10 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
           srcVerb = NodeTypes.Pod;
           srcName = entry.src.pod.metadata.name;
           srcNamespace = entry.src.pod.metadata.namespace;
-        } else if (entry.src.endpoint) {
+        } else if (entry.src.endpointSlice) {
           srcVerb = NodeTypes.EndpointSlice;
-          srcName = entry.src.endpoint.metadata.name;
-          srcNamespace = entry.src.endpoint.metadata.namespace;
+          srcName = entry.src.endpointSlice.metadata.name;
+          srcNamespace = entry.src.endpointSlice.metadata.namespace;
         } else if (entry.src.service) {
           srcVerb = NodeTypes.Service;
           srcName = entry.src.service.metadata.name;
@@ -188,8 +189,8 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
       case NodeTypes.Namespace:
         if (entry.src.pod) {
           srcLabel = entry.src.pod.metadata.namespace;
-        } else if (entry.src.endpoint) {
-          srcLabel = entry.src.endpoint.metadata.namespace;
+        } else if (entry.src.endpointSlice) {
+          srcLabel = entry.src.endpointSlice.metadata.namespace;
         } else if (entry.src.service) {
           srcLabel = entry.src.service.metadata.namespace;
         }
@@ -207,10 +208,10 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
         srcVerb = NodeTypes.Pod;
         break;
       case NodeTypes.EndpointSlice:
-        if (entry.src.endpoint) {
-          srcLabel = `${entry.src.endpoint.metadata.name}.${entry.src.endpoint.metadata.namespace}`;
-          srcName = entry.src.endpoint.metadata.name;
-          srcNamespace = entry.src.endpoint.metadata.namespace;
+        if (entry.src.endpointSlice) {
+          srcLabel = `${entry.src.endpointSlice.metadata.name}.${entry.src.endpointSlice.metadata.namespace}`;
+          srcName = entry.src.endpointSlice.metadata.name;
+          srcNamespace = entry.src.endpointSlice.metadata.namespace;
         }
 
         srcVerb = NodeTypes.EndpointSlice;
@@ -234,10 +235,10 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
           dstVerb = NodeTypes.Pod;
           dstName = entry.dst.pod.metadata.name;
           dstNamespace = entry.dst.pod.metadata.namespace;
-        } else if (entry.dst.endpoint) {
+        } else if (entry.dst.endpointSlice) {
           dstVerb = NodeTypes.EndpointSlice;
-          dstName = entry.dst.endpoint.metadata.name;
-          dstNamespace = entry.dst.endpoint.metadata.namespace;
+          dstName = entry.dst.endpointSlice.metadata.name;
+          dstNamespace = entry.dst.endpointSlice.metadata.namespace;
         } else if (entry.dst.service) {
           dstVerb = NodeTypes.Service;
           dstName = entry.dst.service.metadata.name;
@@ -247,8 +248,8 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
       case NodeTypes.Namespace:
         if (entry.dst.pod) {
           dstLabel = entry.dst.pod.metadata.namespace;
-        } else if (entry.dst.endpoint) {
-          dstLabel = entry.dst.endpoint.metadata.namespace;
+        } else if (entry.dst.endpointSlice) {
+          dstLabel = entry.dst.endpointSlice.metadata.namespace;
         } else if (entry.dst.service) {
           dstLabel = entry.dst.service.metadata.namespace;
         }
@@ -266,10 +267,10 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
         dstVerb = NodeTypes.Pod;
         break;
       case NodeTypes.EndpointSlice:
-        if (entry.dst.endpoint) {
-          dstLabel = `${entry.dst.endpoint.metadata.name}.${entry.dst.endpoint.metadata.namespace}`;
-          dstName = entry.dst.endpoint.metadata.name;
-          dstNamespace = entry.dst.endpoint.metadata.namespace;
+        if (entry.dst.endpointSlice) {
+          dstLabel = `${entry.dst.endpointSlice.metadata.name}.${entry.dst.endpointSlice.metadata.namespace}`;
+          dstName = entry.dst.endpointSlice.metadata.name;
+          dstNamespace = entry.dst.endpointSlice.metadata.namespace;
         }
 
         dstVerb = NodeTypes.EndpointSlice;
@@ -325,7 +326,8 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
             let n = rng.int32();
             if (n < 0) n = -n;
             ServiceMapOptions.groups[namespace] = {
-              color: colorPalette[n % 9]
+              color: colorPalette[n % 9],
+              filter: `src.namespace == "${namespace}" or dst.namespace == "${namespace}"`,
             }
           }
         }
@@ -438,6 +440,7 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
   }, [graphData?.nodes?.length]);
 
   const handleEdgeChange = (event: SelectChangeEvent) => {
+    setLegendFilter("");
     setSelectedEdges([]);
     setEdgeType(event.target.value as string);
     setLastEntriesLength(0);
@@ -445,6 +448,7 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
   };
 
   const handleNodeChange = (event: SelectChangeEvent) => {
+    setLegendFilter("");
     setSelectedNodes([]);
     setNodeType(event.target.value as string);
     setLastEntriesLength(0);
@@ -453,6 +457,7 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
 
   const events = {
     select: ({ nodes, edges }) => {
+      setLegendFilter("");
       setSelectedEdges(edges);
       setSelectedNodes(nodes);
     }
@@ -602,7 +607,6 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
                 left: "0.5%",
                 bottom: "1%",
                 zIndex: 1,
-                maxHeight: "20%",
               }}>
                 {maximizeLegendCard ?
                   <IconButton onClick={() => {
@@ -626,7 +630,7 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
                   </IconButton>
                 }
 
-                {maximizeLegendCard && <CardContent sx={{ overflow: "scroll" }}>
+                {maximizeLegendCard && <CardContent sx={{ maxHeight: "20%", overflow: "scroll" }}>
                   <List dense disablePadding>
                     {
                       Object.keys(legendData).map(function(key) {
@@ -639,7 +643,17 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
                           color: proto.backgroundColor,
                         };
 
-                        return <ListItem key={key} disableGutters disablePadding sx={{ backgroundColor: "#E8E8E8", padding: "0 5px 0 5px", marginBottom: "5px" }}>
+                        return <ListItem key={key} disableGutters disablePadding sx={{
+                          backgroundColor: "#E8E8E8",
+                          padding: "0 5px 0 5px",
+                          marginBottom: "5px",
+                          border: "2px solid white",
+                          "&:hover": {
+                            border: `2px solid ${proto.backgroundColor}`
+                          },
+                          cursor: "pointer",
+                        }}
+                        onClick={() => setLegendFilter(proto.macro)}>
                           <ListItemIcon sx={{ minWidth: "36px" }}>
                             <RectangleIcon sx={{ color: proto.backgroundColor }} />
                           </ListItemIcon>
@@ -665,7 +679,17 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
                           color: group.color,
                         };
 
-                        return <ListItem key={key} disableGutters disablePadding sx={{ backgroundColor: "#505050", padding: "0 5px 0 5px", marginBottom: "5px" }}>
+                        return <ListItem key={key} disableGutters disablePadding sx={{
+                          backgroundColor: "#505050",
+                          padding: "0 5px 0 5px",
+                          marginBottom: "5px",
+                          border: "2px solid white",
+                          "&:hover": {
+                            border: `2px solid ${group.color}`
+                          },
+                          cursor: "pointer",
+                        }}
+                        onClick={() => setLegendFilter(group.filter)}>
                           <ListItemIcon sx={{ minWidth: "36px" }}>
                             <CircleIcon sx={{ color: group.color }} />
                           </ListItemIcon>
@@ -689,7 +713,6 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
                 bottom: "1%",
                 transform: "translate(-50%, 0%)",
                 zIndex: 1,
-                maxHeight: "20%",
               }}>
                 {maximizeKubectlCard ?
                   <IconButton onClick={() => {
@@ -713,7 +736,7 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
                   </IconButton>
                 }
 
-                {maximizeKubectlCard && <CardContent sx={{ overflow: "scroll" }}>
+                {maximizeKubectlCard && <CardContent sx={{ maxHeight: "20%", overflow: "scroll" }}>
                   {selectedNodes.length === 0 && <>Select a node to display its kubectl command. <a className="kbc-button kbc-button-xxs">Right-Click</a> and drag for rectangular selection.</>}
                   {
                     selectedNodes.length > 0 && selectedNodes.map(id => {
@@ -738,7 +761,6 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
                 position: "absolute",
                 right: "0.5%",
                 zIndex: 1,
-                maxHeight: "20%",
               }}>
                 {maximizeFilterCard ?
                   <IconButton onClick={() => {
@@ -762,14 +784,32 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
                   </IconButton>
                 }
 
-                {maximizeFilterCard && <CardContent sx={{ overflow: "scroll" }}>
-                  {selectedEdges.length === 0 && <>Select an edge to generate its filter. <a className="kbc-button kbc-button-xxs">Ctrl</a> + <a className="kbc-button kbc-button-xxs">Left-Click</a> to multiselect edges.</>}
+                {maximizeFilterCard && <CardContent sx={{ maxHeight: "20%", overflow: "scroll" }}>
+                  {selectedEdges.length === 0 && !legendFilter && <>Select an edge to generate its filter. <a className="kbc-button kbc-button-xxs">Ctrl</a> + <a className="kbc-button kbc-button-xxs">Left-Click</a> to multiselect edges.</>}
                   {
-                    selectedEdges.length > 0 &&
+                    !legendFilter && selectedEdges.length > 0 &&
                     <>
                       <SyntaxHighlighter
                         showLineNumbers={false}
                         code={filter}
+                        language="python"
+                      />
+
+                      <Button
+                        variant="contained"
+                        className={`${styles.bigButton}`}
+                        onClick={handleSetFilter}
+                      >
+                        Set Filter
+                      </Button>
+                    </>
+                  }
+                  {
+                    legendFilter &&
+                    <>
+                      <SyntaxHighlighter
+                        showLineNumbers={false}
+                        code={legendFilter}
                         language="python"
                       />
 

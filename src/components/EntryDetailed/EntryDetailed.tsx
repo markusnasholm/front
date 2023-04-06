@@ -115,7 +115,7 @@ const EntrySummary: React.FC<EntrySummaryProps> = ({ entry }) => {
     entry={entry}
     style={{}}
     headingMode={true}
-    namespace={entry.dst.pod?.metadata.namespace}
+    namespace={entry.dst.namespace}
   />;
 };
 

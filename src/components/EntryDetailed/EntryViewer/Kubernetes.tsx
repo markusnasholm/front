@@ -4,7 +4,7 @@ import YAML from 'yaml';
 
 export interface Resolution {
   pod: Record<string, unknown>;
-  endpoint: Record<string, unknown>;
+  endpointSlice: Record<string, unknown>;
   service: Record<string, unknown>;
 }
 
@@ -31,15 +31,15 @@ const Manifest: React.FC<ManifestProps> = ({ source, destination, color }) => {
       );
     }
 
-    if (source.endpoint) {
+    if (source.endpointSlice) {
       sections.push(
         <EntryBodySection
           key={sections.length}
-          title="Source Endpoint"
+          title="Source EndpointSlice"
           color={color}
-          content={YAML.stringify(source.endpoint)}
+          content={YAML.stringify(source.endpointSlice)}
           contentType="application/yaml"
-          selector="src.endpoint"
+          selector="src.endpointSlice"
         />
       );
     }
@@ -72,15 +72,15 @@ const Manifest: React.FC<ManifestProps> = ({ source, destination, color }) => {
       );
     }
 
-    if (destination.endpoint) {
+    if (destination.endpointSlice) {
       sections.push(
         <EntryBodySection
           key={sections.length}
-          title="Destination Endpoint"
+          title="Destination EndpointSlice"
           color={color}
-          content={YAML.stringify(destination.endpoint)}
+          content={YAML.stringify(destination.endpointSlice)}
           contentType="application/yaml"
-          selector="dst.endpoint"
+          selector="dst.endpointSlice"
         />
       );
     }

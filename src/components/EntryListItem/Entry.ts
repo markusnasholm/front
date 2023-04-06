@@ -9,8 +9,9 @@ interface Resolution {
   ip: string;
   port: string;
   name: string;
+  namespace: string;
   pod?: any;
-  endpoint?: any;
+  endpointSlice?: any;
   service?: any;
 }
 
