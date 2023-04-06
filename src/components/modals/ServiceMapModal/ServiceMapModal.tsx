@@ -342,15 +342,31 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
 
       let filter = entry.proto.macro;
 
-      if (entry.src.name)
-        filter += ` and src.name == "${entry.src.name}"`
-      else
-        filter += ` and src.ip == "${entry.src.ip}"`
+      if (nodeType === NodeTypes.Namespace) {
+        if (entry.src.namespace)
+          filter += ` and src.namespace == "${entry.src.namespace}"`
+        else if (entry.src.name)
+          filter += ` and src.name == "${entry.src.name}"`
+        else
+          filter += ` and src.ip == "${entry.src.ip}"`
 
-      if (entry.dst.name)
-        filter += ` and dst.name == "${entry.dst.name}"`
-      else
-        filter += ` and dst.ip == "${entry.dst.ip}"`
+        if (entry.dst.namespace)
+          filter += ` and dst.namespace == "${entry.dst.namespace}"`
+        else if (entry.dst.name)
+          filter += ` and dst.name == "${entry.dst.name}"`
+        else
+          filter += ` and dst.ip == "${entry.dst.ip}"`
+      } else {
+        if (entry.src.name)
+          filter += ` and src.name == "${entry.src.name}"`
+        else
+          filter += ` and src.ip == "${entry.src.ip}"`
+
+        if (entry.dst.name)
+          filter += ` and dst.name == "${entry.dst.name}"`
+        else
+          filter += ` and dst.ip == "${entry.dst.ip}"`
+      }
 
       let edge: Edge;
       if (edgeKey in edgeMap) {
