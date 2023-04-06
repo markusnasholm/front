@@ -6,6 +6,7 @@ let network;
 let container;
 let canvas;
 let nodes;
+let edges;
 let rect = [];
 var drawingSurfaceImageData;
 
@@ -19,13 +20,11 @@ class ForceGraph extends Component {
   }
 
   componentDidMount() {
-    // ref on graph <Graph/> to add listeners to, maybe?
-    console.log("ref:", this.canvasWrapperRef.current.Network.body.nodes);
-
     container = this.canvasWrapperRef.current.Network.canvas.frame;
     network = this.canvasWrapperRef.current.Network;
     canvas = this.canvasWrapperRef.current.Network.canvas.frame.canvas;
     nodes = this.props.graph.nodes;
+    edges = this.props.graph.edges;
     ctx = canvas.getContext("2d");
 
     container.oncontextmenu = function() {
@@ -50,7 +49,7 @@ class ForceGraph extends Component {
           this.props.modalRef.current.getBoundingClientRect().top;
         this.state.drag = true;
         container.style.cursor = "crosshair";
-        this.selectNodesFromHighlight();
+        this.setSelectionFromHighlight();
       }
     });
 
@@ -80,7 +79,7 @@ class ForceGraph extends Component {
         this.restoreDrawingSurface();
         this.state.drag = false;
         container.style.cursor = "default";
-        this.selectNodesFromHighlight();
+        this.setSelectionFromHighlight();
       }
     });
   }
@@ -98,29 +97,40 @@ class ForceGraph extends Component {
     ctx.putImageData(drawingSurfaceImageData, 0, 0);
   }
 
-  selectNodesFromHighlight() {
-    var nodesIdInDrawing = [];
+  selectItemsFromHighlight(items) {
+    var itemsIdInDrawing = [];
     var xRange = this.getStartToEnd(rect.startX, rect.w);
     var yRange = this.getStartToEnd(rect.startY, rect.h);
-    var allNodes = nodes;
-    for (var i = 0; i < allNodes.length; i++) {
-      var curNode = allNodes[i];
-      var nodePosition = network.getPositions([curNode.id]);
-      var nodeXY = network.canvasToDOM({
-        x: nodePosition[curNode.id].x,
-        y: nodePosition[curNode.id].y
+    var allItems = items;
+    for (var i = 0; i < allItems.length; i++) {
+      var curItem = allItems[i];
+      var itemPosition = network.getPositions([curItem.id]);
+      var itemXY = network.canvasToDOM({
+        x: itemPosition[curItem.id].x,
+        y: itemPosition[curItem.id].y
       });
       if (
-        xRange.start <= nodeXY.x &&
-        nodeXY.x <= xRange.end &&
-        yRange.start <= nodeXY.y &&
-        nodeXY.y <= yRange.end
+        xRange.start <= itemXY.x &&
+        itemXY.x <= xRange.end &&
+        yRange.start <= itemXY.y &&
+        itemXY.y <= yRange.end
       ) {
-        nodesIdInDrawing.push(curNode.id);
+        itemsIdInDrawing.push(curItem.id);
       }
     }
-    network.selectNodes(nodesIdInDrawing);
+
+    return itemsIdInDrawing;
+  }
+
+  setSelectionFromHighlight() {
+    var nodesIdInDrawing = this.selectItemsFromHighlight(nodes);
+    var edgesIdInDrawing = this.selectItemsFromHighlight(edges);
+    network.setSelection({
+      nodes: nodesIdInDrawing,
+      edges: edgesIdInDrawing
+    });
     this.props.setSelectedNodes(nodesIdInDrawing);
+    this.props.setSelectedEdges(edgesIdInDrawing);
   }
 
   getStartToEnd(start, theLen) {

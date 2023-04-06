@@ -370,7 +370,6 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
           ) / 100;
 
         edgeMap[edgeKey].label = `${edgeMap[edgeKey].value}`;
-        console.log(edgeMap[edgeKey].label);
 
         if (!showCumulative)
           edgeMap[edgeKey].label += "/s";
@@ -556,7 +555,7 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
                           color: proto.backgroundColor,
                         };
 
-                        return <ListItem disableGutters disablePadding>
+                        return <ListItem key={key} disableGutters disablePadding>
                           <ListItemIcon sx={{ minWidth: "36px" }}>
                             <RectangleIcon sx={{ color: proto.backgroundColor }} />
                           </ListItemIcon>
@@ -590,14 +589,14 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
                       const node = graphData.nodes[id];
                       let namespaceFlag = "";
                       if (node.verb !== NodeTypes.Namespace) namespaceFlag = "-n";
-                      return <>
+                      return <div key={id}>
                         <b>{node.label}</b>
                         <SyntaxHighlighter
                           showLineNumbers={false}
                           code={node.name.length ? `kubectl describe ${node.verb} ${node.name} ${namespaceFlag} ${node.namespace}` : "# NOT APPLICABLE"}
                           language="bash"
                         />
-                      </>
+                      </div>
                     })
                   }
                 </CardContent>
@@ -640,6 +639,7 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
                 events={events}
                 modalRef={modalRef}
                 setSelectedNodes={setSelectedNodes}
+                setSelectedEdges={setSelectedEdges}
               />
             </div>
           </div>
