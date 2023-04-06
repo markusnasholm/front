@@ -340,8 +340,7 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
         edges.push(edge);
       }
 
-      const timeNow = new Date();
-      const secondsPassed = Moment(timeNow).utc().diff(firstMoment, "seconds");
+      const secondsPassed = Moment(+entry.timestamp).utc().diff(firstMoment, "seconds");
 
       switch (edgeType) {
       case EdgeTypes.Bandwidth:
