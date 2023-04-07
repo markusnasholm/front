@@ -444,6 +444,10 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
   const handleEdgeChange = (event: SelectChangeEvent) => {
     setLegendFilter("");
     setSelectedEdges([]);
+    setGraphData({
+      nodes: [],
+      edges: [],
+    });
     setEdgeType(event.target.value as string);
     setLastEntriesLength(0);
     setLastUpdated(Date.now());
@@ -452,6 +456,10 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
   const handleNodeChange = (event: SelectChangeEvent) => {
     setLegendFilter("");
     setSelectedNodes([]);
+    setGraphData({
+      nodes: [],
+      edges: [],
+    });
     setNodeType(event.target.value as string);
     setLastEntriesLength(0);
     setLastUpdated(Date.now());
