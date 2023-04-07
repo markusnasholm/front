@@ -125,7 +125,6 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
   const [lastEntriesLength, setLastEntriesLength] = useState(0);
 
   const [legendData, setLegendData] = useState<LegendData>({});
-  const [legendFilter, setLegendFilter] = useState("");
 
   const [selectedEdges, setSelectedEdges] = useState([]);
   const [selectedNodes, setSelectedNodes] = useState([]);
@@ -319,6 +318,7 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
             let n = rng.int32();
             if (n < 0) n = -n;
             ServiceMapOptions.groups[namespace] = {
+              key: namespace,
               color: colorPalette[n % 9],
               filter: `src.namespace == "${namespace}" or dst.namespace == "${namespace}"`,
             }
@@ -331,7 +331,7 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
           dstId = node.id;
       }
 
-      const edgeKey = `${srcId}_${dstId}`;
+      const edgeKey = `${entry.proto.abbr}_${srcId}_${dstId}`;
 
       let filter = entry.proto.macro;
 
@@ -378,6 +378,7 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
           cumulative: 0,
           label: "",
           filter: filter,
+          proto: entry.proto.abbr,
           title: entry.proto.longName,
           color: entry.proto.backgroundColor,
         }
@@ -453,7 +454,6 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
   }, [graphData?.nodes?.length]);
 
   const handleEdgeChange = (event: SelectChangeEvent) => {
-    setLegendFilter("");
     setSelectedEdges([]);
     setGraphData({
       nodes: [],
@@ -465,7 +465,6 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
   };
 
   const handleNodeChange = (event: SelectChangeEvent) => {
-    setLegendFilter("");
     setSelectedNodes([]);
     setGraphData({
       nodes: [],
@@ -478,7 +477,6 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
 
   const events = {
     select: ({ nodes, edges }) => {
-      setLegendFilter("");
       setSelectedEdges(edges);
       setSelectedNodes(nodes);
     }
@@ -674,7 +672,16 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
                           },
                           cursor: "pointer",
                         }}
-                        onClick={() => setLegendFilter(proto.macro)}>
+                        onClick={() => {
+                          const edges = [];
+                          graphData.edges.forEach(edge => {
+                            if (edge.proto === proto.abbr) {
+                              edges.push(edge.id);
+                            }
+                          });
+                          setSelectedNodes([]);
+                          setSelectedEdges(edges);
+                        }}>
                           <ListItemIcon sx={{ minWidth: "36px" }}>
                             <RectangleIcon sx={{ color: proto.backgroundColor }} />
                           </ListItemIcon>
@@ -710,7 +717,16 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
                           },
                           cursor: "pointer",
                         }}
-                        onClick={() => setLegendFilter(group.filter)}>
+                        onClick={() => {
+                          const nodes = [];
+                          graphData.nodes.forEach(node => {
+                            if (node.group === group.key) {
+                              nodes.push(node.id);
+                            }
+                          });
+                          setSelectedEdges([]);
+                          setSelectedNodes(nodes);
+                        }}>
                           <ListItemIcon sx={{ minWidth: "36px" }}>
                             <CircleIcon sx={{ color: group.color }} />
                           </ListItemIcon>
@@ -806,31 +822,13 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
                 }
 
                 {maximizeFilterCard && <CardContent sx={{ maxHeight: "20vh", overflow: "scroll" }}>
-                  {selectedEdges.length === 0 && !legendFilter && <>Select an edge to generate its filter. <a className="kbc-button kbc-button-xxs">Ctrl</a> + <a className="kbc-button kbc-button-xxs">Left-Click</a> to multiselect edges.</>}
+                  {selectedEdges.length === 0 && <>Select an edge to generate its filter. <a className="kbc-button kbc-button-xxs">Ctrl</a> + <a className="kbc-button kbc-button-xxs">Left-Click</a> to multiselect edges.</>}
                   {
-                    !legendFilter && selectedEdges.length > 0 &&
+                    selectedEdges.length > 0 &&
                     <>
                       <SyntaxHighlighter
                         showLineNumbers={false}
                         code={filter}
-                        language="python"
-                      />
-
-                      <Button
-                        variant="contained"
-                        className={`${styles.bigButton}`}
-                        onClick={handleSetFilter}
-                      >
-                        Set Filter
-                      </Button>
-                    </>
-                  }
-                  {
-                    legendFilter &&
-                    <>
-                      <SyntaxHighlighter
-                        showLineNumbers={false}
-                        code={legendFilter}
                         language="python"
                       />
 

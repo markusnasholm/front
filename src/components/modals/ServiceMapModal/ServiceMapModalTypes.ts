@@ -26,6 +26,7 @@ export interface Edge {
   cumulative: number;
   label: string;
   filter: string;
+  proto: string;
   title?: string;
   color?: string;
 }
