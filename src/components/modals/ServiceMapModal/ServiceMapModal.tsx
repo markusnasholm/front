@@ -128,6 +128,7 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
 
   const [selectedEdges, setSelectedEdges] = useState([]);
   const [selectedNodes, setSelectedNodes] = useState([]);
+  const [filter, setFilter] = useState("");
 
   const [showCumulative, setShowCumulative] = React.useState(false);
   const [showRequests, setShowRequests] = React.useState(true);
@@ -453,6 +454,10 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
     setGraphOptions(options);
   }, [graphData?.nodes?.length]);
 
+  useEffect(() => {
+    setFilter(selectedEdges.reduce((acc, x) => acc === "" ? graphData.edges[x].filter : `(${acc}) or \n(${graphData.edges[x].filter})`, ""));
+  }, [selectedEdges]);
+
   const handleEdgeChange = (event: SelectChangeEvent) => {
     setSelectedEdges([]);
     setGraphData({
@@ -500,7 +505,6 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
     setLastUpdated(Date.now());
   };
 
-  const filter = selectedEdges.reduce((acc, x) => acc === null ? graphData.edges[x].filter : `(${acc}) or \n(${graphData.edges[x].filter})`, null);
   const handleSetFilter = () => setQueryBuild(filter?.trim());
 
   const modalRef = useRef(null);

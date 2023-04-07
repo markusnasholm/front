@@ -85,7 +85,10 @@ class ForceGraph extends Component {
   }
 
   componentDidUpdate() {
-    network.setSelection(this.props.selection);
+    try {
+      network.setSelection(this.props.selection);
+    } catch (error) {
+    }
   }
 
   saveDrawingSurface() {
