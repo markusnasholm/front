@@ -653,7 +653,7 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
                   </IconButton>
                 }
 
-                {maximizeLegendCard && <CardContent sx={{ maxHeight: "20vh", overflow: "scroll" }}>
+                {maximizeLegendCard && <CardContent sx={{ maxHeight: "30vh", overflow: "scroll" }}>
                   <List dense disablePadding>
                     {
                       Object.keys(legendData).map(function(key) {
