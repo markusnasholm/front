@@ -700,7 +700,7 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
                     }
                     {
                       Object.keys(ServiceMapOptions.groups).map(function(key) {
-                        if (!key) return <></>;
+                        if (!key) return;
 
                         const group = ServiceMapOptions.groups[key];
                         const primaryStyle = {

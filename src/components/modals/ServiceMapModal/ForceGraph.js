@@ -112,6 +112,8 @@ class ForceGraph extends Component {
     for (var i = 0; i < allItems.length; i++) {
       var curItem = allItems[i];
       var itemPosition = network.getPositions([curItem.id]);
+      if (!itemPosition[curItem.id]) continue;
+
       var itemXY = network.canvasToDOM({
         x: itemPosition[curItem.id].x,
         y: itemPosition[curItem.id].y
