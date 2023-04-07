@@ -100,7 +100,7 @@ export const EntryItem: React.FC<EntryProps> = ({ id, stream, entry, style, head
         <Summary method={entry.method} methodQuery={entry.methodQuery} summary={entry.summary} summaryQuery={entry.summaryQuery} />
         <div className={styles.resolvedName}>
           <Queryable
-            query={`src.name == "${entry.src.name}"`}
+            query={`src.name == "${entry.src.name} and src.namespace == "${entry.src.namespace}"`}
             displayIconOnMouseOver={true}
             flipped={true}
             style={{ marginTop: "-4px", overflow: "visible" }}
@@ -116,7 +116,7 @@ export const EntryItem: React.FC<EntryProps> = ({ id, stream, entry, style, head
           </Queryable>
           <SwapHorizIcon style={{ color: entry.proto.backgroundColor, marginTop: "-2px", marginLeft: "5px", marginRight: "5px" }}></SwapHorizIcon>
           <Queryable
-            query={`dst.name == "${entry.dst.name}"`}
+            query={`dst.name == "${entry.dst.name}" and dst.namespace == "${entry.dst.namespace}"`}
             displayIconOnMouseOver={true}
             flipped={true}
             style={{ marginTop: "-4px" }}

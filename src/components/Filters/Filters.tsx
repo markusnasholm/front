@@ -323,7 +323,7 @@ export const QueryForm: React.FC<QueryFormProps> = ({ entries, reopenConnection,
               </Typography>
               <SyntaxHighlighter
                 showLineNumbers={false}
-                code={`and dst.name == "carts.sock-shop"`}
+                code={`and dst.name == "carts" and dst.namespace == "sock-shop"`}
                 language="python"
               />
               <Typography id="modal-modal-description">

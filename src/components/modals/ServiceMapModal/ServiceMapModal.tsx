@@ -160,6 +160,8 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
       legendMap[entry.proto.abbr] = entry.proto;
       let srcLabel = entry.src.name;
       let dstLabel = entry.dst.name;
+      let srcKey = `${entry.src.name}.${entry.src.namespace}`;
+      let dstKey = `${entry.dst.name}.${entry.dst.namespace}`;
 
       let srcName = "";
       let dstName = "";
@@ -168,8 +170,6 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
 
       switch (nodeType) {
       case NodeTypes.Name:
-        srcLabel = entry.src.name;
-
         if (entry.src.pod) {
           srcVerb = NodeTypes.Pod;
           srcName = entry.src.pod.metadata.name;
@@ -189,13 +189,15 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
         } else if (entry.src.service) {
           srcLabel = entry.src.service.metadata.namespace;
         }
+        srcKey = srcLabel;
 
         srcVerb = NodeTypes.Namespace;
         srcName = srcLabel;
         break;
       case NodeTypes.Pod:
         if (entry.src.pod) {
-          srcLabel = `${entry.src.pod.metadata.name}.${entry.src.pod.metadata.namespace}`;
+          srcLabel = entry.src.pod.metadata.name;
+          srcKey = `${entry.src.pod.metadata.name}.${entry.src.pod.metadata.namespace}`;
           srcName = entry.src.pod.metadata.name;
         }
 
@@ -203,7 +205,8 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
         break;
       case NodeTypes.EndpointSlice:
         if (entry.src.endpointSlice) {
-          srcLabel = `${entry.src.endpointSlice.metadata.name}.${entry.src.endpointSlice.metadata.namespace}`;
+          srcLabel = entry.src.endpointSlice.metadata.name;
+          srcKey = `${entry.src.endpointSlice.metadata.name}.${entry.src.endpointSlice.metadata.namespace}`;
           srcName = entry.src.endpointSlice.metadata.name;
         }
 
@@ -211,7 +214,8 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
         break;
       case NodeTypes.Service:
         if (entry.src.service) {
-          srcLabel = `${entry.src.service.metadata.name}.${entry.src.service.metadata.namespace}`;
+          srcLabel = entry.src.service.metadata.name;
+          srcKey = `${entry.src.service.metadata.name}.${entry.src.service.metadata.namespace}`;
           srcName = entry.src.service.metadata.name;
         }
 
@@ -221,8 +225,6 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
 
       switch (nodeType) {
       case NodeTypes.Name:
-        dstLabel = entry.dst.name;
-
         if (entry.dst.pod) {
           dstVerb = NodeTypes.Pod;
           dstName = entry.dst.pod.metadata.name;
@@ -242,13 +244,15 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
         } else if (entry.dst.service) {
           dstLabel = entry.dst.service.metadata.namespace;
         }
+        dstKey = dstLabel;
 
         dstVerb = NodeTypes.Namespace;
         dstName = dstLabel;
         break;
       case NodeTypes.Pod:
         if (entry.dst.pod) {
-          dstLabel = `${entry.dst.pod.metadata.name}.${entry.dst.pod.metadata.namespace}`;
+          dstLabel = entry.dst.pod.metadata.name;
+          dstKey = `${entry.dst.pod.metadata.name}.${entry.dst.pod.metadata.namespace}`;
           dstName = entry.dst.pod.metadata.name;
         }
 
@@ -256,7 +260,8 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
         break;
       case NodeTypes.EndpointSlice:
         if (entry.dst.endpointSlice) {
-          dstLabel = `${entry.dst.endpointSlice.metadata.name}.${entry.dst.endpointSlice.metadata.namespace}`;
+          dstLabel = entry.dst.endpointSlice.metadata.name;
+          dstKey = `${entry.dst.endpointSlice.metadata.name}.${entry.dst.endpointSlice.metadata.namespace}`;
           dstName = entry.dst.endpointSlice.metadata.name;
         }
 
@@ -264,7 +269,8 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
         break;
       case NodeTypes.Service:
         if (entry.dst.service) {
-          dstLabel = `${entry.dst.service.metadata.name}.${entry.dst.service.metadata.namespace}`;
+          dstLabel = entry.dst.service.metadata.name;
+          dstKey = `${entry.dst.service.metadata.name}.${entry.dst.service.metadata.namespace}`;
           dstName = entry.dst.service.metadata.name;
         }
 
@@ -282,12 +288,13 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
       let srcId: number;
       let dstId: number;
 
+      const keyArr: string[] = [srcKey, dstKey];
       const labelArr: string[] = [srcLabel, dstLabel];
       const nameArr: string[] = [srcName, dstName];
       const namespaceArr: string[] = [entry.src.namespace, entry.dst.namespace];
       const verbArr: string[] = [srcVerb, dstVerb];
-      for (let i = 0; i < labelArr.length; i++) {
-        const nodeKey: string = labelArr[i];
+      for (let i = 0; i < keyArr.length; i++) {
+        const nodeKey: string = keyArr[i];
         let node: Node;
         const namespace = namespaceArr[i];
         if (nodeKey in nodeMap) {
@@ -297,7 +304,7 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
           node = {
             id: nodes.length,
             value: 1,
-            label: nodeKey,
+            label: labelArr[i],
             group: namespace,
             title: nodeKey,
             name: nameArr[i],
@@ -348,10 +355,14 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
         else
           filter += ` and src.ip == "${entry.src.ip}"`
 
+        filter += ` and src.namespace == "${entry.src.namespace}"`
+
         if (entry.dst.name)
           filter += ` and dst.name == "${entry.dst.name}"`
         else
           filter += ` and dst.ip == "${entry.dst.ip}"`
+
+        filter += ` and dst.namespace == "${entry.dst.namespace}"`
       }
 
       let edge: Edge;
