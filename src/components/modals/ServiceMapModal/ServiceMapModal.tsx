@@ -25,7 +25,7 @@ import { SelectChangeEvent } from '@mui/material/Select';
 import CloseIcon from '@mui/icons-material/Close';
 import RemoveIcon from '@mui/icons-material/Remove';
 import AddIcon from '@mui/icons-material/Add';
-import RectangleIcon from '@mui/icons-material/Rectangle';
+import ForwardIcon from '@mui/icons-material/Forward';
 import CircleIcon from '@mui/icons-material/Circle';
 import styles from './ServiceMapModal.module.sass'
 import { GraphData, Node, Edge, LegendData } from "./ServiceMapModalTypes"
@@ -687,7 +687,7 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
                           setSelectedEdges(edges);
                         }}>
                           <ListItemIcon sx={{ minWidth: "36px" }}>
-                            <RectangleIcon sx={{ color: proto.backgroundColor }} />
+                            <ForwardIcon sx={{ color: proto.backgroundColor }} />
                           </ListItemIcon>
                           <ListItemText
                             primary={proto.abbr}
