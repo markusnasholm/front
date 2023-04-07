@@ -163,8 +163,6 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
 
       let srcName = "";
       let dstName = "";
-      let srcNamespace = "";
-      let dstNamespace = "";
       let srcVerb = "";
       let dstVerb = "";
 
@@ -175,15 +173,12 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
         if (entry.src.pod) {
           srcVerb = NodeTypes.Pod;
           srcName = entry.src.pod.metadata.name;
-          srcNamespace = entry.src.pod.metadata.namespace;
         } else if (entry.src.endpointSlice) {
           srcVerb = NodeTypes.EndpointSlice;
           srcName = entry.src.endpointSlice.metadata.name;
-          srcNamespace = entry.src.endpointSlice.metadata.namespace;
         } else if (entry.src.service) {
           srcVerb = NodeTypes.Service;
           srcName = entry.src.service.metadata.name;
-          srcNamespace = entry.src.service.metadata.namespace;
         }
         break;
       case NodeTypes.Namespace:
@@ -202,7 +197,6 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
         if (entry.src.pod) {
           srcLabel = `${entry.src.pod.metadata.name}.${entry.src.pod.metadata.namespace}`;
           srcName = entry.src.pod.metadata.name;
-          srcNamespace = entry.src.pod.metadata.namespace;
         }
 
         srcVerb = NodeTypes.Pod;
@@ -211,7 +205,6 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
         if (entry.src.endpointSlice) {
           srcLabel = `${entry.src.endpointSlice.metadata.name}.${entry.src.endpointSlice.metadata.namespace}`;
           srcName = entry.src.endpointSlice.metadata.name;
-          srcNamespace = entry.src.endpointSlice.metadata.namespace;
         }
 
         srcVerb = NodeTypes.EndpointSlice;
@@ -220,7 +213,6 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
         if (entry.src.service) {
           srcLabel = `${entry.src.service.metadata.name}.${entry.src.service.metadata.namespace}`;
           srcName = entry.src.service.metadata.name;
-          srcNamespace = entry.src.service.metadata.namespace;
         }
 
         srcVerb = NodeTypes.Service;
@@ -234,15 +226,12 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
         if (entry.dst.pod) {
           dstVerb = NodeTypes.Pod;
           dstName = entry.dst.pod.metadata.name;
-          dstNamespace = entry.dst.pod.metadata.namespace;
         } else if (entry.dst.endpointSlice) {
           dstVerb = NodeTypes.EndpointSlice;
           dstName = entry.dst.endpointSlice.metadata.name;
-          dstNamespace = entry.dst.endpointSlice.metadata.namespace;
         } else if (entry.dst.service) {
           dstVerb = NodeTypes.Service;
           dstName = entry.dst.service.metadata.name;
-          dstNamespace = entry.dst.service.metadata.namespace;
         }
         break;
       case NodeTypes.Namespace:
@@ -261,7 +250,6 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
         if (entry.dst.pod) {
           dstLabel = `${entry.dst.pod.metadata.name}.${entry.dst.pod.metadata.namespace}`;
           dstName = entry.dst.pod.metadata.name;
-          dstNamespace = entry.dst.pod.metadata.namespace;
         }
 
         dstVerb = NodeTypes.Pod;
@@ -270,7 +258,6 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
         if (entry.dst.endpointSlice) {
           dstLabel = `${entry.dst.endpointSlice.metadata.name}.${entry.dst.endpointSlice.metadata.namespace}`;
           dstName = entry.dst.endpointSlice.metadata.name;
-          dstNamespace = entry.dst.endpointSlice.metadata.namespace;
         }
 
         dstVerb = NodeTypes.EndpointSlice;
@@ -279,7 +266,6 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
         if (entry.dst.service) {
           dstLabel = `${entry.dst.service.metadata.name}.${entry.dst.service.metadata.namespace}`;
           dstName = entry.dst.service.metadata.name;
-          dstNamespace = entry.dst.service.metadata.namespace;
         }
 
         dstVerb = NodeTypes.Service;
@@ -298,7 +284,7 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
 
       const labelArr: string[] = [srcLabel, dstLabel];
       const nameArr: string[] = [srcName, dstName];
-      const namespaceArr: string[] = [srcNamespace, dstNamespace];
+      const namespaceArr: string[] = [entry.src.namespace, entry.dst.namespace];
       const verbArr: string[] = [srcVerb, dstVerb];
       for (let i = 0; i < labelArr.length; i++) {
         const nodeKey: string = labelArr[i];
