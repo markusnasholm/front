@@ -154,8 +154,9 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
     let firstMoment: Moment.Moment;
 
     entries.map(entry => {
-      if (firstMoment === undefined)
-        firstMoment = Moment(+entry.timestamp)?.utc();
+      const thisMoment = Moment(+entry.timestamp)?.utc();
+      if (firstMoment === undefined) firstMoment = thisMoment;
+      if (thisMoment.diff(firstMoment, "seconds") < 0) firstMoment = thisMoment;
 
       legendMap[entry.proto.abbr] = entry.proto;
       let srcLabel = entry.src.name;
@@ -387,7 +388,7 @@ export const ServiceMapModal: React.FC<ServiceMapModalProps> = ({
         edges.push(edge);
       }
 
-      const secondsPassed = Moment(+entry.timestamp).utc().diff(firstMoment, "seconds");
+      const secondsPassed = thisMoment.diff(firstMoment, "seconds");
 
       switch (edgeType) {
       case EdgeTypes.Bandwidth:
