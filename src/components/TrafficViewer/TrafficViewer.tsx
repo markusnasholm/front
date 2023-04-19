@@ -243,6 +243,7 @@ export const TrafficViewer: React.FC<TrafficViewerProps> = ({ entries, setEntrie
         setFocusedStream(entry.stream);
       }
 
+      entry.key = `${Date().valueOf()}-${entry.id}`;
       entriesBuffer.current.push(entry);
     }
   }

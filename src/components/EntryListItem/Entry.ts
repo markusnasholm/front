@@ -19,6 +19,7 @@ interface Resolution {
 }
 
 export interface Entry {
+  key: string;
   id: string;
   index?: number;
   stream: string;

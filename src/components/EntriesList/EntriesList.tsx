@@ -54,7 +54,7 @@ export const EntriesList: React.FC<EntriesListProps> = ({
           {false /* It's because the first child is ignored by ScrollableFeedVirtualized */}
           {memoizedEntries.map(entry => {
             return <EntryItem
-              key={entry.id}
+              key={entry.key}
               id={entry.id}
               stream={entry.stream}
               entry={entry}
