@@ -143,10 +143,10 @@ export const TrafficViewer: React.FC<TrafficViewerProps> = ({ entries, setEntrie
           // msg = "Connecting with the new filter..."
           break;
         case 1006:
-          toast.warning("Workers are down!", {
-            theme: "colored",
-            autoClose: 1000,
-          });
+          // toast.warning("Workers are down!", {
+          //   theme: "colored",
+          //   autoClose: 1000,
+          // });
           break;
         case 4001:
           return;
