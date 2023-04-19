@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState } from "react";
 import styles from './EntriesList.module.sass';
 import ScrollableFeedVirtualized from "react-scrollable-feed-virtualized";
 import down from "./assets/downImg.svg";
@@ -43,16 +43,12 @@ export const EntriesList: React.FC<EntriesListProps> = ({
     setTimeNow(new Date());
   }, 1000, true);
 
-  const memoizedEntries = useMemo(() => {
-    return entries;
-  }, [entries]);
-
   return <React.Fragment>
     <div className={styles.list}>
       <div id="list" ref={listEntryREF} className={styles.list}>
         <ScrollableFeedVirtualized ref={scrollableRef} itemHeight={48} marginTop={10} onSnapBroken={onSnapBrokenEvent}>
           {false /* It's because the first child is ignored by ScrollableFeedVirtualized */}
-          {memoizedEntries.map(entry => {
+          {entries.map(entry => {
             return <EntryItem
               key={entry.id}
               id={entry.id}
