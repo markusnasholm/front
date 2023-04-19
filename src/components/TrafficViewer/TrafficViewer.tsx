@@ -118,10 +118,10 @@ export const TrafficViewer: React.FC<TrafficViewerProps> = ({ entries, setEntrie
 
       ws.current.onopen = () => {
         setWsReadyState(ws?.current?.readyState);
-        toast.success("Connected to Hub.", {
-          theme: "colored",
-          autoClose: 1000,
-        });
+        // toast.success("Connected to Hub.", {
+        //   theme: "colored",
+        //   autoClose: 1000,
+        // });
 
         getLicense();
         timer = setTimeout(() => {
@@ -134,13 +134,13 @@ export const TrafficViewer: React.FC<TrafficViewerProps> = ({ entries, setEntrie
 
         setWsReadyState(ws?.current?.readyState);
         let delay = 3000;
-        let msg = "Trying to reconnect...";
+        // let msg = "Trying to reconnect...";
 
         // 4001 is a custom code, meaning don't try to reconnect.
         switch (e.code) {
         case 1000:
           delay = 100;
-          msg = "Connecting with the new filter..."
+          // msg = "Connecting with the new filter..."
           break;
         case 1006:
           toast.warning("Workers are down!", {
@@ -154,10 +154,10 @@ export const TrafficViewer: React.FC<TrafficViewerProps> = ({ entries, setEntrie
           break;
         }
 
-        toast.info(msg, {
-          theme: "colored",
-          autoClose: 1000,
-        });
+        // toast.info(msg, {
+        //   theme: "colored",
+        //   autoClose: 1000,
+        // });
 
         setTimeout(() => {
           openWebSocket();
@@ -168,7 +168,7 @@ export const TrafficViewer: React.FC<TrafficViewerProps> = ({ entries, setEntrie
         clearTimeout(timer);
 
         console.error("WebSocket error:", err);
-        toast.error("Hub is down!", {
+        toast.error(err, {
           theme: "colored",
           autoClose: 1000,
         });
